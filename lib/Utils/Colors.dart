@@ -5,3 +5,4 @@ int fontColorSteelGrey = 0XFF445066;
 int midnightBlue = 0XFF001736;
 int skyBlue = 0XFFE4F0F8;
 int whiteColor = 0XFFFFFFFF;
+int borderColor = 0XFFD8DFE9;

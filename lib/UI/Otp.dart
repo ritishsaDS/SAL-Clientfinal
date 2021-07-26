@@ -8,14 +8,14 @@ import 'package:otp_text_field/style.dart';
 
 import 'Professionalinfo.dart';
 
-class OTP extends StatefulWidget {
+class OTPScreen extends StatefulWidget {
   String phonenumber;
-  OTP({this.phonenumber});
+  OTPScreen({this.phonenumber});
   @override
-  _OTPState createState() => _OTPState();
+  _OTPScreenState createState() => _OTPScreenState();
 }
 
-class _OTPState extends State<OTP> {
+class _OTPScreenState extends State<OTPScreen> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
