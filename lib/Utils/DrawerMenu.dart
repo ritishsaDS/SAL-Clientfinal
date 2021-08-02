@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/AboutSAL.dart';
+import 'package:sal_user/UI/Connect.dart';
+import 'package:sal_user/UI/Help.dart';
+import 'package:sal_user/UI/MySessions.dart';
+import 'package:sal_user/UI/Settings.dart';
+import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
 import 'Colors.dart';
@@ -91,17 +97,17 @@ class _DrawerMenuState extends State<DrawerMenu> {
               },
             ),
             ListTile(
-              title: Text("My Availability"),
+              title: Text("Explore All"),
               leading: ImageIcon(Image.asset('assets/icons/availability.png').image),
               onTap: (){
-                Navigator.of(context).pushNamed('/AvailabilityFirst');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Connect()));
               },
             ),
             ListTile(
               title: Text("My Content"),
               leading: ImageIcon(Image.asset('assets/icons/content.png').image),
               onTap: (){
-                Navigator.of(context).pushNamed('/MyContent');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>MySessions()));
               },
             ),
             ListTile(
@@ -115,28 +121,28 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("Payments"),
               leading: ImageIcon(Image.asset('assets/icons/payment.png').image),
               onTap: (){
-                Navigator.of(context).pushNamed('/Payments');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>SummaryPayment()));
               },
             ),
             ListTile(
               title: Text("Help"),
               leading: ImageIcon(Image.asset('assets/icons/help.png').image),
               onTap: (){
-                Navigator.of(context).pushNamed('/Help');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Help()));
               },
             ),
             ListTile(
               title: Text("About SAL"),
               leading: ImageIcon(Image.asset('assets/icons/about.png').image),
               onTap: (){
-                Navigator.of(context).pushNamed('/AboutSAL');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AboutSAL()));
               },
             ),
             ListTile(
               title: Text("Settings"),
               leading: ImageIcon(Image.asset('assets/icons/settings.png').image),
               onTap: (){
-                Navigator.of(context).pushNamed('/Settings');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Settings()));
               },
             ),
           ],

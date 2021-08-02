@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/AboutSAL.dart';
 import 'package:sal_user/UI/Assessments.dart';
+import 'package:sal_user/UI/Connect.dart';
+import 'package:sal_user/UI/CousellorProfile.dart';
+import 'package:sal_user/UI/Exploreall.dart';
+import 'package:sal_user/UI/Help.dart';
+import 'package:sal_user/UI/MySessions.dart';
+import 'package:sal_user/UI/Settings.dart';
+import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
@@ -89,10 +97,14 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("My Profile"),
               leading: ImageIcon(Image.asset('assets/icons/user.png').image),
               onTap: () {
-                Navigator.of(context).pushNamed('/MyProfile');
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CounsellorProfile()));
               },
             ),
             ListTile(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ExploreAll()));
+              },
               title: Text("My Availability"),
               leading:
                   ImageIcon(Image.asset('assets/icons/availability.png').image),
@@ -102,14 +114,15 @@ class _DrawerMenuState extends State<DrawerMenu> {
               leading:
                   ImageIcon(Image.asset('assets/icons/nav booking.png').image),
               onTap: () {
-                Navigator.of(context).pushNamed('/Cafe1');
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Connect()));
               },
             ),
             ListTile(
               title: Text("My Content"),
               leading: ImageIcon(Image.asset('assets/icons/content.png').image),
               onTap: () {
-                Navigator.of(context).pushNamed('/MyContent');
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MySessions()));
               },
             ),
             ListTile(
@@ -127,29 +140,28 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("Payments"),
               leading: ImageIcon(Image.asset('assets/icons/payment.png').image),
               onTap: () {
-                Navigator.of(context).pushNamed('/Payments');
+               Navigator.push(context, MaterialPageRoute(builder: (context)=>SummaryPayment()));
               },
             ),
             ListTile(
               title: Text("Help"),
               leading: ImageIcon(Image.asset('assets/icons/help.png').image),
-              onTap: () {
-                Navigator.of(context).pushNamed('/Help');
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Help()));
               },
             ),
             ListTile(
               title: Text("About SAL"),
               leading: ImageIcon(Image.asset('assets/icons/about.png').image),
-              onTap: () {
-                Navigator.of(context).pushNamed('/AboutSAL');
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AboutSAL()));
               },
             ),
             ListTile(
               title: Text("Settings"),
-              leading:
-                  ImageIcon(Image.asset('assets/icons/settings.png').image),
-              onTap: () {
-                Navigator.of(context).pushNamed('/Settings');
+              leading: ImageIcon(Image.asset('assets/icons/settings.png').image),
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Settings()));
               },
             ),
           ],

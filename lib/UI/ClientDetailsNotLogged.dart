@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 class ClientDetails extends StatefulWidget {
@@ -443,7 +444,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                           top: SizeConfig.blockSizeVertical * 8,
                         ),
                         child: MaterialButton(onPressed: (){
-                          Navigator.of(context).pushNamed('/Session');
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Sessions()));
                         },
                           child: Text("CONTINUE",
                             style: TextStyle(

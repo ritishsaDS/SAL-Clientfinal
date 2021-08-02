@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    countryCode = "+91";
+    countryCode = "91";
   }
 
   @override
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Navigator.push(context,
                                             MaterialPageRoute(
                                                 builder: (conext) {
-                                          return OTPScreen();
+                                          return OTPScreen(phonenumber:mobileController.text);
                                         }));
                                       } else {
                                         Navigator.of(loginLoader.currentContext,

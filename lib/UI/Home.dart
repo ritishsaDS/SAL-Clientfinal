@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/Utils/NavigationBar.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Widgets/Drawemenu.dart';
@@ -256,6 +257,7 @@ class _HomeMainState extends State<HomeMain> {
         ),
       ),
       drawer: DrawerMenu(),
+          bottomNavigationBar: NavigationBar(index: 0,),
       // bottomNavigationBar: NavigationBar(
       //   index: 0,
       // ),

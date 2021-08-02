@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sal_user/UI/CousellorProfile.dart';
+import 'package:sal_user/Utils/NavigationBar.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 
@@ -612,7 +614,7 @@ class _ConnectState extends State<Connect> {
                           ),
                           child: MaterialButton(
                             onPressed: (){
-                              Navigator.of(context).pushNamed('/CounsellorProfile');
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile()));
                             },
                             child: Text("BOOK APPOINTMENT",
                             style: TextStyle(
@@ -640,6 +642,7 @@ class _ConnectState extends State<Connect> {
           ),
         ),
       ),
+      bottomNavigationBar: NavigationBar(index: 1,),
     ));
   }
 }

@@ -41,10 +41,12 @@ class VerifyOtpRepo extends BaseRepository {
   Future<VerifyOtpModal> verifyOtp({String phone,String otp,
     BuildContext context,
   }) async {
-    final uri = '${ApiEndpoint.BaseUrl}verifyotp';
+    print(otp);
+    print(phone);
+    final uri = 'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/verifyotp?phone=${phone}&otp=${otp}';
     var response = await Dio().get(uri,
-        queryParameters:
-        {'phone': phone, 'otp': otp},
+        // queryParameters:
+        // {'phone': phone, 'otp': otp},
         options: Options(
           headers: {
             'Content-Type': 'application/json',
@@ -54,6 +56,7 @@ class VerifyOtpRepo extends BaseRepository {
     try {
       if (response.data != null) {
         final passEntity = VerifyOtpModal.fromJson(response.data);
+        print("jnwernjn");
         return passEntity;
       } else {
         return VerifyOtpModal(meta: response.data);

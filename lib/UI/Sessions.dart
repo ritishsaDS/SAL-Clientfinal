@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
@@ -602,7 +604,7 @@ class _SessionsState extends State<Sessions> {
                   top: SizeConfig.blockSizeVertical * 10,
                 ),
                 child: MaterialButton(onPressed: (){
-                  Navigator.of(context).pushNamed('/PaymentSummary');
+                Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment()));
                 },
                   child: Text("PROCEED TO PAYMENT",
                     style: TextStyle(

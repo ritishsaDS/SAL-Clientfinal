@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 
+import 'ClientDetailsNotLogged.dart';
+
 class CounsellorProfile extends StatefulWidget {
   const CounsellorProfile({Key key}) : super(key: key);
 
@@ -78,7 +80,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
             ),
             MaterialButton(
               onPressed: (){
-                Navigator.of(context).pushNamed('/ClientDetails');
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ClientDetails()));
               },
               color: Color(backgroundColorBlue),
               child: Text("SCHEDULE",style: TextStyle(

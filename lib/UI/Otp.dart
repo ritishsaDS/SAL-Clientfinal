@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
+import 'package:sal_user/Utils/Dialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:sal_user/data/repo/verifyOtpRepo.dart';
 
 import 'Professionalinfo.dart';
 
@@ -16,6 +20,10 @@ class OTPScreen extends StatefulWidget {
 }
 
 class _OTPScreenState extends State<OTPScreen> {
+  final GlobalKey<State> loginLoader = new GlobalKey<State>();
+  var digit;
+  var verifyOtp = VerifyOtpRepo();
+ // var sendOtp = send.SendOtptoPhone();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -53,7 +61,7 @@ class _OTPScreenState extends State<OTPScreen> {
                 ),
               ),
               OTPTextField(
-                length: 5,
+                length: 4,
                 width: MediaQuery.of(context).size.width,
                 textFieldAlignment: MainAxisAlignment.spaceAround,
                 fieldWidth: 55,
@@ -64,11 +72,15 @@ class _OTPScreenState extends State<OTPScreen> {
                   print("Changed: " + pin);
                 },
                 onCompleted: (pin) {
+                  digit=pin;
+                  print(digit);
                   print("Completed: " + pin);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfessionalInfo1()));
+
+                 setState(() {
+                   selected=true;
+                 });
+
+
                 },
               ),
               SizedBox(
@@ -85,6 +97,92 @@ class _OTPScreenState extends State<OTPScreen> {
             ],
           ),
         ),
+      ),
+      floatingActionButton:FloatingActionButton(
+          child: Icon(Icons.arrow_forward_ios,color: Colors.white,),
+          backgroundColor: selected == true? Colors.blue : Colors.grey,
+          onPressed: () {
+            if (digit.isNotEmpty
+            ) {
+              Dialogs.showLoadingDialog(context, loginLoader);
+              verifyOtp
+                  .verifyOtp(
+
+                  phone: "91"+widget.phonenumber,
+                  otp: digit
+
+              ).then((value) async {
+
+                if (value != null) {
+print(value.meta.message);
+                  if (value.meta.status == "200") {
+                    Navigator.of(loginLoader.currentContext,
+                        rootNavigator: true)
+                        .pop();
+                    print(value.mediaUrl);
+                    toast(value.meta.message);
+Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfessionalInfo1()));
+                    if(value.therapist!=null){
+                     // SharedPreferences prefs=await SharedPreferences.getInstance();
+                     //  prefs.setString("therapistid",value.therapist.therapistId );
+                     //  prefs.remove("firstname");
+                     //  prefs.remove("lastname");
+                     //  prefs.setString("firstname",value.therapist.firstName );
+                     //  prefs.setString("lastname",value.therapist.lastName );
+                     //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));
+
+                    }
+                    else{
+
+                      // // Navigator.push(context, MaterialPageRoute(builder: (conext){
+                      // //   return Price1(getOtp:  firstController.text
+                      // //   );
+                      // }));
+
+                    }
+
+
+
+
+                  } else {
+                    // firstController.clear();
+                    //
+                    Navigator.of(loginLoader.currentContext,
+                        rootNavigator: true)
+                        .pop();
+                    showAlertDialog(
+                      context,
+                      value.meta.message,
+                      "",
+                    );
+                  }
+                } else {
+                  Navigator.of(loginLoader.currentContext,
+                      rootNavigator: true)
+                      .pop();
+                  showAlertDialog(
+                    context,
+                    value.meta.message,
+                    "",
+                  );
+                }
+              }).catchError((error) {
+                Navigator.of(loginLoader.currentContext,
+                    rootNavigator: true)
+                    .pop();
+                showAlertDialog(
+                  context,
+                  error.toString(),
+                  "",
+                );
+              });
+            }else{
+              toast("Otp is required");
+            }
+          }
       ),
     );
   }

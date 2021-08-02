@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/Connect.dart';
+import 'package:sal_user/UI/Exploreall.dart';
+import 'package:sal_user/UI/Home.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'Colors.dart';
 
@@ -35,7 +38,7 @@ class _NavigationBarState extends State<NavigationBar> {
       items: [
         BottomNavigationBarItem(icon: InkWell(
           onTap: (){
-            Navigator.of(context).pushReplacementNamed('/HomeMain');
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));
           },
           child: Container(child:
           Image.asset('assets/icons/nav home.png',
@@ -51,8 +54,8 @@ class _NavigationBarState extends State<NavigationBar> {
             label: "Home"),
         BottomNavigationBarItem(icon: InkWell(
           onTap: (){
-          /*  Navigator.push(context, MaterialPageRoute(builder: (context){
-              return AppointmentTabBarView();}));*/
+           Navigator.push(context, MaterialPageRoute(builder: (context){
+              return Connect();}));
           },
           child: Container(child:
           Image.asset('assets/icons/nav booking.png',
@@ -68,7 +71,8 @@ class _NavigationBarState extends State<NavigationBar> {
             label: "Booking"),
         BottomNavigationBarItem(icon: InkWell(
           onTap: (){
-            Navigator.of(context).pushReplacementNamed('/ExploreAll');
+            Navigator.push(context, MaterialPageRoute(builder: (context){
+              return ExploreAll();}));
           },
           child: Container(child:
           Image.asset('assets/icons/nav explore.png',

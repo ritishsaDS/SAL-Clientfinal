@@ -169,5 +169,4 @@ class _CancelAppointmentClientState extends State<CancelAppointmentClient> {
   }
 }
 
-class GoogleFonts {
-}
+
