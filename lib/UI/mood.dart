@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sal_user/UI/OnBoardScreens.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Widgets/Moodwidget.dart';
 import 'Addnote.dart';
@@ -101,7 +102,7 @@ class _MoodState extends State<Mood> {
                 textColor: Colors.white,
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Splash1()));
+                      MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
                 },
               ),
             )

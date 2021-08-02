@@ -37,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return SafeArea(
         child: Scaffold(
       body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
         child: Stack(
           children: [
             Container(
@@ -67,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: Container(
                 margin: EdgeInsets.only(
-                  top: SizeConfig.screenHeight * 0.12,
+                  top: SizeConfig.screenHeight * 0.10,
                   left: SizeConfig.screenWidth * 0.05,
                   right: SizeConfig.screenWidth * 0.05,
                 ),

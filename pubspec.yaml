@@ -34,7 +34,7 @@ dependencies:
   flutter_svg: ^0.22.0
   keyboard_actions: ^3.4.0
   image_picker:
-  nb_utils: ^4.2.11
+  nb_utils:
   swipedetector:
   video_player: ^2.1.10
   audioplayer: ^0.8.1
@@ -67,6 +67,7 @@ flutter:
     - assets/logo/
     - assets/icons/
     - assets/bg/
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
