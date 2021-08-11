@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/Professionalinfo.dart';
+import 'package:sal_user/UI/webview.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/sendOtpRepo.dart';
 import 'Otp.dart';
 import 'package:sal_user/Utils/Dialog.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
 TextEditingController mobileController = TextEditingController();
 
 class LoginScreen extends StatefulWidget {
@@ -30,6 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     countryCode = "91";
   }
+  GoogleSignInAccount _userObj;
+  bool isLoggedIn = false;
+  var profileData;
+  Map userfb = {};
+  //var facebookLogin = FacebookLogin();
+
+  GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   Widget build(BuildContext context) {
@@ -74,12 +83,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Welcome To SAL!",
-                      style: GoogleFonts.openSans(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700,
-                          fontSize: SizeConfig.blockSizeVertical * 2.5),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Welcome To SAL!",
+                          style: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: SizeConfig.blockSizeVertical * 2.5),
+                        ),
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfessionalInfo1()));
+                          },
+                          child: Text(
+                            "Skip",
+                            style: GoogleFonts.openSans(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w700,
+                                fontSize: SizeConfig.blockSizeVertical * 1.5),
+                          ),
+                        ),
+                      ],
                     ),
                     Text(
                       "We are glad to see you here.",
@@ -239,17 +264,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Container(
-                                  child: SvgPicture.asset("assets/icons/googleIcon.svg"),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Color(borderColor),width: 1
-                                              ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(8.0))),
-                                  width: SizeConfig.blockSizeHorizontal * 20,
-                                  height: SizeConfig.blockSizeVertical * 6,
-                                  padding: EdgeInsets.all(8),
+                                GestureDetector(
+                                  onTap: ()=>googlelogin(),
+                                  child: Container(
+                                    child: SvgPicture.asset("assets/icons/googleIcon.svg"),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Color(borderColor),width: 1
+                                                ),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8.0))),
+                                    width: SizeConfig.blockSizeHorizontal * 20,
+                                    height: SizeConfig.blockSizeVertical * 6,
+                                    padding: EdgeInsets.all(8),
+                                  ),
                                 ),
                                 SizedBox(width: SizeConfig.blockSizeHorizontal * 4,),
                                 Container(
@@ -296,12 +324,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.center,
                     ),
                     Container(
-                      child: Text(
-                        "Terms of service & Privacy Policy.",
-                        style: GoogleFonts.openSans(
-                            color: Color(backgroundColorBlue),
-                            fontSize: SizeConfig.blockSizeVertical * 1.5,
-                            fontWeight: FontWeight.w400),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>WebViewClass(link:"https://sal-foundation.com/about-sal")));
+
+                        },
+                        child: Text(
+                          "Terms of service & Privacy Policy.",
+                          style: GoogleFonts.openSans(
+                              color: Color(backgroundColorBlue),
+                              fontSize: SizeConfig.blockSizeVertical * 1.5,
+                              fontWeight: FontWeight.w400),
+                        ),
                       ),
                       width: SizeConfig.screenWidth,
                       alignment: Alignment.center,
@@ -325,5 +359,61 @@ class _LoginScreenState extends State<LoginScreen> {
       return 'Please enter valid mobile number';
     }
     return null;
+  }
+  googlelogin() {
+    print("jejk");
+    _googleSignIn.signIn().then((userData) {
+      setState(() async {
+       // _isLoggedIn = true;
+        _userObj = userData;
+        print("jejjjnkjnkek");
+        print(_userObj.displayName);
+        if (_userObj.displayName != null) {
+          // try {
+          //   final response = await http.post(checklogin, body: {
+          //     "email": _userObj.email,
+          //     // "password": "1234",
+          //   });
+          //   print("bjkb" + response.statusCode.toString());
+          //   if (response.statusCode == 200) {
+          //     final responseJson = json.decode(response.body);
+          //
+          //     loginwithserver = responseJson;
+          //     print(loginwithserver);
+          //     Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (context) => PinField(
+          //                 email: _userObj.email,
+          //                 message: loginwithserver['message'])));
+          //     // showToast("");
+          //     // savedata();
+          //     setState(() {
+          //       isError = false;
+          //       isLoading = false;
+          //       print('setstate');
+          //     });
+          //   } else {
+          //     print("bjkb" + response.statusCode.toString());
+          //     showToast("Mismatch Credentials");
+          //     setState(() {
+          //       isError = true;
+          //       isLoading = false;
+          //     });
+          //   }
+          // } catch (e) {
+          //   print(e);
+          //   setState(() {
+          //     isError = true;
+          //     isLoading = false;
+          //   });
+          // }
+          // signup(_userObj.displayName, _userObj.email,
+          //     "google");
+        }
+      });
+    }).catchError((e) {
+      print(e);
+    });
   }
 }

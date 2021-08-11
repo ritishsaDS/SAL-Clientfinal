@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "148945366290",
+    "project_id": "sal-user-app",
+    "storage_bucket": "sal-user-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:148945366290:android:3d85a146d5a5c730d217cb",
+        "android_client_info": {
+          "package_name": "com.example.sal_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "148945366290-4k4n086jcvuturct4itv83723ck0oi7g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYBJCAWpFYMi3ljq_zTedwqNfbjJSA9QY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "148945366290-4k4n086jcvuturct4itv83723ck0oi7g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

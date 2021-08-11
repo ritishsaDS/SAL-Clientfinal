@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'OnBoardScreens.dart';
 import 'mood.dart';
 
 class Splash extends StatefulWidget {
@@ -16,7 +17,7 @@ class _SplashState extends State<Splash> {
           ()=>Navigator.pushReplacement(context,
                                         MaterialPageRoute(builder:
                                                           (context) =>
-                                                          Mood()
+                                                              DTWalkThoughScreen()
                                                          )
                                        )
          );

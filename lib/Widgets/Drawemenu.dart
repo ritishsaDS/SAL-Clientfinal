@@ -7,6 +7,7 @@ import 'package:sal_user/UI/CousellorProfile.dart';
 import 'package:sal_user/UI/Exploreall.dart';
 import 'package:sal_user/UI/Help.dart';
 import 'package:sal_user/UI/MySessions.dart';
+import 'package:sal_user/UI/Myprofile.dart';
 import 'package:sal_user/UI/Settings.dart';
 import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -98,7 +99,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               leading: ImageIcon(Image.asset('assets/icons/user.png').image),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CounsellorProfile()));
+                    MaterialPageRoute(builder: (context) => MyProfile()));
               },
             ),
             ListTile(

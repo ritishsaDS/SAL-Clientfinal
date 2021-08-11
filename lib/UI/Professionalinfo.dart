@@ -15,7 +15,7 @@ bool stress = false;
 bool motivation = false;
 bool others = false;
 bool selected = false;
-
+var list=[];
 class ProfessionalInfo1 extends StatefulWidget {
   const ProfessionalInfo1({Key key}) : super(key: key);
 
@@ -80,32 +80,36 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        anxiety = true;
+                        // anxiety = true;
                         selected = true;
+                        if(anxiety==true&&selected==true){
+                          setState(() {
+                            anxiety=false;
+                            list.remove("Anxiety Management");
+                          });}
+                        else{
+                          anxiety=true;
+                          list.add("Anxiety Management");
+                        }
+
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Anxiety Management",
-                        style: GoogleFonts.openSans(
-                            color: anxiety == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Anxiety Management",style: GoogleFonts.openSans(
+                          color: anxiety == true && selected == true ? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                          color: anxiety == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: anxiety == true && selected == true ? Colors.blue : Colors.white,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                              color: anxiety == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: anxiety == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -117,32 +121,35 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                     width: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        relationship = true;
-                        selected = true;
+                        selected == true;
+                        if(relationship==true&&selected==true){
+                          setState(() {
+                            relationship=false;
+                            list.remove("Relationship");
+                          });}
+                        else{
+                          relationship=true;
+                          list.add("Relationship");
+                        }
+
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Relationship",
-                        style: GoogleFonts.openSans(
-                            color: relationship == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Relationship",style: GoogleFonts.openSans(
+                          color: relationship == true  ? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: relationship == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: relationship == true  ? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: relationship == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color:relationship == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -165,32 +172,36 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: (){
+                      selected = true;
                       setState(() {
-                        depression = true;
                         selected = true;
+                        if(depression==true&&selected==true){
+                          setState(() {
+                            depression=false;
+                            list.remove("Depression");
+                          });}
+                        else{
+                          depression=true;
+                          list.add("Depression");
+                        }
+
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Depression",
-                        style: GoogleFonts.openSans(
-                            color: depression == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Depression",style: GoogleFonts.openSans(
+                          color: depression == true && selected == true? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: depression == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: depression == true && selected == true? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: depression == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: depression == true && selected == true? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -202,32 +213,34 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                     width: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        grief = true;
                         selected = true;
+                        if(grief==true&&selected==true){
+                          setState(() {
+                            grief=false;
+                            list.remove("Grief");
+                          });}
+                        else{
+                          grief=true;
+                          list.add("Grief");
+                        }
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Grief",
-                        style: GoogleFonts.openSans(
-                            color: grief == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Grief",style: GoogleFonts.openSans(
+                          color: grief==true && selected == true?Colors.white:Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: grief == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: grief == true && selected == true?Colors.blue:Colors.white,
                           border: Border.all(
-                              color: grief == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: grief == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -239,32 +252,33 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                     width: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        lifeCoaching = true;
                         selected = true;
-                      });
+                        if(lifeCoaching==true&&selected==true){
+                          setState(() {
+                            lifeCoaching=false;
+                            list.remove("Life Coaching");
+                          });}
+                        else{
+                          lifeCoaching=true;
+                          list.add("Life Coaching");
+                        }                      });
                     },
                     child: Container(
-                      child: Text(
-                        "Life Coaching",
-                        style: GoogleFonts.openSans(
-                            color: lifeCoaching == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Life Coaching",style: GoogleFonts.openSans(
+                          color: lifeCoaching==true && selected == true? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: lifeCoaching == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: lifeCoaching == true && selected == true? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: lifeCoaching == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: lifeCoaching == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -287,32 +301,34 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        anger = true;
                         selected = true;
+                        if(anger==true&&selected==true){
+                          setState(() {
+                            anger=false;
+                            list.remove("Anger Management");
+                          });}
+                        else{
+                          anger=true;
+                          list.add("Anger Management");
+                        }
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Anger Management",
-                        style: GoogleFonts.openSans(
-                            color: anger == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Anger Management",style: GoogleFonts.openSans(
+                          color: anger == true && selected == true ? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: anger == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: anger == true && selected == true ? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: anger == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: anger == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -324,32 +340,35 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                     width: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        parenting = true;
                         selected = true;
+                        if(parenting==true&&selected==true){
+                          setState(() {
+                            parenting=false;
+                            list.remove("Parenting");
+
+                          });}
+                        else{
+                          list.add("Parenting");
+                          parenting=true;
+                        }
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Parenting",
-                        style: GoogleFonts.openSans(
-                            color: parenting == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Parenting",style: GoogleFonts.openSans(
+                          color: parenting == true && selected == true ? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: parenting == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: parenting == true && selected == true ? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: parenting == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: parenting == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -359,6 +378,7 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                   ),
                 ],
               ),
+
             ),
             Container(
               width: SizeConfig.screenWidth,
@@ -372,32 +392,35 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        stress = true;
-                        selected = true;
+                        if(stress==true&&selected==true){
+                          setState(() {
+                            stress=false;
+                            list.remove("Stress");
+
+                          });}
+                        else{
+                          stress=true;
+                        list.add("Stress");
+
+                        }
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Stress",
-                        style: GoogleFonts.openSans(
-                            color: stress == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Stress",style: GoogleFonts.openSans(
+                          color: stress == true && selected == true ? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: stress == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: stress == true && selected == true ? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: stress == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: stress == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -409,32 +432,35 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                     width: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   InkWell(
-                    onTap: () {
+                    onTap: (){
                       setState(() {
-                        motivation = true;
-                        selected = true;
+                        if(motivation==true&&selected==true){
+                          setState(() {
+                            motivation=false;
+                            list.remove("Self Motivation");
+
+                          });}
+                        else{
+                          motivation=true;
+                          list.add("Self Motivation");
+
+                        }
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Self Motivation",
-                        style: GoogleFonts.openSans(
-                            color: motivation == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Self Motivation",style: GoogleFonts.openSans(
+                          color:motivation == true && selected == true ? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: motivation == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: motivation == true && selected == true ? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: motivation == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: motivation == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -446,32 +472,38 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                     width: SizeConfig.blockSizeHorizontal * 5,
                   ),
                   InkWell(
-                    onTap: () {
+                    onTap: (){
+                      selected=true;
                       setState(() {
-                        others = true;
-                        selected = true;
+                        if(others==true&&selected ==true){
+                          setState(() {
+                            others=false;
+                            list.remove("Others");
+
+                            // selected=false;
+                          });}
+                        else{
+                          others=true;
+                          list.add("Others");
+
+                          // selected=true;
+                        }
                       });
                     },
                     child: Container(
-                      child: Text(
-                        "Others",
-                        style: GoogleFonts.openSans(
-                            color: others == true && selected == true
-                                ? Colors.white
-                                : Color(fontColorGray),
-                            fontSize: SizeConfig.blockSizeVertical * 2),
-                      ),
+                      child: Text("Others",style: GoogleFonts.openSans(
+                          color: others == true && selected == true ? Colors.white : Color(fontColorGray),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: others == true && selected == true
-                              ? Colors.blue
-                              : Colors.white,
+                          color: others == true && selected == true ? Colors.blue : Colors.white,
                           border: Border.all(
-                              color: others == true && selected == true
-                                  ? Colors.blue
-                                  : Color(fontColorGray),
-                              width: 1.0)),
+                              color: others == true && selected == true ? Colors.blue : Color(fontColorGray),
+                              width: 1.0
+                          )
+                      ),
                       height: SizeConfig.blockSizeVertical * 5,
                       padding: EdgeInsets.only(
                         left: SizeConfig.blockSizeHorizontal * 3,
@@ -492,6 +524,7 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
         ),
         backgroundColor: selected == true ? Colors.blue : Colors.grey,
         onPressed: () {
+
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => HomeMain()));
         },

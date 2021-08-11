@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sal_user/UI/OnBoardScreens.dart';
 
 import 'UI/MySessions.dart';
+import 'UI/Splash.dart';
 import 'UI/login.dart';
 import 'UI/mood.dart';
 
@@ -20,7 +21,7 @@ class MentalHealth extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'OpenSans',
       ),
-      home: Mood(),
+      home: Splash(),
       routes: {
         '/Login': (context) => LoginScreen(),
       },
