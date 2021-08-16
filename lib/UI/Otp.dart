@@ -114,12 +114,11 @@ class _OTPScreenState extends State<OTPScreen> {
               ).then((value) async {
 
                 if (value != null) {
-print(value.meta.message);
                   if (value.meta.status == "200") {
                     Navigator.of(loginLoader.currentContext,
                         rootNavigator: true)
                         .pop();
-                    print(value.mediaUrl);
+
                     toast(value.meta.message);
 Navigator.push(
                         context,
@@ -129,7 +128,7 @@ Navigator.push(
                      // SharedPreferences prefs=await SharedPreferences.getInstance();
                      //  prefs.setString("therapistid",value.therapist.therapistId );
                      //  prefs.remove("firstname");
-                     //  prefs.remove("lastname");
+                     //  prefFs.remove("lastname");
                      //  prefs.setString("firstname",value.therapist.firstName );
                      //  prefs.setString("lastname",value.therapist.lastName );
                      //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));

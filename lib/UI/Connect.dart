@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:sal_user/UI/CousellorProfile.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/NavigationBar.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
+import 'package:sal_user/data/repo/getTherapistDetailRepo.dart';
+import 'package:sal_user/models/getTherapistDetailModal.dart';
 
 class Connect extends StatefulWidget {
   const Connect({Key key}) : super(key: key);
@@ -13,14 +19,17 @@ class Connect extends StatefulWidget {
 }
 
 class _ConnectState extends State<Connect> {
-
+bool  isError = true;
+bool isLoading = false;
+bool isloding = false;
   String topic;
   String language;
   bool expand = false;
   int checkboxValue = 0;
   double price = 0;
   DateTime selectedDate = DateTime.now();
-
+var getHomeContentModal = GetCounsellor();
+var getprofilecontent = GetTherapistDetailRepo();
   TextEditingController date = TextEditingController();
 
 
@@ -38,7 +47,13 @@ class _ConnectState extends State<Connect> {
 
     date.text = DateFormat.yMd().format(selectedDate);
   }
-
+@override
+  void initState() {
+  gettherapist();
+  getCouncilorfromserver();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -480,162 +495,14 @@ class _ConnectState extends State<Connect> {
               ),
               Container(
                 width: SizeConfig.screenWidth,
+                height: SizeConfig.screenHeight*0.5,
                 margin: EdgeInsets.symmetric(
                   vertical: SizeConfig.blockSizeVertical
                 ),
-                child: ListView.builder(itemBuilder: (context,int index){
-                  return Container(
-                    width: SizeConfig.screenWidth,
-                    margin: EdgeInsets.symmetric(
-                      vertical: SizeConfig.blockSizeVertical * 0.5
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              width: SizeConfig.screenWidth * 0.25,
-                              height: SizeConfig.screenHeight * 0.1,
-                              margin:EdgeInsets.symmetric(
-                                vertical: SizeConfig.blockSizeVertical * 0.5
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.asset('assets/bg/person.png',fit: BoxFit.cover,),
-                              ),
-                            ),
-                            Container(
-                              margin:EdgeInsets.only(
-                                left: SizeConfig.blockSizeHorizontal * 2,
-                                top: SizeConfig.blockSizeVertical * 0.5
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("Avinash Kothari",
-                                      style: TextStyle(
-                                        color: Color(fontColorSteelGrey),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: SizeConfig.blockSizeVertical * 2
-                                      ),),
-                                      Container(
-                                          child: Image.asset('assets/icons/dot.png',width: SizeConfig.blockSizeHorizontal,),
-                                      margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 2),),
-                                      Row(
-                                        children: [
-                                          Text("4.5",
-                                          style: TextStyle(
-                                            color: Color(fontColorSteelGrey),
-                                            fontSize: SizeConfig.blockSizeVertical * 1.50
-                                          ),),
-                                          Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,)
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text("Counsellor",
-                                        style: TextStyle(
-                                            color: Color(fontColorSteelGrey),
-                                            fontSize: SizeConfig.blockSizeVertical * 2
-                                        ),),
-                                      Container(
-                                        child: Image.asset('assets/icons/dot.png',width: SizeConfig.blockSizeHorizontal,),
-                                        margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 2),),
-                                      Text("₹ 500",
-                                        style: TextStyle(
-                                            color: Color(fontColorSteelGrey),
-                                            fontSize: SizeConfig.blockSizeVertical * 2
-                                        ),),
-                                    ],
-                                  ),
-                                  Text("7+ years experience",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(fontColorSteelGrey)
-                                  ),)
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          width: SizeConfig.screenWidth,
-                          margin: EdgeInsets.symmetric(
-                            vertical: SizeConfig.blockSizeVertical
-                          ),
-                          child: Text("Next available Today",
-                          style: TextStyle(
-                            color: Color(fontColorSteelGrey),
-                            fontWeight: FontWeight.w600
-                          ),),
-                        ),
-                        Container(
-                          margin:EdgeInsets.symmetric(
-                            vertical: SizeConfig.blockSizeVertical
-                          ),
-                          height: SizeConfig.blockSizeVertical * 6,
-                          child: ListView.builder(itemBuilder: (context, int index){
-                            return Container(
-                              width: SizeConfig.screenWidth * 0.2,
-                              padding:EdgeInsets.all(8),
-                              margin: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.blockSizeHorizontal
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: Color(fontColorGray),
-                                ),
-                              ),
-                              child: Text("9:00"),
-                              alignment: Alignment.center,
-                            );
-                          },
-                          primary: false,
-                          itemCount: 4,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          )
-                        ),
-                        Container(
-                          margin:EdgeInsets.symmetric(
-                            vertical: SizeConfig.blockSizeVertical * 2
-                          ),
-                          child: MaterialButton(
-                            onPressed: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile()));
-                            },
-                            child: Text("BOOK APPOINTMENT",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600
-                            ),),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            color: Color(backgroundColorBlue),
-                            minWidth: SizeConfig.screenWidth,
-                            height: SizeConfig.blockSizeVertical * 6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                shrinkWrap: true,
-                itemCount: 10,
+                child: ListView(
+                  shrinkWrap: true,
                   primary: false,
+                  children: Councilorwidget(),
                 ),
               ),
             ],
@@ -645,4 +512,250 @@ class _ConnectState extends State<Connect> {
       bottomNavigationBar: NavigationBar(index: 1,),
     ));
   }
+ void gettherapist(){
+    getprofilecontent
+        .getTherapistDetail(
+      context: context,
+      //  therapistId: prefs.getString("therapistid")
+    )
+        .then((value) async {
+      if (value != null) {
+        print(value.meta.status);
+        if (value.meta.status == "200") {
+          setState(() {
+            isloding = false;
+            print(value.counsellors);
+           // print(value.meta.messageType);
+            getHomeContentModal = value;
+           // print(getHomeContentModal.counsellors[5].firstName);
+
+
+          });
+        } else {
+          setState(() {
+            isloding = false;
+          });
+          showAlertDialog(
+            context,
+            value.meta.message,
+            "",
+          );
+        }
+      } else {
+        setState(() {
+          isloding = false;
+        });
+        showAlertDialog(
+          context,
+          value.meta.message,
+          "",
+        );
+      }
+    }).catchError((error) {
+      setState(() {
+        isloding = false;
+      });
+      showAlertDialog(
+        context,
+        error.toString(),
+        "",
+      );
+    });
+  }
+dynamic Therapist = new List();
+dynamic mediaurl = new List();
+
+void getCouncilorfromserver() async {
+  setState(() {
+    isLoading=true;
+  });
+
+  try {
+    final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search'));
+    print("bjkb" + response.statusCode.toString());
+    if (response.statusCode == 200) {
+      final responseJson = json.decode(response.body);
+      mediaurl=responseJson['media_url'];
+      Therapist=responseJson['counsellors'];
+print(Therapist);
+
+      setState(() {
+        isError = false;
+        isLoading = false;
+        print('setstate');
+      });
+
+
+    } else {
+      print("bjkb" + response.statusCode.toString());
+      // showToast("Mismatch Credentials");
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+    }
+  } catch (e) {
+    print(e);
+    setState(() {
+      isError = true;
+      isLoading = false;
+    });
+    showAlertDialog(
+      context,
+      e.toString(),
+      "",
+    );
+  }
 }
+
+List <Widget> Councilorwidget (){
+List <Widget> councilorlist= new List();
+for(int i =0; i<Therapist.length;i++){
+  councilorlist.add(Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            width: SizeConfig.screenWidth * 0.25,
+            height: SizeConfig.screenHeight * 0.1,
+            margin:EdgeInsets.symmetric(
+                vertical: SizeConfig.blockSizeVertical * 0.5
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(mediaurl+Therapist[i]['photo'],fit: BoxFit.cover,),
+            ),
+          ),
+          Container(
+            margin:EdgeInsets.only(
+                left: SizeConfig.blockSizeHorizontal * 2,
+                top: SizeConfig.blockSizeVertical * 0.5
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(Therapist[i]['first_name'],
+                      style: TextStyle(
+                          color: Color(fontColorSteelGrey),
+                          fontWeight: FontWeight.w600,
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
+                    Container(
+                      child: Image.asset('assets/icons/dot.png',width: SizeConfig.blockSizeHorizontal,),
+                      margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 2),),
+                    Row(
+                      children: [
+                        Text(Therapist[i]['average_rating'],
+                          style: TextStyle(
+                              color: Color(fontColorSteelGrey),
+                              fontSize: SizeConfig.blockSizeVertical * 1.50
+                          ),),
+                        Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,)
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text("Counsellor",
+                      style: TextStyle(
+                          color: Color(fontColorSteelGrey),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
+                    Container(
+                      child: Image.asset('assets/icons/dot.png',width: SizeConfig.blockSizeHorizontal,),
+                      margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 2),),
+                    Text(Therapist[i]['price'],
+                      style: TextStyle(
+                          color: Color(fontColorSteelGrey),
+                          fontSize: SizeConfig.blockSizeVertical * 2
+                      ),),
+                  ],
+                ),
+                Text("7+ Years",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Color(fontColorSteelGrey)
+                  ),)
+              ],
+            ),
+          ),
+        ],
+      ),
+      Container(
+        width: SizeConfig.screenWidth,
+        margin: EdgeInsets.symmetric(
+            vertical: SizeConfig.blockSizeVertical
+        ),
+        child: Text("Next available Today",
+          style: TextStyle(
+              color: Color(fontColorSteelGrey),
+              fontWeight: FontWeight.w600
+          ),),
+      ),
+      Container(
+          margin:EdgeInsets.symmetric(
+              vertical: SizeConfig.blockSizeVertical
+          ),
+          height: SizeConfig.blockSizeVertical * 6,
+          child: ListView.builder(itemBuilder: (context, int index){
+            return Container(
+              width: SizeConfig.screenWidth * 0.2,
+              padding:EdgeInsets.all(8),
+              margin: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.blockSizeHorizontal
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(fontColorGray),
+                ),
+              ),
+              child: Text("9:00"),
+              alignment: Alignment.center,
+            );
+          },
+            primary: false,
+            itemCount: 4,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+          )
+      ),
+      Container(
+        margin:EdgeInsets.symmetric(
+            vertical: SizeConfig.blockSizeVertical * 2
+        ),
+        child: MaterialButton(
+          onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile()));
+          },
+          child: Text("BOOK APPOINTMENT",
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600
+            ),),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          color: Color(backgroundColorBlue),
+          minWidth: SizeConfig.screenWidth,
+          height: SizeConfig.blockSizeVertical * 6,
+        ),
+      ),
+    ],
+  ),);
+}
+return councilorlist;
+}
+}
+
+
