@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SharedPref.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'login.dart';
 
 
@@ -14,7 +12,6 @@ class Settings extends StatefulWidget {
   @override
   _SettingsState createState() => _SettingsState();
 }
-
 
 class _SettingsState extends State<Settings> {
 
@@ -109,10 +106,10 @@ class _SettingsState extends State<Settings> {
                 onTap: () async {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.clear();
-                  Navigator.pushReplacement(context,
+                  Navigator.pushAndRemoveUntil(context,
                       MaterialPageRoute(builder: (context) {
                         return LoginScreen();
-                      }));
+                      }), (Route<dynamic> route) => false);
                   SharedPreferencesTest()
                       .checkIsLogin(
                       "2");

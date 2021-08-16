@@ -12,6 +12,8 @@ import 'package:sal_user/data/repo/sendOtpRepo.dart';
 import 'Otp.dart';
 import 'package:sal_user/Utils/Dialog.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+
 TextEditingController mobileController = TextEditingController();
 
 class LoginScreen extends StatefulWidget {
