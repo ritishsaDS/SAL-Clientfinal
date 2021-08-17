@@ -13,6 +13,7 @@ class DTWalkThoughScreen extends StatefulWidget {
 
 class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
     with SingleTickerProviderStateMixin {
+
   var pages = List<Widget>();
   var selectedIndex = 0;
   bool isRegisterd = false;
@@ -28,6 +29,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
     });
     super.initState();
   }
+
   init() async {
     pages = [
       Container(

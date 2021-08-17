@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
@@ -495,7 +494,7 @@ var getprofilecontent = GetTherapistDetailRepo();
               ),
               Container(
                 width: SizeConfig.screenWidth,
-                height: SizeConfig.screenHeight*0.5,
+                height: SizeConfig.screenHeight*0.4,
                 margin: EdgeInsets.symmetric(
                   vertical: SizeConfig.blockSizeVertical
                 ),
@@ -624,7 +623,7 @@ for(int i =0; i<Therapist.length;i++){
             width: SizeConfig.screenWidth * 0.25,
             height: SizeConfig.screenHeight * 0.1,
             margin:EdgeInsets.symmetric(
-                vertical: SizeConfig.blockSizeVertical * 0.5
+                vertical: SizeConfig.blockSizeVertical * 0.8
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
