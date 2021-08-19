@@ -6,7 +6,9 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'ClientDetailsNotLogged.dart';
 
 class CounsellorProfile extends StatefulWidget {
-  const CounsellorProfile({Key key}) : super(key: key);
+  final Map<String, dynamic> getData;
+  final String mediaUrl;
+  const CounsellorProfile({Key key, this.getData, this.mediaUrl}) : super(key: key);
 
   @override
   _CounsellorProfileState createState() => _CounsellorProfileState();
@@ -68,7 +70,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
           children: [
             Row(
               children: [
-                Text("₹ 500",style: TextStyle(
+                Text("₹ ${widget.getData['price']}",style: TextStyle(
                   color: Color(backgroundColorBlue),
                   fontWeight: FontWeight.w600
                 ),),
@@ -152,10 +154,8 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: ClipRRect(
-                            // child: image.path != null && image.path != "" ? Image.file(
-                            //     File(image.path)):
-                            child:Image.asset('assets/bg/profile.png'),
                             borderRadius: BorderRadius.circular(15),
+                            child: Image.network(widget.mediaUrl+ widget.getData['photo'],fit: BoxFit.cover,),
                           ),
                         ),
                       ),
@@ -163,11 +163,12 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                         margin: EdgeInsets.only(top: 8),
                         width: SizeConfig.screenWidth,
                         alignment: Alignment.center,
-                        child: Text("Sushmita Sinha",
+                        child: Text(widget.getData['first_name'],
                           style: GoogleFonts.openSans(
                               color: Color(backgroundColorBlue),
                               fontSize: SizeConfig.blockSizeVertical * 2.5,
                               fontWeight: FontWeight.bold
+
                           ),),
                       ),
                       Container(
@@ -188,12 +189,16 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                             SizedBox(
                               width: SizeConfig.blockSizeHorizontal,
                             ),
-                            Text("4.5", style: GoogleFonts.openSans(
-                              color: Color(fontColorSteelGrey),
-                            ),
-                            ),
-                            Image.asset('assets/icons/star.png',
-                              height: SizeConfig.blockSizeVertical * 2,)
+                            Row(
+                              children: [
+                                Text(widget.getData['average_rating'],
+                                  style: TextStyle(
+                                      color: Color(fontColorSteelGrey),
+                                      fontSize: SizeConfig.blockSizeVertical * 1.50
+                                  ),),
+                                Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,)
+                              ],
+                            )
                           ],
                         ),
                       ),
@@ -216,7 +221,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                   ),
                                 ),
                                 Container(
-                                    height: 400, //height of TabBarView
+                                    height: 600, //height of TabBarView
                                     decoration: BoxDecoration(
                                         border: Border(
                                             top: BorderSide(
@@ -229,183 +234,185 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                           top: SizeConfig.blockSizeVertical * 3,
                                           right: SizeConfig.screenWidth * 0.025,
                                         ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "About Event",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                color: Color(backgroundColorBlue),
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "About Event",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Color(backgroundColorBlue),
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              "Sushmita has been a therapist for many years and believes in helping people wholeheartedly. She wants to provide her services to from all over the country and not just her city. She loves to help people when... See more ",
-                                              style: TextStyle(
-                                                color: Color(fontColorGray),
+                                              Text(
+                                                widget.getData['about'],
+                                                style: TextStyle(
+                                                  color: Color(fontColorGray),
+                                                ),
+                                                textAlign: TextAlign.justify,
                                               ),
-                                              textAlign: TextAlign.justify,
-                                            ),
-                                            Container(
-                                              width: SizeConfig.screenWidth,
-                                              height:
-                                              SizeConfig.blockSizeVertical *
-                                                  8,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width:
-                                                    SizeConfig.screenWidth *
-                                                        0.1,
-                                                    height: SizeConfig
-                                                        .blockSizeVertical *
-                                                        3.5,
-                                                    padding: EdgeInsets.all(8),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/bg/minusBg.png'),
-                                                        fit: BoxFit.fill,
+                                              Container(
+                                                width: SizeConfig.screenWidth,
+                                                height:
+                                                SizeConfig.blockSizeVertical *
+                                                    8,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width:
+                                                      SizeConfig.screenWidth *
+                                                          0.1,
+                                                      height: SizeConfig
+                                                          .blockSizeVertical *
+                                                          3.5,
+                                                      padding: EdgeInsets.all(8),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                              'assets/bg/minusBg.png'),
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/icons/minus.png'),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: SizeConfig.screenWidth * 0.05
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text("Experience",
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w600,
+                                                              color: Color(backgroundColorBlue),
+                                                            ),),
+                                                          Text("12+ years",
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w400,
+                                                              color: Color(fontColorGray),
+                                                            ),),
+                                                        ],
                                                       ),
                                                     ),
-                                                    child: Image.asset(
-                                                        'assets/icons/minus.png'),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: SizeConfig.screenWidth * 0.05
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Experience",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Color(backgroundColorBlue),
-                                                          ),),
-                                                        Text("12+ years",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w400,
-                                                            color: Color(fontColorGray),
-                                                          ),),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            Container(
-                                              width: SizeConfig.screenWidth,
-                                              height:
-                                              SizeConfig.blockSizeVertical *
-                                                  8,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width:
-                                                    SizeConfig.screenWidth *
-                                                        0.1,
-                                                    height: SizeConfig
-                                                        .blockSizeVertical *
-                                                        3.5,
-                                                    padding: EdgeInsets.all(8),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/bg/minusBg.png'),
-                                                        fit: BoxFit.fill,
+                                              Container(
+                                                width: SizeConfig.screenWidth,
+                                                height:
+                                                SizeConfig.blockSizeVertical *
+                                                    8,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width:
+                                                      SizeConfig.screenWidth *
+                                                          0.1,
+                                                      height: SizeConfig
+                                                          .blockSizeVertical *
+                                                          3.5,
+                                                      padding: EdgeInsets.all(8),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                              'assets/bg/minusBg.png'),
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/icons/minus.png'),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: SizeConfig.screenWidth * 0.05
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text("Speciality",
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w600,
+                                                              color: Color(backgroundColorBlue),
+                                                            ),),
+                                                          Text("Parenting, Stress",
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w400,
+                                                              color: Color(fontColorGray),
+                                                            ),),
+                                                        ],
                                                       ),
                                                     ),
-                                                    child: Image.asset(
-                                                        'assets/icons/minus.png'),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: SizeConfig.screenWidth * 0.05
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Speciality",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Color(backgroundColorBlue),
-                                                          ),),
-                                                        Text("Parenting, Stress",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w400,
-                                                            color: Color(fontColorGray),
-                                                          ),),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            Container(
-                                              width: SizeConfig.screenWidth,
-                                              height:
-                                              SizeConfig.blockSizeVertical *
-                                                  8,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width:
-                                                    SizeConfig.screenWidth *
-                                                        0.1,
-                                                    height: SizeConfig
-                                                        .blockSizeVertical *
-                                                        3.5,
-                                                    padding: EdgeInsets.all(8),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/bg/minusBg.png'),
-                                                        fit: BoxFit.fill,
+                                              Container(
+                                                width: SizeConfig.screenWidth,
+                                                height:
+                                                SizeConfig.blockSizeVertical *
+                                                    8,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width:
+                                                      SizeConfig.screenWidth *
+                                                          0.1,
+                                                      height: SizeConfig
+                                                          .blockSizeVertical *
+                                                          3.5,
+                                                      padding: EdgeInsets.all(8),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                              'assets/bg/minusBg.png'),
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/icons/minus.png'),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: SizeConfig.screenWidth * 0.05
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text("Languages",
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w600,
+                                                              color: Color(backgroundColorBlue),
+                                                            ),),
+                                                          Text("English, Hindi",
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.w400,
+                                                              color: Color(fontColorGray),
+                                                            ),),
+                                                        ],
                                                       ),
                                                     ),
-                                                    child: Image.asset(
-                                                        'assets/icons/minus.png'),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: SizeConfig.screenWidth * 0.05
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Languages",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Color(backgroundColorBlue),
-                                                          ),),
-                                                        Text("English, Hindi",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w400,
-                                                            color: Color(fontColorGray),
-                                                          ),),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Container(

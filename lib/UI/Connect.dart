@@ -571,12 +571,11 @@ void getCouncilorfromserver() async {
 
   try {
     final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search'));
-    print("bjkb" + response.statusCode.toString());
+    print("bjkb" + response.body.toString());
     if (response.statusCode == 200) {
       final responseJson = json.decode(response.body);
       mediaurl=responseJson['media_url'];
       Therapist=responseJson['counsellors'];
-print(Therapist);
 
       setState(() {
         isError = false;
@@ -735,7 +734,7 @@ for(int i =0; i<Therapist.length;i++){
         ),
         child: MaterialButton(
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile()));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile(getData: Therapist[i],mediaUrl: mediaurl,)));
           },
           child: Text("BOOK APPOINTMENT",
             style: TextStyle(
