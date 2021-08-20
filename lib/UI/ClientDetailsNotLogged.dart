@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nb_utils/nb_utils.dart' as utils;
 import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
+import 'package:sal_user/Utils/validator.dart';
+
 class ClientDetails extends StatefulWidget {
-  const ClientDetails({Key key}) : super(key: key);
+  final Map<String, dynamic> getData;
+  final String mediaUrl;
+  const ClientDetails({Key key, this.getData, this.mediaUrl}) : super(key: key);
 
   @override
   _ClientDetailsState createState() => _ClientDetailsState();
 }
 
 class _ClientDetailsState extends State<ClientDetails> {
-
   GlobalKey<FormState> FormKey = GlobalKey<FormState>();
 
   TextEditingController name = TextEditingController();
@@ -41,7 +45,8 @@ class _ClientDetailsState extends State<ClientDetails> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return SafeArea(child: Scaffold(
+    return SafeArea(
+        child: Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -68,28 +73,26 @@ class _ClientDetailsState extends State<ClientDetails> {
         physics: BouncingScrollPhysics(),
         child: Container(
           width: SizeConfig.screenWidth,
-          margin: EdgeInsets.symmetric(
-            horizontal: SizeConfig.screenWidth * 0.05
-          ),
+          margin:
+              EdgeInsets.symmetric(horizontal: SizeConfig.screenWidth * 0.05),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 margin: EdgeInsets.symmetric(
-                  vertical: SizeConfig.blockSizeVertical * 2
+                    vertical: SizeConfig.blockSizeVertical * 2),
+                child: Text(
+                  "Please provide us the following details",
+                  style: TextStyle(
+                      color: Color(fontColorSteelGrey),
+                      fontWeight: FontWeight.w600,
+                      fontSize: SizeConfig.blockSizeVertical * 2.5),
                 ),
-                child: Text("Please provide us the following details",
-                style: TextStyle(
-                  color: Color(fontColorSteelGrey),
-                  fontWeight: FontWeight.w600,
-                  fontSize: SizeConfig.blockSizeVertical * 2.5
-                ),),
               ),
               Container(
                 margin: EdgeInsets.symmetric(
-                  vertical: SizeConfig.blockSizeVertical
-                ),
+                    vertical: SizeConfig.blockSizeVertical),
                 child: Form(
                   key: FormKey,
                   child: Column(
@@ -118,27 +121,33 @@ class _ClientDetailsState extends State<ClientDetails> {
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             isDense: true,
                             contentPadding: EdgeInsets.all(12),
@@ -146,8 +155,14 @@ class _ClientDetailsState extends State<ClientDetails> {
                             hintStyle: TextStyle(
                                 color: Color(fontColorGray),
                                 fontWeight: FontWeight.w400,
-                                fontSize: SizeConfig.blockSizeVertical * 1.75),
+                                fontSize:
+                                    SizeConfig.blockSizeVertical * 1.75),
                           ),
+                          validator: (s) {
+                            if (s.trim().isEmpty)
+                              return utils.errorThisFieldRequired;
+                            return null;
+                          },
                         ),
                       ),
                       Container(
@@ -173,27 +188,33 @@ class _ClientDetailsState extends State<ClientDetails> {
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             isDense: true,
                             contentPadding: EdgeInsets.all(12),
@@ -201,8 +222,16 @@ class _ClientDetailsState extends State<ClientDetails> {
                             hintStyle: TextStyle(
                                 color: Color(fontColorGray),
                                 fontWeight: FontWeight.w400,
-                                fontSize: SizeConfig.blockSizeVertical * 1.75),
+                                fontSize:
+                                    SizeConfig.blockSizeVertical * 1.75),
                           ),
+                          validator: (s) {
+                            if (s.trim().isEmpty)
+                              return utils.errorThisFieldRequired;
+                            if (!validateEmail(email.text))
+                              return "Invalid Email";
+                            return null;
+                          },
                         ),
                       ),
                       Container(
@@ -228,27 +257,33 @@ class _ClientDetailsState extends State<ClientDetails> {
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(fontColorGray)),
+                              borderSide:
+                                  BorderSide(color: Color(fontColorGray)),
                             ),
                             isDense: true,
                             contentPadding: EdgeInsets.all(12),
@@ -256,8 +291,16 @@ class _ClientDetailsState extends State<ClientDetails> {
                             hintStyle: TextStyle(
                                 color: Color(fontColorGray),
                                 fontWeight: FontWeight.w400,
-                                fontSize: SizeConfig.blockSizeVertical * 1.75),
+                                fontSize:
+                                    SizeConfig.blockSizeVertical * 1.75),
                           ),
+                          validator: (s) {
+                            if (s.trim().isEmpty)
+                              return utils.errorThisFieldRequired;
+                            /*   if (!validateEmail(emailController.text))
+                              return invalid_email;*/
+                            return null;
+                          },
                         ),
                       ),
                       Container(
@@ -284,7 +327,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                               child: RadioListTile(
                                 value: 1,
                                 groupValue: gender,
-                                onChanged: (value){
+                                onChanged: (value) {
                                   setState(() {
                                     gender = value;
                                   });
@@ -292,10 +335,11 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 activeColor: Color(backgroundColorBlue),
                                 dense: true,
                                 contentPadding: EdgeInsets.zero,
-                                title: Text("Male",
-                                style: TextStyle(
-                                  color: Color(fontColorGray)
-                                ),),
+                                title: Text(
+                                  "Male",
+                                  style:
+                                      TextStyle(color: Color(fontColorGray)),
+                                ),
                               ),
                             ),
                             Container(
@@ -303,7 +347,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                               child: RadioListTile(
                                 value: 2,
                                 groupValue: gender,
-                                onChanged: (value){
+                                onChanged: (value) {
                                   setState(() {
                                     gender = value;
                                   });
@@ -311,10 +355,11 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 activeColor: Color(backgroundColorBlue),
                                 dense: true,
                                 contentPadding: EdgeInsets.zero,
-                                title: Text("Female",
-                                  style: TextStyle(
-                                      color: Color(fontColorGray)
-                                  ),),
+                                title: Text(
+                                  "Female",
+                                  style:
+                                      TextStyle(color: Color(fontColorGray)),
+                                ),
                               ),
                             ),
                             Container(
@@ -322,7 +367,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                               child: RadioListTile(
                                 value: 3,
                                 groupValue: gender,
-                                onChanged: (value){
+                                onChanged: (value) {
                                   setState(() {
                                     gender = value;
                                   });
@@ -330,10 +375,11 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 activeColor: Color(backgroundColorBlue),
                                 dense: true,
                                 contentPadding: EdgeInsets.zero,
-                                title: Text("Others",
-                                  style: TextStyle(
-                                      color: Color(fontColorGray)
-                                  ),),
+                                title: Text(
+                                  "Others",
+                                  style:
+                                      TextStyle(color: Color(fontColorGray)),
+                                ),
                               ),
                             ),
                           ],
@@ -363,32 +409,32 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide:
-                                  BorderSide(color: Color(fontColorGray)),
+                                      BorderSide(color: Color(fontColorGray)),
                                 ),
                                 disabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide:
-                                  BorderSide(color: Color(fontColorGray)),
+                                      BorderSide(color: Color(fontColorGray)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide:
-                                  BorderSide(color: Color(fontColorGray)),
+                                      BorderSide(color: Color(fontColorGray)),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide:
-                                  BorderSide(color: Color(fontColorGray)),
+                                      BorderSide(color: Color(fontColorGray)),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide:
-                                  BorderSide(color: Color(fontColorGray)),
+                                      BorderSide(color: Color(fontColorGray)),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide:
-                                  BorderSide(color: Color(fontColorGray)),
+                                      BorderSide(color: Color(fontColorGray)),
                                 ),
                                 isDense: true,
                                 contentPadding: EdgeInsets.all(12),
@@ -396,7 +442,8 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 hintStyle: TextStyle(
                                     color: Color(fontColorGray),
                                     fontWeight: FontWeight.w400,
-                                    fontSize: SizeConfig.blockSizeVertical * 1.75),
+                                    fontSize:
+                                        SizeConfig.blockSizeVertical * 1.75),
                                 suffixIcon: Padding(
                                   padding: EdgeInsets.zero,
                                   child: Icon(
@@ -408,29 +455,41 @@ class _ClientDetailsState extends State<ClientDetails> {
                               onTap: () {
                                 selectDate(context);
                               },
+                              validator: (s) {
+                                if (s.trim().isEmpty)
+                                  return utils.errorThisFieldRequired;
+                                /*   if (!validateEmail(emailController.text))
+                              return invalid_email;*/
+                                return null;
+                              },
                             ),
                           ),
                           onTap: () {
                             selectDate(context);
                           },
-
                         ),
                       ),
-                      CheckboxListTile(value: agree, onChanged: (value){
-                        setState(() {
-                          agree = value;
-                        });
-                      },
+                      CheckboxListTile(
+                        value: agree,
+                        onChanged: (value) {
+                          setState(() {
+                            agree = value;
+                          });
+                        },
                         title: Row(
                           children: [
-                            Text("I agree to the",style: TextStyle(
-                              color: Color(fontColorGray),
-                                fontSize: SizeConfig.blockSizeVertical * 2
-                            ),),
-                            Text(" Terms & Conditions",style: TextStyle(
-                                color: Color(backgroundColorBlue),
-                              fontSize: SizeConfig.blockSizeVertical * 2
-                            ),)
+                            Text(
+                              "I agree to the",
+                              style: TextStyle(
+                                  color: Color(fontColorGray),
+                                  fontSize: SizeConfig.blockSizeVertical * 2),
+                            ),
+                            Text(
+                              " Terms & Conditions",
+                              style: TextStyle(
+                                  color: Color(backgroundColorBlue),
+                                  fontSize: SizeConfig.blockSizeVertical * 2),
+                            )
                           ],
                         ),
                         dense: true,
@@ -443,19 +502,30 @@ class _ClientDetailsState extends State<ClientDetails> {
                         margin: EdgeInsets.only(
                           top: SizeConfig.blockSizeVertical * 8,
                         ),
-                        child: MaterialButton(onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Sessions()));
-                        },
-                          child: Text("CONTINUE",
+                        child: MaterialButton(
+                          onPressed: () {
+                            if (FormKey.currentState.validate()) {
+                              if (gender > 0 && agree) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Sessions(mediaUrl: widget.mediaUrl,getData:widget.getData ,)));
+                              } else {
+                                utils.toast("Please fill required fields");
+                              }
+                            }
+                          },
+                          child: Text(
+                            "CONTINUE",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600
-                            ),),
+                                fontWeight: FontWeight.w600),
+                          ),
                           minWidth: SizeConfig.screenWidth,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)
-                          ),
-                          color: Color(backgroundColorBlue),),
+                              borderRadius: BorderRadius.circular(8)),
+                          color: Color(backgroundColorBlue),
+                        ),
                       ),
                     ],
                   ),

@@ -82,7 +82,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
             ),
             MaterialButton(
               onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ClientDetails()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ClientDetails(mediaUrl:widget.mediaUrl ,getData:widget.getData ,)));
               },
               color: Color(backgroundColorBlue),
               child: Text("SCHEDULE",style: TextStyle(

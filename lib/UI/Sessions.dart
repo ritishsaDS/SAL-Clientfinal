@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:nb_utils/nb_utils.dart' hide midnightBlue;
 import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
 class Sessions extends StatefulWidget {
-  const Sessions({Key key}) : super(key: key);
+  final Map<String, dynamic> getData;
+  final String mediaUrl;
+  const Sessions({Key key, this.getData, this.mediaUrl}) : super(key: key);
 
   @override
   _SessionsState createState() => _SessionsState();
@@ -62,7 +65,8 @@ class _SessionsState extends State<Sessions> {
               ),
               Container(
                 width: SizeConfig.screenWidth,
-                child: Text("Pay now choose date and schedule anytime",style: TextStyle(
+                child: Text("Pay now choose date and schedule anytime",
+                  style: TextStyle(
                     color: Color(fontColorGray),
                     fontWeight: FontWeight.w400,
                     fontSize: SizeConfig.blockSizeVertical * 2
@@ -604,7 +608,11 @@ class _SessionsState extends State<Sessions> {
                   top: SizeConfig.blockSizeVertical * 10,
                 ),
                 child: MaterialButton(onPressed: (){
-                Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment()));
+                  if(sessionRadio > 0){
+                    Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: widget.mediaUrl,getData: widget.getData,sessionNumbers: sessionRadio.toString(),)));
+                  }else{
+                    toast("Please select session");
+                  }
                 },
                   child: Text("PROCEED TO PAYMENT",
                     style: TextStyle(

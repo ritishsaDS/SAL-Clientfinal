@@ -6,7 +6,9 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
 class SummaryPayment extends StatefulWidget {
-  const SummaryPayment({Key key}) : super(key: key);
+  final Map<String, dynamic> getData;
+  final String mediaUrl;final String sessionNumbers;
+  const SummaryPayment({Key key, this.getData, this.mediaUrl, this.sessionNumbers}) : super(key: key);
 
   @override
   _SummaryPaymentState createState() => _SummaryPaymentState();
@@ -73,7 +75,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.asset('assets/bg/person.png',fit: BoxFit.cover,),
+                            child: widget.getData['photo']  != null && widget.getData['photo'] != "" ? Image.network(widget.mediaUrl+ widget.getData['photo'],fit: BoxFit.cover,) : Image.asset('assets/bg/person.png',fit: BoxFit.cover,) ,
                           ),
                         ),
                         Container(
@@ -85,7 +87,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Sushmita Sinha",
+                              Text(widget.getData['first_name'],
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
@@ -119,7 +121,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                           color: Colors.white,
                           fontWeight: FontWeight.bold
                         ),),
-                        Text("1",style: TextStyle(
+                          Text(widget.sessionNumbers,style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold
                         ),)
@@ -139,7 +141,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                             color: Colors.white,
                             fontWeight: FontWeight.bold
                         ),),
-                        Text("Rs 608",style: TextStyle(
+                        Text("₹ ${widget.getData['price']}",style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold
                         ),)
