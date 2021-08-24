@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart' as utils;
+import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/Sessions.dart';
+import 'package:sal_user/UI/webview.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
+import 'package:sal_user/Utils/Dialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/validator.dart';
+import 'package:sal_user/data/repo/CreatetherapistProfileRepo.dart';
 
 class ClientDetails extends StatefulWidget {
   final Map<String, dynamic> getData;
@@ -17,11 +22,12 @@ class ClientDetails extends StatefulWidget {
 
 class _ClientDetailsState extends State<ClientDetails> {
   GlobalKey<FormState> FormKey = GlobalKey<FormState>();
-
+  final GlobalKey<State> loginLoader = new GlobalKey<State>();
   TextEditingController name = TextEditingController();
   TextEditingController phn = TextEditingController();
   TextEditingController dob = TextEditingController();
   TextEditingController email = TextEditingController();
+  var createUser = CreateTherapistProfileRepo();
 
   int gender = 0;
   bool agree = false;
@@ -54,7 +60,7 @@ class _ClientDetailsState extends State<ClientDetails> {
         title: Text(
           "Details",
           style: TextStyle(
-            color: Color(midnightBlue),
+            color: Color(0XFF001736),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -65,7 +71,7 @@ class _ClientDetailsState extends State<ClientDetails> {
           },
           child: Icon(
             Icons.arrow_back_ios_rounded,
-            color: Color(midnightBlue),
+            color: Color(0XFF001736),
           ),
         ),
       ),
@@ -484,11 +490,17 @@ class _ClientDetailsState extends State<ClientDetails> {
                                   color: Color(fontColorGray),
                                   fontSize: SizeConfig.blockSizeVertical * 2),
                             ),
-                            Text(
-                              " Terms & Conditions",
-                              style: TextStyle(
-                                  color: Color(backgroundColorBlue),
-                                  fontSize: SizeConfig.blockSizeVertical * 2),
+                            GestureDetector(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>WebViewClass(link:"https://sal-foundation.com/about-sal")));
+
+                              },
+                              child: Text(
+                                " Terms & Services",
+                                style: TextStyle(
+                                    color: Color(backgroundColorBlue),
+                                    fontSize: SizeConfig.blockSizeVertical * 2),
+                              ),
                             )
                           ],
                         ),
@@ -506,10 +518,67 @@ class _ClientDetailsState extends State<ClientDetails> {
                           onPressed: () {
                             if (FormKey.currentState.validate()) {
                               if (gender > 0 && agree) {
-                                Navigator.push(
+                                Dialogs.showLoadingDialog(context, loginLoader);
+                                /* Future.delayed(Duration(seconds: 2)).then((value) {
+                  SharedPreferencesTest().checkIsLogin("0");
+                  Navigator.of(context).pushNamed('/Price5');
+                });*/
+                                // print(mobileController.text);
+                                createUser
+                                    .createCounsellor(
+                                    age: "20",context: context,timezone: "4:50",device_id: "frst5533",location: "45.333",email: email.text
+                                    ,experience: "2",first_name: name.text,last_name: "nncde",phone: phn.text  )
+                                    .then((value) async {
+                                  if (value != null) {
+                                    print(value.meta.status);
+                                    print(createUser.createCounsellor());
+                                    if (value.meta.status == "200") {
+                                      Navigator.of(loginLoader.currentContext,
+                                          rootNavigator: true)
+                                          .pop();
+                                      print(value.meta.message);
+                                      print(value.meta.status);
+                                      print(value.clientId);
+
+                                      SharedPreferences prefs= await SharedPreferences.getInstance();
+
+                                      prefs.setString("cleintid", value.clientId);
+
+                                                       Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Sessions(mediaUrl: widget.mediaUrl,getData:widget.getData ,)));
+                                    } else {
+                                      Navigator.of(loginLoader.currentContext,
+                                          rootNavigator: true)
+                                          .pop();
+                                      showAlertDialog(
+                                        context,
+                                        value.meta.message,
+                                        "",
+                                      );
+                                    }
+                                  } else {
+                                    Navigator.of(loginLoader.currentContext,
+                                        rootNavigator: true)
+                                        .pop();
+                                    showAlertDialog(
+                                      context,
+                                      value.meta.message,
+                                      "",
+                                    );
+                                  }
+                                }).catchError((error) {
+                                  Navigator.of(loginLoader.currentContext,
+                                      rootNavigator: true)
+                                      .pop();
+                                  showAlertDialog(
                                     context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Sessions(mediaUrl: widget.mediaUrl,getData:widget.getData ,)));
+                                    error.toString(),
+                                    "",
+                                  );
+                                });
+
                               } else {
                                 utils.toast("Please fill required fields");
                               }

@@ -19,7 +19,7 @@ class _MoodState extends State<Mood> {
         backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
-          "Assessments",
+          "Moods ",
           style: TextStyle(
             color: Color(midnightBlue),
             fontWeight: FontWeight.w600,

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 
 import 'ClientDetailsNotLogged.dart';
+import 'Schedulescreen.dart';
+import 'Sessions.dart';
 
 class CounsellorProfile extends StatefulWidget {
   final Map<String, dynamic> getData;
@@ -15,7 +19,10 @@ class CounsellorProfile extends StatefulWidget {
 }
 
 class _CounsellorProfileState extends State<CounsellorProfile> {
-
+  @override
+void initState(){
+ print("mkermpfvvpr"+widget.getData.toString());
+}
   List<Color> colors = [
     Color.fromRGBO(42, 138, 163, 0.75),
     Color.fromRGBO(48, 37, 33, 0.75),
@@ -81,8 +88,16 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
               ],
             ),
             MaterialButton(
-              onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ClientDetails(mediaUrl:widget.mediaUrl ,getData:widget.getData ,)));
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+               if( prefs.getString("cleintid")==null){
+                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SignUp()));
+
+               }else{
+
+                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DynamicEvent(data:widget.getData,mediaurl:widget.mediaUrl)));
+
+               }
               },
               color: Color(backgroundColorBlue),
               child: Text("SCHEDULE",style: TextStyle(

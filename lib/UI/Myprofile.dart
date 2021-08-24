@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'EditProfile.dart';
@@ -12,6 +13,15 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
+ @override
+  void initState(){
+    getid();
+  }
+
+  Future<void> getid() async {
+   SharedPreferences preferences= await SharedPreferences.getInstance();
+  print( preferences.getString("cleintid"));
+  }
   bool isloding = false;
   Widget build(BuildContext context) {
     SizeConfig().init(context);

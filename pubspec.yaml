@@ -45,6 +45,10 @@ dependencies:
   http:
   date_format: ^2.0.2
   cached_network_image:
+  weight_slider: ^1.2.2
+  lunar_calendar: ^1.0.1
+  table_calendar:
+  razorpay_flutter: ^1.2.7
   otp_text_field: ^1.1.1
   country_code_picker: ^2.0.2
 

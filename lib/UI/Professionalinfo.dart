@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'Home.dart';
@@ -524,9 +525,14 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
         ),
         backgroundColor: selected == true ? Colors.blue : Colors.grey,
         onPressed: () {
+if(selected==true){
+  Navigator.push(
+      context, MaterialPageRoute(builder: (context) => HomeMain()));
+}
+else{
+  toast("Please Select Value first");
+}
 
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HomeMain()));
         },
       ),
     ));

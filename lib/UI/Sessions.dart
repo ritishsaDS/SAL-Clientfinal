@@ -1,21 +1,42 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart' hide midnightBlue;
 import 'package:sal_user/UI/SummaryPayment.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/data/repo/Appointmentorder.dart';
+import 'package:sal_user/models/appointmentmode.dart';
 
 class Sessions extends StatefulWidget {
-  final Map<String, dynamic> getData;
+   dynamic getData;
   final String mediaUrl;
-  const Sessions({Key key, this.getData, this.mediaUrl}) : super(key: key);
+  var date;
+  var slot;
+  Sessions({Key key, this.getData, this.mediaUrl,this.slot,this.date}) : super(key: key);
 
   @override
   _SessionsState createState() => _SessionsState();
 }
 
 class _SessionsState extends State<Sessions> {
-
+  bool isLoading=false;
+  bool isError=false;
+  var appointmentslotid;
+  var counsellor_id;
+  AppointmentModel appointmentModel=AppointmentModel();
+  final List<AppointmentModel> addnotesList = [];
+  @override
+  void initState() {
+    getClientid();
+   // gettherapist();
+   // getCouncilorfromserver();
+    // TODO: implement initState
+    super.initState();
+  }
   int sessionRadio = 0;
   @override
   Widget build(BuildContext context) {
@@ -48,8 +69,8 @@ class _SessionsState extends State<Sessions> {
         child: Container(
           width: SizeConfig.screenWidth,
           margin: EdgeInsets.symmetric(
-            horizontal: SizeConfig.screenWidth * 0.05,
-            vertical: SizeConfig.blockSizeVertical
+              horizontal: SizeConfig.screenWidth * 0.05,
+              vertical: SizeConfig.blockSizeVertical
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -58,19 +79,19 @@ class _SessionsState extends State<Sessions> {
               Container(
                 width: SizeConfig.screenWidth,
                 child: Text("Select number of sessions",style: TextStyle(
-                  color: Color(fontColorSteelGrey),
-                  fontWeight: FontWeight.w600,
-                  fontSize: SizeConfig.blockSizeVertical * 2.5
+                    color: Color(fontColorSteelGrey),
+                    fontWeight: FontWeight.w600,
+                    fontSize: SizeConfig.blockSizeVertical * 2.5
                 ),),
               ),
               Container(
                 width: SizeConfig.screenWidth,
                 child: Text("Pay now choose date and schedule anytime",
                   style: TextStyle(
-                    color: Color(fontColorGray),
-                    fontWeight: FontWeight.w400,
-                    fontSize: SizeConfig.blockSizeVertical * 2
-                ),),
+                      color: Color(fontColorGray),
+                      fontWeight: FontWeight.w400,
+                      fontSize: SizeConfig.blockSizeVertical * 2
+                  ),),
               ),
               Stack(
                 children: [
@@ -107,8 +128,8 @@ class _SessionsState extends State<Sessions> {
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(10),
-                            bottomLeft: Radius.circular(10)
+                              bottomRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10)
                           ),
                           border: Border.all(
                               color: Color(fontColorGray)
@@ -117,7 +138,7 @@ class _SessionsState extends State<Sessions> {
                       child: Container(
                         width: SizeConfig.screenWidth,
                         margin: EdgeInsets.symmetric(
-                          vertical: SizeConfig.blockSizeVertical
+                            vertical: SizeConfig.blockSizeVertical
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -130,8 +151,8 @@ class _SessionsState extends State<Sessions> {
                                 horizontal: SizeConfig.screenWidth * 0.05,
                               ),
                               child: Text("Coupon",style: TextStyle(
-                                color: Color(fontColorGray),
-                                fontWeight: FontWeight.w600
+                                  color: Color(fontColorGray),
+                                  fontWeight: FontWeight.w600
                               ),),
                             ),
                             Container(
@@ -186,9 +207,9 @@ class _SessionsState extends State<Sessions> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text("Base Amount",
-                                  style: TextStyle(
-                                    color: Color(fontColorGray)
-                                  ),),
+                                    style: TextStyle(
+                                        color: Color(fontColorGray)
+                                    ),),
                                   Text("Rs 500",
                                     style: TextStyle(
                                         color: Color(fontColorGray)
@@ -199,7 +220,7 @@ class _SessionsState extends State<Sessions> {
                             Container(
                               width: SizeConfig.screenWidth,
                               margin: EdgeInsets.symmetric(
-                                  vertical: SizeConfig.blockSizeVertical,
+                                vertical: SizeConfig.blockSizeVertical,
                                 horizontal: SizeConfig.screenWidth * 0.05,
                               ),
                               child: Row(
@@ -232,12 +253,12 @@ class _SessionsState extends State<Sessions> {
                                   Text("Total Payable Amount",
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
-                                      fontWeight: FontWeight.w600
+                                        fontWeight: FontWeight.w600
                                     ),),
                                   Text("Rs 608",
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
-                                      fontWeight: FontWeight.w600
+                                        fontWeight: FontWeight.w600
                                     ),)
                                 ],
                               ),
@@ -609,7 +630,9 @@ class _SessionsState extends State<Sessions> {
                 ),
                 child: MaterialButton(onPressed: (){
                   if(sessionRadio > 0){
-                    Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: widget.mediaUrl,getData: widget.getData,sessionNumbers: sessionRadio.toString(),)));
+                    var data;
+                    data=   AppointmentModel(clientId: "g29bg6fntbmqa",counsellorId:widget.getData['id'] ,couponCode:"" ,date:  widget.date.toString(),noSession: "1",time: widget.slot);
+                    Appointmentorder.diomwthod( data,context);
                   }else{
                     toast("Please select session");
                   }
@@ -630,5 +653,59 @@ class _SessionsState extends State<Sessions> {
         ),
       ),
     ));
+  }
+  void bookappointment() async {
+    setState(() {
+      isLoading = true;
+    });
+    SharedPreferences prefs =await SharedPreferences.getInstance();
+    print( prefs.getString("cleintid"));
+
+    try {
+      final response = await post(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor/order'),body: {
+        "client_id": "g29bg6fntbmqa",
+        "counsellor_id":widget.getData['id'],
+        "coupon_code": "",
+        "date": widget.date.toString(),
+        "no_session": "1",
+        "time": widget.slot
+      });
+      print("bjkb" + response.body.toString());
+      print("bjkb" + response.statusCode.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+        Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: widget.mediaUrl,getData: widget.getData,sessionNumbers: sessionRadio.toString(),)));
+
+
+        setState(() {
+          isError = false;
+          isLoading = false;
+          print('setstate');
+        });
+        // for(int i=0;i<dishfromserver.length;i++){
+        //   searcharray.add( dishfromserver[i]['name']);
+        //   print(searcharray.toString());
+        // }
+
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+    }
+  }
+  Future<void> getClientid() async {
+    SharedPreferences prefs =await SharedPreferences.getInstance();
+   print( prefs.getString("clientid"));
   }
 }

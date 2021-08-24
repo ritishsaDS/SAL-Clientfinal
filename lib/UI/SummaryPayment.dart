@@ -5,18 +5,28 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
+import 'Razorpay.dart';
+
 class SummaryPayment extends StatefulWidget {
-  final Map<String, dynamic> getData;
+  final dynamic getData;
   final String mediaUrl;final String sessionNumbers;
-  const SummaryPayment({Key key, this.getData, this.mediaUrl, this.sessionNumbers}) : super(key: key);
+  String client_id;String counsellor_id;String appointment_id;
+   SummaryPayment({Key key, this.getData, this.mediaUrl, this.sessionNumbers,this.appointment_id,this.client_id,this.counsellor_id}) : super(key: key);
 
   @override
   _SummaryPaymentState createState() => _SummaryPaymentState();
 }
 
 class _SummaryPaymentState extends State<SummaryPayment> {
-
   int paymentRadio = 0;
+  @override
+  void initState() {
+    print(widget.getData.toString());
+
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -222,6 +232,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                 right: SizeConfig.screenWidth * 0.05
               ),
               child: MaterialButton(onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Razor()));
                 showDialog(context: context, builder: (context){
                   return Dialog(
                     shape: RoundedRectangleBorder(
@@ -314,8 +325,10 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                             margin: EdgeInsets.only(
                               top: SizeConfig.blockSizeVertical * 6,
                             ),
-                            child: MaterialButton(onPressed: (){},
-                              child: Text("CONTINUE",
+                            child: MaterialButton(onPressed: (){
+
+                            },
+                              child: Text("CONTINUEss",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600
@@ -332,7 +345,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                   );
                 });
               },
-                child: Text("CONTINUE",
+                child: Text("CONTINUEss",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600

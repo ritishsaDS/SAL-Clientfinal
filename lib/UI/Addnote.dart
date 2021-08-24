@@ -79,7 +79,30 @@ class _AddnoteState extends State<Addnote> {
                   ),
                 ),
               ),
+            ),
+            Expanded(
+              child: SizedBox(
+
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.all(10),
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                color: Colors.blue,
+                child: Text("Done"),
+                textColor: Colors.white,
+                onPressed: () {
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
+                },
+              ),
             )
+            ,
+            SizedBox(height: 20,)
           ],
         ),
       ),

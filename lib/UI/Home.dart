@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/mood.dart';
 import 'package:sal_user/Utils/NavigationBar.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Widgets/Drawemenu.dart';
+
+import 'Notification.dart';
 class HomeMain extends StatefulWidget {
   const HomeMain({Key key}) : super(key: key);
 
@@ -39,7 +42,12 @@ class _HomeMainState extends State<HomeMain> {
     "Worlds of the\nwaterfall",
     "Worlds of the\nwaterfall"
   ];
+@override
+  void initState() {
 
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -76,10 +84,10 @@ class _HomeMainState extends State<HomeMain> {
                                 right: SizeConfig.blockSizeHorizontal * 5),
                             child: GestureDetector(
                               onTap: () {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) => Notifications()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => NotificationsScreen()));
                               },
                               child: Icon(
                                 Icons.notifications_none_sharp,
@@ -107,7 +115,7 @@ class _HomeMainState extends State<HomeMain> {
                         margin: EdgeInsets.symmetric(
                             horizontal: SizeConfig.screenWidth * 0.05,
                             vertical: SizeConfig.blockSizeVertical),
-                        child: Text("Suman",
+                        child: Text("",
                             style: GoogleFonts.openSans(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
@@ -154,27 +162,32 @@ class _HomeMainState extends State<HomeMain> {
                                   fontWeight: FontWeight.w500),
                             ),
                           )),
-                      Container(
-                        margin: EdgeInsets.all(10),
-                        height: 100,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          image: DecorationImage(
-                            image: AssetImage(
-                              "assets/bg/gridCard1.png",
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Mood()));
+                        },
+                        child: Container(
+                          margin: EdgeInsets.all(10),
+                          height: 100,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            image: DecorationImage(
+                              image: AssetImage(
+                                "assets/bg/gridCard1.png",
+                              ),
+                              fit: BoxFit.fill,
                             ),
-                            fit: BoxFit.fill,
                           ),
+                          child: Row(
+                              children:[ Text(
+                            "How Are You \n Feeling Today",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500),
+                              )]),
                         ),
-                        child: Row(
-                            children:[ Text(
-                          "How Are You \n Feeling Today",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500),
-                            )]),
                       ),
                       Container(
                         width: SizeConfig.screenWidth,
