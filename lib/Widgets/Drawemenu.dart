@@ -8,6 +8,7 @@ import 'package:sal_user/UI/Exploreall.dart';
 import 'package:sal_user/UI/Help.dart';
 import 'package:sal_user/UI/MySessions.dart';
 import 'package:sal_user/UI/Myprofile.dart';
+import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/UI/Settings.dart';
 import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -104,9 +105,9 @@ class _DrawerMenuState extends State<DrawerMenu> {
             ),
             ListTile(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ExploreAll()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>MySessions()));
               },
-              title: Text("My Availability"),
+              title: Text("My Sessions"),
               leading:
                   ImageIcon(Image.asset('assets/icons/availability.png').image),
             ),

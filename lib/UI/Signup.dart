@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/Dialog.dart';
@@ -9,8 +10,13 @@ import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/CreatetherapistProfileRepo.dart';
 
 import 'Myprofile.dart';
+import 'Schedulescreen.dart';
+import 'login.dart';
 
 class SignUp extends StatefulWidget{
+  dynamic data;
+  dynamic mediaurl;
+  SignUp({this.data,this.mediaurl});
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -551,7 +557,8 @@ class _SignUpState extends State<SignUp> {
                   if (value != null) {
                     print(value.meta.status);
                     print(createUser.createCounsellor());
-                    if (value.meta.status == "200") {
+                    if (value.meta.status == "200")
+                    {
                       Navigator.of(loginLoader.currentContext,
                           rootNavigator: true)
                           .pop();
@@ -563,8 +570,13 @@ class _SignUpState extends State<SignUp> {
                       
                       prefs.setString("cleintid", value.clientId);
                       
-                      ;                      Navigator.pop(context);
-                    } else {
+                      ;                    Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DynamicEvent(data: widget.data,mediaurl: widget.mediaurl,)));
+                    }
+
+                    else {
                       Navigator.of(loginLoader.currentContext,
                           rootNavigator: true)
                           .pop();
@@ -573,8 +585,16 @@ class _SignUpState extends State<SignUp> {
                         value.meta.message,
                         "",
                       );
+                      if(value.meta.message=="Verify phone number wth OTP"){
+                        print("knrjorn");
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen(screen:"Signup")));
+                      }
+                      else{
+                        print(value.meta.message);
+                      }
                     }
                   } else {
+                    print("nkascdsdjsdv;jo");
                     Navigator.of(loginLoader.currentContext,
                         rootNavigator: true)
                         .pop();
@@ -583,6 +603,13 @@ class _SignUpState extends State<SignUp> {
                       value.meta.message,
                       "",
                     );
+                    if(value.meta.message=="Verify phone number with OTP"){
+                      print("knrjorn");
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen(screen:"Signup")));
+                    }
+                    else{
+                      print("kaanrjorn");
+                    }
                   }
                 }).catchError((error) {
                   Navigator.of(loginLoader.currentContext,

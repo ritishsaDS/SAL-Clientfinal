@@ -6,23 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart'as http;
 import 'package:sal_user/UI/SummaryPayment.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/models/appointmentmode.dart';
 
 
 class Appointmentorder {
 
-  static Future<void> diomwthod(AppointmentModel adddishmodel,context) async {
+  static Future<void> diomwthod(AppointmentModel adddishmodel,context,mediaurl,data,session) async {
     dynamic loginwithserver=new List();
 
     print(adddishmodel.toJson());
-    var model = AppointmentModel(clientId:adddishmodel.clientId,counsellorId: adddishmodel.counsellorId,couponCode: "",date:"2021-08-28",noSession: "1",time: "1"  );
+    var model = AppointmentModel(clientId:adddishmodel.clientId,counsellorId: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
     try {
       final response = await http.post(Uri.parse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor/order"),
 
 
           body:json.encode(model));
       print("bjkb" + response.statusCode.toString());
-      print("bjkb" + response.body.toString());
+      print("bjkb" + model.toJson().toString());
      // showToast("Dish Added Successfully");
 
       if (response.statusCode == 200)
@@ -30,7 +31,18 @@ class Appointmentorder {
         final responseJson = json.decode(response.body);
 
         loginwithserver = responseJson;
-       // Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: widget.mediaUrl,getData: widget.getData,sessionNumbers: sessionRadio.toString(),)));
+        if(loginwithserver['meta']['status']=="200"){
+          Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: mediaurl,getData:data
+              ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'])));
+
+        }
+        else{
+          showAlertDialog(
+            context,
+            loginwithserver['meta']['message'],
+            "",
+          );
+        }
 
         // print(loginwithserver['data']['email']);
         print(loginwithserver);

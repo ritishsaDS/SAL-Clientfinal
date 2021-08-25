@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/Dialog.dart';
@@ -14,7 +15,8 @@ import 'Professionalinfo.dart';
 
 class OTPScreen extends StatefulWidget {
   String phonenumber;
-  OTPScreen({this.phonenumber});
+  String screen;
+  OTPScreen({this.phonenumber,this.screen});
   @override
   _OTPScreenState createState() => _OTPScreenState();
 }
@@ -120,10 +122,19 @@ class _OTPScreenState extends State<OTPScreen> {
                         .pop();
 
                     toast(value.meta.message);
-Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProfessionalInfo1()));
+                    if(widget.screen=="Home"){setState(() {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfessionalInfo1()));
+                    });}
+                    else{
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignUp()));
+                    }
+
                     if(value.therapist!=null){
                      // SharedPreferences prefs=await SharedPreferences.getInstance();
                      //  prefs.setString("therapistid",value.therapist.therapistId );

@@ -4,9 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sal_user/data/repo/paymentrepo.dart';
 
 
 class Razor extends StatefulWidget {
+  dynamic order;
+  dynamic payment;
+  Razor({this.order,this.payment});
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -21,13 +25,13 @@ class _MyAppState extends State<Razor> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Razorpay Sample App'),
+          title: const Text('Razorpay'),
         ),
         body: Center(
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  RaisedButton(onPressed: openCheckout, child: Text('Open'))
+                  RaisedButton(onPressed: openCheckout, child: Text('Open Razorpay for payment' ))
                 ])),
       ),
     );
@@ -36,6 +40,7 @@ class _MyAppState extends State<Razor> {
   @override
   void initState() {
     super.initState();
+    openCheckout();
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
@@ -50,11 +55,11 @@ class _MyAppState extends State<Razor> {
 
   void openCheckout() async {
     var options = {
-      'key': 'rzp_test_1DP5mmOlF5G5ag',
-      'amount': 2000,
-      'name': 'Acme Corp.',
-      'description': 'Fine T-Shirt',
-      'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'},
+      'key': 'rzp_test_6TdfVgJzVLhMwc',
+      'amount':(widget.payment),
+      'name': 'SAL Appointment',
+      'description': '${widget.order}',
+
       'external': {
         'wallets': ['paytm']
       }
@@ -70,6 +75,10 @@ class _MyAppState extends State<Razor> {
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     Fluttertoast.showToast(
         msg: "SUCCESS: " + response.paymentId, toastLength: Toast.LENGTH_SHORT);
+    print("jjasdvjdvji"+widget.order);
+    print("jjasdvjdvji"+response.paymentId);
+    Succespaymentrepo.diomwthod(context,widget.order,response.paymentId);
+  //  successapi();
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {

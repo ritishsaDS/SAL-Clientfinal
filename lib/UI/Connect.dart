@@ -494,7 +494,7 @@ var getprofilecontent = GetTherapistDetailRepo();
               ),
               Container(
                 width: SizeConfig.screenWidth,
-                height: SizeConfig.screenHeight*0.4,
+                height: SizeConfig.screenHeight*0.6,
                 margin: EdgeInsets.symmetric(
                   vertical: SizeConfig.blockSizeVertical
                 ),

@@ -91,7 +91,7 @@ void initState(){
               onPressed: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                if( prefs.getString("cleintid")==null){
-                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SignUp()));
+                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SignUp(data:widget.getData,mediaurl:widget.mediaUrl)));
 
                }else{
 

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sal_user/UI/Professionalinfo.dart';
+import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/UI/webview.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -17,7 +18,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 TextEditingController mobileController = TextEditingController();
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key key}) : super(key: key);
+  var screen;
+   LoginScreen({this.screen});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -96,7 +98,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfessionalInfo1()));
+                            if(widget.screen=="Home"){
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfessionalInfo1()));
+                            }
+                            else{
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>SignUp()));
+                            }
+
                           },
                           child: Text(
                             "Skip",
@@ -205,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Navigator.push(context,
                                             MaterialPageRoute(
                                                 builder: (conext) {
-                                          return OTPScreen(phonenumber:mobileController.text);
+                                          return OTPScreen(phonenumber:mobileController.text,screen:widget.screen);
                                         }));
                                       } else {
                                         Navigator.of(loginLoader.currentContext,

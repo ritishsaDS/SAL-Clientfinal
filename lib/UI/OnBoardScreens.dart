@@ -150,7 +150,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => LoginScreen()));
+                        builder: (BuildContext context) => LoginScreen(screen:"Home")));
               }),
             ),
           ],

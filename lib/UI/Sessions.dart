@@ -628,11 +628,14 @@ class _SessionsState extends State<Sessions> {
                 margin: EdgeInsets.only(
                   top: SizeConfig.blockSizeVertical * 10,
                 ),
-                child: MaterialButton(onPressed: (){
+                child: MaterialButton(onPressed: () async {
                   if(sessionRadio > 0){
                     var data;
-                    data=   AppointmentModel(clientId: "g29bg6fntbmqa",counsellorId:widget.getData['id'] ,couponCode:"" ,date:  widget.date.toString(),noSession: "1",time: widget.slot);
-                    Appointmentorder.diomwthod( data,context);
+                    SharedPreferences prefs =await SharedPreferences.getInstance();
+                    print( prefs.getString("cleintid"));
+                    data=   AppointmentModel(clientId: prefs.getString("cleintid"),counsellorId:widget.getData['id'] ,couponCode:"" ,date:  widget.date.toString(),noSession: "1",time: widget.slot);
+                    Appointmentorder.diomwthod( data,context,widget.mediaUrl,widget.getData,sessionRadio);
+
                   }else{
                     toast("Please select session");
                   }
