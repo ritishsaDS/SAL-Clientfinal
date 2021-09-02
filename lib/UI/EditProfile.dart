@@ -1,20 +1,34 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/Dialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Myprofile.dart';
 
 class Editprofile extends StatefulWidget{
+  var firstname;
+  var lastname;
+  var gender;
+  var phone;
+  var email;
+  Editprofile({this.lastname,this.gender,this.email,this.firstname,this.phone,});
   @override
   _EditprofileState createState() => _EditprofileState();
 }
 
 class _EditprofileState extends State<Editprofile> {
+
+  bool   isError = false;
+
+  bool isloding = false;
   GlobalKey<FormState> nameForm = GlobalKey<FormState>();
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
 
@@ -22,7 +36,7 @@ class _EditprofileState extends State<Editprofile> {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController price1 = TextEditingController();
   TextEditingController price2 = TextEditingController();
-  TextEditingController about = TextEditingController();
+  TextEditingController dob = TextEditingController();
   TextEditingController experience = TextEditingController();
   TextEditingController email = TextEditingController();
   FocusNode firstNameFocusNode;
@@ -36,7 +50,13 @@ class _EditprofileState extends State<Editprofile> {
   @override void initState() {
     // TODO: implement initState
    // print(widget.gender);
-
+    firstNameController = TextEditingController(text: widget.firstname);
+    lastNameController = TextEditingController(text: widget.lastname);
+radioValue=widget.gender;
+  //  about = TextEditingController();
+   // experience = TextEditingController();
+    experience = TextEditingController(text:widget.phone);
+    email = TextEditingController(text: widget.email);
     super.initState();
   }
 
@@ -78,6 +98,25 @@ class _EditprofileState extends State<Editprofile> {
         child: Container(
           height: MediaQuery.of(context).size.height * 1.05,
           child: Column(children: [
+            Container(
+              width: SizeConfig.screenWidth,
+              alignment: Alignment.center,
+              child: Container(
+                margin: EdgeInsets.only(
+                    top: SizeConfig.screenHeight * 0.05),
+                width: SizeConfig.screenWidth * 0.25,
+                height: SizeConfig.screenHeight * 0.12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: ClipRRect(
+                  child: Image.network(
+                      'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png'),
+                  borderRadius: BorderRadius.circular(60),
+                ),
+              ),
+            ),
             Container(
               margin: EdgeInsets.only(
                 top: SizeConfig.blockSizeVertical * 2,
@@ -264,7 +303,7 @@ class _EditprofileState extends State<Editprofile> {
                     Container(
                       width:MediaQuery.of(context).size.width,
                       child: TextFormField(
-                        controller: about,
+                        controller: dob,
                         // focusNode: firstNameFocusNode,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.name,
@@ -372,7 +411,7 @@ class _EditprofileState extends State<Editprofile> {
                                   color: Color(fontColorGray)
                               )
                           ),
-                          hintText: "Experience",
+                          hintText: "Phone",
                           isDense: true,
                           contentPadding: EdgeInsets.all(SizeConfig.blockSizeVertical * 1.5),
                         ),
@@ -462,15 +501,16 @@ class _EditprofileState extends State<Editprofile> {
                 ),
               ),
             ),
-            Expanded(
-              child: SizedBox(
-                height: 40,
-              ),
+
+              SizedBox(
+                height: 20,
+
             ),
             Container(child:MaterialButton(
               onPressed: () {
                 print(email.text);
-                Dialogs.showLoadingDialog(context, loginLoader);
+                updateprofile();
+               // Dialogs.showLoadingDialog(context, loginLoader);
                 /* Future.delayed(Duration(seconds: 2)).then((value) {
                       SharedPreferencesTest().checkIsLogin("0");
                       Navigator.of(context).pushNamed('/Price5');
@@ -550,4 +590,58 @@ class _EditprofileState extends State<Editprofile> {
       ),
     );
   }
-}
+  updateprofile() async {
+    setState(() {
+      isloding = true;
+    });
+    SharedPreferences prefs=await  SharedPreferences.getInstance();
+    prefs.getString("cleintid");
+    var data={
+      "age": dob.text,
+      "device_id": "ffrers2383",
+      "first_name": firstNameController.text,
+      "gender": radioValue.toString(),
+      "last_name": lastNameController.text,
+      "location": "45.33",
+      "timezone": "+5:30"
+    };
+    var uri =
+        "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client?client_id=${prefs.getString("cleintid")}";
+
+  print(jsonEncode(data));
+    try {
+      final response = await put(Uri.parse(uri),body: (jsonEncode(data)));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+        print(responseJson);
+       // profile = responseJson['client'];
+        // counsellorid=upcominglist['appointment_slots'][0]['counsellor_id'];
+        //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
+        setState(() {
+          isError = false;
+          isloding = false;
+          print('setstate');
+        });
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isloding = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isloding = false;
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
+  }
+  }
