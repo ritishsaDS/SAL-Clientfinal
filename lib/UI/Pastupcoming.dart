@@ -139,10 +139,10 @@ class _UpcomingAppointmentState extends State<PastAppointment> {
               return appointments != null && appointments.length > 0 ?  pastappointmentwidget(context,"Counsellor",moodstatic[int.parse(appointments.elementAt(index).time)],appointments.elementAt(index).date.toString()
 
               ): Container(
-                child: Center(child: Text("No Upcoming Appointments", style:  TextStyle(color: Colors.black),)),
+                child: Center(child: Text("No  Appointments", style:  TextStyle(color: Colors.black),)),
               );
             }, itemCount: appointments.length,): Container(
-              child: Center(child: Text("No Upcoming Appointments", style:  TextStyle(color: Colors.black),)),
+              child: Center(child: Text("No  Appointments", style:  TextStyle(color: Colors.black),)),
             ),
           ),
         )

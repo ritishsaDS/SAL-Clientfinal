@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -10,13 +11,16 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/Appointmentorder.dart';
 import 'package:sal_user/models/appointmentmode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Sessions extends StatefulWidget {
    dynamic getData;
   final String mediaUrl;
   var date;
   var slot;
-  Sessions({Key key, this.getData, this.mediaUrl,this.slot,this.date}) : super(key: key);
+  var type;
+  dynamic bill;
+  Sessions({Key key, this.getData, this.mediaUrl,this.slot,this.date,this.type,this.bill}) : super(key: key);
 
   @override
   _SessionsState createState() => _SessionsState();
@@ -31,6 +35,8 @@ class _SessionsState extends State<Sessions> {
   final List<AppointmentModel> addnotesList = [];
   @override
   void initState() {
+    print("widget.bill");
+    print(widget.bill['prices']);
     getClientid();
    // gettherapist();
    // getCouncilorfromserver();
@@ -210,7 +216,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("Rs 500",
+                                  Text("${widget.bill['billing']['actual_amount']}",
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -226,11 +232,11 @@ class _SessionsState extends State<Sessions> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text("Tax(18%)",
+                                  Text("Tax",
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("Rs 108",
+                                  Text(widget.bill['billing']['tax'],
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -255,7 +261,7 @@ class _SessionsState extends State<Sessions> {
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
                                     ),),
-                                  Text("Rs 608",
+                                  Text(widget.bill['billing']['paid_amount'],
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
@@ -286,7 +292,7 @@ class _SessionsState extends State<Sessions> {
                       contentPadding: EdgeInsets.only(
                           left: SizeConfig.blockSizeHorizontal * 4
                       ),
-                      title: Text("3 sessions for Rs 1000",style: TextStyle(
+                      title: Text("3 sessions for Rs ${widget.bill['prices']==null?"600":widget.bill['prices']['price_3']}",style: TextStyle(
                           color: Color(sessionRadio == 2 ? backgroundColorBlue : fontColorGray),
                           fontWeight: FontWeight.w600
                       ),),
@@ -387,7 +393,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("Rs 500",
+                                  Text(widget.bill['prices']==null?"600":widget.bill['prices']['price_3'].toString(),
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -463,7 +469,7 @@ class _SessionsState extends State<Sessions> {
                       contentPadding: EdgeInsets.only(
                           left: SizeConfig.blockSizeHorizontal * 4
                       ),
-                      title: Text("5 sessions for Rs 2000",style: TextStyle(
+                      title: Text("5 sessions for Rs ${widget.bill['prices']==null?"1799":widget.bill['prices']['price_5']}",style: TextStyle(
                           color: Color(sessionRadio == 3 ? backgroundColorBlue : fontColorGray),
                           fontWeight: FontWeight.w600
                       ),),
@@ -564,7 +570,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("Rs 500",
+                                  Text(widget.bill['prices']==null?"1799":widget.bill['prices']['price_5'],
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -584,7 +590,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("Rs 108",
+                                  Text("Rs 360",
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -609,7 +615,7 @@ class _SessionsState extends State<Sessions> {
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
                                     ),),
-                                  Text("Rs 608",
+                                  Text("Rs 2360",
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
@@ -628,15 +634,18 @@ class _SessionsState extends State<Sessions> {
                 margin: EdgeInsets.only(
                   top: SizeConfig.blockSizeVertical * 10,
                 ),
-                child: MaterialButton(onPressed: () async {
+                child: MaterialButton(
+                  onPressed: () async {
                   if(sessionRadio > 0){
                     var data;
                     SharedPreferences prefs =await SharedPreferences.getInstance();
                     print( prefs.getString("cleintid"));
                     data=   AppointmentModel(clientId: prefs.getString("cleintid"),counsellorId:widget.getData['id'] ,couponCode:"" ,date:  widget.date.toString(),noSession: "1",time: widget.slot);
-                    Appointmentorder.diomwthod( data,context,widget.mediaUrl,widget.getData,sessionRadio);
 
-                  }else{
+                    Appointmentorder.diomwthod( data,context,widget.mediaUrl,widget.getData,sessionRadio,widget.type,"Session");
+
+                  }
+                  else{
                     toast("Please select session");
                   }
                 },
@@ -663,12 +672,22 @@ class _SessionsState extends State<Sessions> {
     });
     SharedPreferences prefs =await SharedPreferences.getInstance();
     print( prefs.getString("cleintid"));
+var type;
+if(widget.type=='1'){
+  type="counsellor";
+}
+else if(widget.type=="2"){
+  type="listener";
 
+}
+else if(widget.type=='4'){
+  type='therapist';
+}
     try {
       final response = await post(Uri.parse(
-          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor/order'),body: {
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/$type/order'),body: {
         "client_id": "g29bg6fntbmqa",
-        "counsellor_id":widget.getData['id'],
+        "${type}_id":widget.getData['id'],
         "coupon_code": "",
         "date": widget.date.toString(),
         "no_session": "1",

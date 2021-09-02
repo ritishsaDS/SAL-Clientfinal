@@ -33,56 +33,56 @@ class _DrawerMenuState extends State<DrawerMenu> {
               color: Color(backgroundColorBlue),
               child: Column(
                 children: [
-                  Container(
-                    width: SizeConfig.screenWidth,
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(
-                      top: SizeConfig.blockSizeVertical * 3,
-                    ),
-                    child: CircleAvatar(
-                      radius: SizeConfig.blockSizeVertical * 5,
-                      backgroundImage: AssetImage('assets/bg/profile.png'),
-                    ),
-                  ),
-                  Container(
-                    width: SizeConfig.screenWidth,
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(
-                        top: SizeConfig.blockSizeVertical * 2
-                    ),
-                    child: Text("",
-                      style: GoogleFonts.openSans(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                  ),
-                  Container(
-                    width: SizeConfig.screenWidth,
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(
-                      top: SizeConfig.blockSizeVertical * 1.5,
-                    ),
-                    child: Text("Profile complete",
-                      style: GoogleFonts.openSans(
-                        color: Colors.white,
-                        fontSize: SizeConfig.blockSizeVertical * 1.5,
-                      ),),
-                  ),
-                  Container(
-                    width: SizeConfig.screenWidth,
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(
-                      top: SizeConfig.blockSizeVertical * 1.5,
-                      left: SizeConfig.screenWidth * 0.2,
-                      right: SizeConfig.screenWidth * 0.2,
-                    ),
-                    child: LinearProgressIndicator(
-                      backgroundColor: Color(midnightBlue),
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      value: 0.6,
-                    ),
-                  ),
+                  // Container(
+                  //   width: SizeConfig.screenWidth,
+                  //   alignment: Alignment.center,
+                  //   margin: EdgeInsets.only(
+                  //     top: SizeConfig.blockSizeVertical * 3,
+                  //   ),
+                  //   child: CircleAvatar(
+                  //     radius: SizeConfig.blockSizeVertical * 5,
+                  //     backgroundImage: AssetImage('assets/bg/profile.png'),
+                  //   ),
+                  // ),
+                  // Container(
+                  //   width: SizeConfig.screenWidth,
+                  //   alignment: Alignment.center,
+                  //   margin: EdgeInsets.only(
+                  //       top: SizeConfig.blockSizeVertical * 2
+                  //   ),
+                  //   child: Text("",
+                  //     style: GoogleFonts.openSans(
+                  //         color: Colors.white,
+                  //         fontWeight: FontWeight.bold,
+                  //         fontSize: SizeConfig.blockSizeVertical * 2
+                  //     ),),
+                  // ),
+                  // Container(
+                  //   width: SizeConfig.screenWidth,
+                  //   alignment: Alignment.center,
+                  //   margin: EdgeInsets.only(
+                  //     top: SizeConfig.blockSizeVertical * 1.5,
+                  //   ),
+                  //   child: Text("Profile complete",
+                  //     style: GoogleFonts.openSans(
+                  //       color: Colors.white,
+                  //       fontSize: SizeConfig.blockSizeVertical * 1.5,
+                  //     ),),
+                  // ),
+                  // Container(
+                  //   width: SizeConfig.screenWidth,
+                  //   alignment: Alignment.center,
+                  //   margin: EdgeInsets.only(
+                  //     top: SizeConfig.blockSizeVertical * 1.5,
+                  //     left: SizeConfig.screenWidth * 0.2,
+                  //     right: SizeConfig.screenWidth * 0.2,
+                  //   ),
+                  //   child: LinearProgressIndicator(
+                  //     backgroundColor: Color(midnightBlue),
+                  //     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  //     value: 0.6,
+                  //   ),
+                  // ),
                 ],
               ),
             ),

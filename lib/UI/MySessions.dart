@@ -4,6 +4,7 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
 import 'Pastupcoming.dart';
+import 'UnuasedSession.dart';
 
 class MySessions extends StatefulWidget {
   const MySessions({Key key}) : super(key: key);
@@ -75,111 +76,8 @@ class _MySessionsState extends State<MySessions> {
                                       color: Colors.grey, width: 0.5))),
                           child: TabBarView(children: <Widget>[
                             UpcomingAppointment(),
+                            UnusedSession(),
 
-                            Container(
-                              width: SizeConfig.screenWidth,
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.screenWidth * 0.05,
-                                  vertical: SizeConfig.blockSizeVertical),
-                              child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      ListTile(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8)),
-                                        title: Text(
-                                          "Sushmita Sinha",
-                                          style: TextStyle(
-                                            color: Color(backgroundColorBlue),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          "Counsellor",
-                                          style: TextStyle(
-                                            color: Color(fontColorGray),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        trailing: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "08:00 AM",
-                                              style: TextStyle(
-                                                  color: Color(fontColorGray),
-                                                  fontSize:
-                                                      SizeConfig.blockSizeVertical *
-                                                          1.5),
-                                            ),
-                                            Text(
-                                              "10 July",
-                                              style: TextStyle(
-                                                  color: Color(fontColorGray),
-                                                  fontSize:
-                                                      SizeConfig.blockSizeVertical *
-                                                          1.5),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          MaterialButton(
-                                            onPressed: (){
-                                              Navigator.pop(context);
-                                            },
-                                            color: Colors.white,
-                                            child: Text("RATE",style: TextStyle(
-                                              color: Color(fontColorGray),
-                                            ),),
-                                            minWidth: SizeConfig.screenWidth * 0.4,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                              side: BorderSide(
-                                                  color: Color(fontColorGray)
-                                              ),
-                                            ),
-                                          ),
-                                          MaterialButton(
-                                            onPressed: (){
-                                              Navigator.of(context).pushNamed('/ClientDetails');
-                                            },
-                                            color: Color(backgroundColorBlue),
-                                            child: Text("BOOK AGAIN",style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600
-                                            ),),
-                                            minWidth: SizeConfig.screenWidth * 0.4,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8)
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: SizeConfig.screenHeight * 0.2,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal:
-                                            SizeConfig.screenWidth * 0.1,
-                                            vertical: SizeConfig.blockSizeVertical),
-                                        child: Text(
-                                            "You have not attended any sessions yet.",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                color: Color(fontColorSteelGrey))),
-                                      ),
-                                    ],
-                                  ),
-
-                            ),
                             PastAppointment(),
                           ]))
                     ])),

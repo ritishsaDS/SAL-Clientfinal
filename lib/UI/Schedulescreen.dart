@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/data/repo/Appointmentorder.dart';
+import 'package:sal_user/models/appointmentmode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class DynamicEvent extends StatefulWidget {
   dynamic data;
+  var appointment;
   dynamic mediaurl;
-  DynamicEvent({this.data,this.mediaurl});
+  var type;
+  DynamicEvent({this.data,this.mediaurl,this.type,this.appointment});
   @override
   _DynamicEventState createState() => _DynamicEventState();
 }
@@ -25,8 +29,8 @@ class _DynamicEventState extends State<DynamicEvent> {
   _onSelected(int index) {
     setState(() => _selectedIndex = index);
   }
-  var slotid;
-  var selectdate;
+  var slotid="0";
+  var selectdate=DateTime.now();
 
   var moodstatic = [
     "0:30",
@@ -323,9 +327,26 @@ Container(
 ),
               Container(
 margin: EdgeInsets.all(10),
-                child: MaterialButton(onPressed: (){
+                child: MaterialButton(onPressed: () async {
                   // if(sessionRadio > 0){
-                    Navigator.push(context,MaterialPageRoute(builder: (context)=>Sessions(mediaUrl: widget.mediaurl,getData: widget.data,date:selectdate,slot:slotid)));
+
+                  if(widget.appointment==null){
+                    var data;
+                    SharedPreferences prefs =await SharedPreferences.getInstance();
+                    print( prefs.getString("cleintid"));
+                    data=   AppointmentModel(clientId: prefs.getString("cleintid"),counsellorId:widget.data['id'] ,couponCode:"" ,date:  selectdate.toString(),noSession: "1",time: slotid);
+                    Appointmentorder.diomwthod( data,context,widget.mediaurl,widget.data,"1",widget.type,"Schedule");
+
+                  }
+                  else{
+                    var data;
+                    SharedPreferences prefs =await SharedPreferences.getInstance();
+                    print( prefs.getString("cleintid"));
+                    data=   AppointmentModel(clientId: prefs.getString("cleintid"),counsellorId:widget.data ,couponCode:"" ,date:  selectdate.toString(),noSession: "1",time: slotid);
+                    Appointmentorder.diomwthod( data,context,widget.mediaurl,widget.data,"1",widget.type,"Schedule");
+
+                  }
+
                   // }else{
                   //   toast("Please select session");
                   // }

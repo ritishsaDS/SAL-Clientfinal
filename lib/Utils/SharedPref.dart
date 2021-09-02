@@ -21,11 +21,11 @@ class SharedPreferencesTest {
     }
   }
 
-  Future<bool> getBool(String key, {defaultValue = false}) async {
-    return await getSharedPref().then((pref) {
-      return pref.getBool(key) ?? defaultValue;
-    });
-  }
+  // Future<bool> getBool(String key, {defaultValue = false}) async {
+  //   return await getSharedPref().then((pref) {
+  //     return pref.getBool(key) ?? defaultValue;
+  //   });
+  // }
 
   saveRegisteredValue(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

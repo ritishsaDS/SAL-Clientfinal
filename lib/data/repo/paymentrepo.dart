@@ -45,20 +45,41 @@ class paymentrepo extends BaseRepository {
 }
 
 class Succespaymentrepo extends BaseRepository {
+
   // BuildContext context;
-  static Future<void> diomwthod(context,mediaurl,data) async {
+  static Future<void> diomwthod(context,mediaurl,data,therapist,date,type,screen) async {
+    var types;
+    //var model;
+    if(type=='1'){
+      types="counsellor";
+   //   model = AppointmentModel(clientId:adddishmodel.clientId,counsellorId: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+    else if(type=="2"){
+      types="listener";
+     // model = Appointmentlistener(clientId:adddishmodel.clientId,listenerid: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+    else if(type=='4'){
+      types='therapist';
+   //   model = AppointmentTherapist(clientId:adddishmodel.clientId,therapistId: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+
     dynamic loginwithserver = new List();
 
     //print(adddishmodel.toJson());
     var model = Payment(
         paymentId: data, orderId: mediaurl, paymentMethod: "phonepe");
     print(model.toJson());
+
     try {
       final response = await post(Uri.parse(
-          "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor/paymentcomplete"),
+          "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/${types}/paymentcomplete"),
 
 
           body: json.encode(model));
+      print("bjkb" + response.request.toString());
       print("bjkb" + response.statusCode.toString());
       print("bjkb" + response.body.toString());
       // showToast("Dish Added Successfully");
@@ -103,7 +124,7 @@ class Succespaymentrepo extends BaseRepository {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text("Susan Smith",
+                          Text(therapist['first_name'],
                             style: GoogleFonts.openSans(
                               color: Color(fontColorSteelGrey),
                             ),),
@@ -115,7 +136,7 @@ class Succespaymentrepo extends BaseRepository {
                           SizedBox(
                             width: SizeConfig.blockSizeHorizontal,
                           ),
-                          Text("Listener", style: GoogleFonts.openSans(
+                          Text(type=="1"?"Counsellor":type=="2"?"Listener":"Therapist", style: GoogleFonts.openSans(
                             color: Color(fontColorSteelGrey),
                           ),
                           ),
@@ -149,7 +170,7 @@ class Succespaymentrepo extends BaseRepository {
                             style: TextStyle(
                               color: Color(fontColorGray),
                             ),),
-                          Text("10 July",
+                          Text(date.toString().substring(0,10),
                             style: TextStyle(
                               color: Color(fontColorGray),
                             ),),

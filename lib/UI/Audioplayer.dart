@@ -38,7 +38,12 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
     );
     audioPlayer = new AudioPlayer();
   }
+@override
+  void dispose() {
+    // TODO: implement dispose
 
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +52,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
         elevation: 0.0,
         leading: InkWell(
           onTap:(){
+            audioPlayer.stop();
             Navigator.pop(context);
           },
           child: Icon(
@@ -64,10 +70,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
       body: Container(
         decoration: BoxDecoration(
           color: Colors.grey.shade100.withOpacity(0.55),
-          image: DecorationImage(
-            image: AssetImage("assets/bg/Frame.png"),
-            fit: BoxFit.fill,
-          ),
+
         ),
         child: Container(
           child: BackdropFilter(

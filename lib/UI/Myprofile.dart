@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'EditProfile.dart';
 import 'Professionalinfo.dart';
 import 'login.dart';
@@ -13,15 +18,19 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
- @override
-  void initState(){
+  @override
+  void initState() {
     getid();
   }
 
+  bool isError = false;
+  bool isLoading = false;
   Future<void> getid() async {
-   SharedPreferences preferences= await SharedPreferences.getInstance();
-  print( preferences.getString("cleintid"));
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    print(preferences.getString("email"));
+    getprofile(preferences.getString("email"));
   }
+
   bool isloding = false;
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -74,7 +83,14 @@ class _MyProfileState extends State<MyProfile> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        Editprofile()));
+                                                        Editprofile(
+                                                            firstname: profile[
+                                                                'first_name'],
+                                                            lastname: profile[
+                                                                'last_name'],email:profile['email'],
+                                                          gender:profile['gender'],
+                                                          phone:profile['phone']
+                                                        )));
                                           },
                                           child: Icon(
                                             Icons.edit_outlined,
@@ -130,8 +146,8 @@ class _MyProfileState extends State<MyProfile> {
                                         borderRadius: BorderRadius.circular(15),
                                       ),
                                       child: ClipRRect(
-                                        child: Image.asset(
-                                            'assets/bg/profile.png'),
+                                        child: Image.network(
+                                            'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png'),
                                         borderRadius: BorderRadius.circular(60),
                                       ),
                                     ),
@@ -153,7 +169,11 @@ class _MyProfileState extends State<MyProfile> {
                                   ),
                                   Center(
                                     child: Text(
-                                      "Suman Aggarwal",
+                                      profile['first_name'] == null
+                                          ? ""
+                                          : profile['first_name'] +
+                                              " " +
+                                              profile['last_name'],
                                       style: GoogleFonts.openSans(
                                           color: Color(backgroundColorBlue),
                                           fontWeight: FontWeight.w600,
@@ -173,7 +193,7 @@ class _MyProfileState extends State<MyProfile> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          "Gender",
+                                          profile['gender'],
                                           style: GoogleFonts.openSans(
                                             color: Color(fontColorSteelGrey),
                                           ),
@@ -210,7 +230,7 @@ class _MyProfileState extends State<MyProfile> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "Date Of Birth",
+                                          "Age",
                                           style: GoogleFonts.openSans(
                                               color: Color(fontColorGray),
                                               fontWeight: FontWeight.w600,
@@ -219,7 +239,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       1.75),
                                         ),
                                         Text(
-                                          "23/12/1999",
+                                          profile['age'],
                                           style: GoogleFonts.openSans(
                                               color: Colors.black,
                                               fontWeight: FontWeight.w600,
@@ -240,7 +260,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       1.75),
                                         ),
                                         Text(
-                                          mobileController.text,
+                                          profile['phone'],
                                           style: GoogleFonts.openSans(
                                               color: Colors.black,
                                               fontWeight: FontWeight.w600,
@@ -261,7 +281,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       1.75),
                                         ),
                                         Text(
-                                          "ritishs39@gmail.com",
+                                          profile['email'],
                                           style: GoogleFonts.openSans(
                                               color: Colors.black,
                                               fontWeight: FontWeight.w600,
@@ -272,106 +292,106 @@ class _MyProfileState extends State<MyProfile> {
                                       ],
                                     ),
                                   ),
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                        top: SizeConfig.blockSizeVertical * 4),
-                                    width: SizeConfig.screenWidth,
-                                    height: SizeConfig.blockSizeVertical * 42,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              margin: EdgeInsets.only(
-                                                  top: SizeConfig
-                                                          .blockSizeVertical *
-                                                      2.5,
-                                                  left: SizeConfig.screenWidth *
-                                                      0.05,
-                                                  right:
-                                                      SizeConfig.screenWidth *
-                                                          0.05),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    "My Intersets",
-                                                    style: GoogleFonts.openSans(
-                                                        color: Color(
-                                                            fontColorGray),
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: SizeConfig
-                                                                .blockSizeVertical *
-                                                            2),
-                                                  ),
-                                                  Icon(
-                                                    Icons.edit,
-                                                    color: Colors.grey[400],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              height:
-                                                  SizeConfig.blockSizeVertical *
-                                                      21,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 10),
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  30,
-                                              child: GridView.builder(
-                                                  physics:
-                                                      NeverScrollableScrollPhysics(),
-                                                  gridDelegate:
-                                                      SliverGridDelegateWithMaxCrossAxisExtent(
-                                                          maxCrossAxisExtent:
-                                                              200,
-                                                          childAspectRatio:
-                                                              4 / 1,
-                                                          crossAxisSpacing: 30,
-                                                          mainAxisSpacing: 20),
-                                                  itemCount: list.length,
-                                                  itemBuilder:
-                                                      (BuildContext ctx,
-                                                          index) {
-                                                    return Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: Text(
-                                                        list[index],
-                                                        style: GoogleFonts.openSans(
-                                                            color: Color(
-                                                                fontColorSteelGrey),
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            fontSize: SizeConfig
-                                                                    .blockSizeVertical *
-                                                                1.90),
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                          color:
-                                                              Color(0XFFE4F0F8),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      15)),
-                                                    );
-                                                  }),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   margin: EdgeInsets.only(
+                                  //       top: SizeConfig.blockSizeVertical * 4),
+                                  //   width: SizeConfig.screenWidth,
+                                  //   height: SizeConfig.blockSizeVertical * 42,
+                                  //   child: Row(
+                                  //     mainAxisAlignment:
+                                  //         MainAxisAlignment.spaceAround,
+                                  //     children: [
+                                  //       Column(
+                                  //         mainAxisAlignment:
+                                  //             MainAxisAlignment.start,
+                                  //         children: [
+                                  //           Container(
+                                  //             margin: EdgeInsets.only(
+                                  //                 top: SizeConfig
+                                  //                         .blockSizeVertical *
+                                  //                     2.5,
+                                  //                 left: SizeConfig.screenWidth *
+                                  //                     0.05,
+                                  //                 right:
+                                  //                     SizeConfig.screenWidth *
+                                  //                         0.05),
+                                  //             child: Row(
+                                  //               mainAxisAlignment:
+                                  //                   MainAxisAlignment
+                                  //                       .spaceBetween,
+                                  //               children: [
+                                  //                 Text(
+                                  //                   "My Intersets",
+                                  //                   style: GoogleFonts.openSans(
+                                  //                       color: Color(
+                                  //                           fontColorGray),
+                                  //                       fontWeight:
+                                  //                           FontWeight.w600,
+                                  //                       fontSize: SizeConfig
+                                  //                               .blockSizeVertical *
+                                  //                           2),
+                                  //                 ),
+                                  //                 Icon(
+                                  //                   Icons.edit,
+                                  //                   color: Colors.grey[400],
+                                  //                 )
+                                  //               ],
+                                  //             ),
+                                  //           ),
+                                  //           Container(
+                                  //             height:
+                                  //                 SizeConfig.blockSizeVertical *
+                                  //                     21,
+                                  //             margin: EdgeInsets.symmetric(
+                                  //                 horizontal: 15, vertical: 10),
+                                  //             width: MediaQuery.of(context)
+                                  //                     .size
+                                  //                     .width -
+                                  //                 30,
+                                  //             child: GridView.builder(
+                                  //                 physics:
+                                  //                     NeverScrollableScrollPhysics(),
+                                  //                 gridDelegate:
+                                  //                     SliverGridDelegateWithMaxCrossAxisExtent(
+                                  //                         maxCrossAxisExtent:
+                                  //                             200,
+                                  //                         childAspectRatio:
+                                  //                             4 / 1,
+                                  //                         crossAxisSpacing: 30,
+                                  //                         mainAxisSpacing: 20),
+                                  //                 itemCount: list.length,
+                                  //                 itemBuilder:
+                                  //                     (BuildContext ctx,
+                                  //                         index) {
+                                  //                   return Container(
+                                  //                     alignment:
+                                  //                         Alignment.center,
+                                  //                     child: Text(
+                                  //                       list[index],
+                                  //                       style: GoogleFonts.openSans(
+                                  //                           color: Color(
+                                  //                               fontColorSteelGrey),
+                                  //                           fontWeight:
+                                  //                               FontWeight.w600,
+                                  //                           fontSize: SizeConfig
+                                  //                                   .blockSizeVertical *
+                                  //                               1.90),
+                                  //                     ),
+                                  //                     decoration: BoxDecoration(
+                                  //                         color:
+                                  //                             Color(0XFFE4F0F8),
+                                  //                         borderRadius:
+                                  //                             BorderRadius
+                                  //                                 .circular(
+                                  //                                     15)),
+                                  //                   );
+                                  //                 }),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ],
@@ -397,5 +417,48 @@ class _MyProfileState extends State<MyProfile> {
       widgetList.add(modal);
     }
     return Stack(children: widgetList);
+  }
+
+  dynamic profile = new List();
+  Future<void> getprofile(email) async {
+    setState(() {
+      isloding = true;
+    });
+    var uri =
+        "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client?email=${email}";
+    try {
+      final response = await get(Uri.parse(uri));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+        print(responseJson);
+        profile = responseJson['client'];
+        // counsellorid=upcominglist['appointment_slots'][0]['counsellor_id'];
+        //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
+        setState(() {
+          isError = false;
+          isloding = false;
+          print('setstate');
+        });
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isloding = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isloding = false;
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
   }
 }

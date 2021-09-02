@@ -10,6 +10,8 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/data/repo/getTherapistDetailRepo.dart';
 import 'package:sal_user/models/getTherapistDetailModal.dart';
 
+import 'SearchResult.dart';
+
 class Connect extends StatefulWidget {
   const Connect({Key key}) : super(key: key);
 
@@ -22,15 +24,22 @@ bool  isError = true;
 bool isLoading = false;
 bool isloding = false;
   String topic;
+
+  var topictype;
+  String languageid;
   String language;
   bool expand = false;
   int checkboxValue = 0;
+  var passlist=[];
   double price = 0;
   DateTime selectedDate = DateTime.now();
 var getHomeContentModal = GetCounsellor();
 var getprofilecontent = GetTherapistDetailRepo();
   TextEditingController date = TextEditingController();
-
+  var type=['Anxiety Management', 'anger',"stress","depression","relationship","parenting","grief","motivation","life","others", ];
+var connectforid=[
+  1,2,3,4,5,6,7,8,9,10
+];
 
   selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -50,6 +59,7 @@ var getprofilecontent = GetTherapistDetailRepo();
   void initState() {
   gettherapist();
   getCouncilorfromserver();
+  getdatafromserver();
     // TODO: implement initState
     super.initState();
   }
@@ -121,12 +131,13 @@ var getprofilecontent = GetTherapistDetailRepo();
                     isDense: true,
                     contentPadding: EdgeInsets.all(12),
                   ),
-                  items: <String>['Topic 1', 'Topic 2', 'Topic 3']
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items:category.map<DropdownMenuItem<String>>((item) {
+
+
                     return DropdownMenuItem<String>(
-                      value: value,
+                      value: item['id']+","+item["category"],
                       child: Text(
-                        value,
+                        item['category'],
                         style: TextStyle(
                             color: Color(midnightBlue),
                             fontWeight: FontWeight.w400,
@@ -148,7 +159,10 @@ var getprofilecontent = GetTherapistDetailRepo();
                   value: topic,
                   onChanged: (value) {
                     setState(() {
-                      topic = value;
+
+                      topictype=value;
+                      print(topic);
+                      passlist.add(value.toString().substring(2));
                     });
                   },
                 ),
@@ -231,6 +245,8 @@ var getprofilecontent = GetTherapistDetailRepo();
                                   onChanged: (value){
                                     setState(() {
                                       checkboxValue = value;
+                                      passlist.add("Counsellor");
+                                      print(checkboxValue);
                                     });
                                   },
                                 ),
@@ -250,7 +266,9 @@ var getprofilecontent = GetTherapistDetailRepo();
                                   groupValue: checkboxValue,
                                   onChanged: (value){
                                     setState(() {
+                                      passlist.add("Listener");
                                       checkboxValue = value;
+                                      print(checkboxValue);
                                     });
                                   },
                                 ),
@@ -275,7 +293,9 @@ var getprofilecontent = GetTherapistDetailRepo();
                                   groupValue: checkboxValue,
                                   onChanged: (value){
                                     setState(() {
+                                      passlist.add("Alternative Therapist");
                                       checkboxValue = value;
+                                      print(checkboxValue);
                                     });
                                   },
                                 ),
@@ -354,7 +374,7 @@ var getprofilecontent = GetTherapistDetailRepo();
                                     color: Color(backgroundColorBlue),
                                     fontWeight: FontWeight.w600
                                 ),),
-                              Text("₹ 0 - ₹ 650",
+                              Text("₹ ${ price.round().toString()} - ₹ 650",
                               style: TextStyle(
                                 color: Color(fontColorSteelGrey),
                                 fontWeight: FontWeight.w600
@@ -424,12 +444,12 @@ var getprofilecontent = GetTherapistDetailRepo();
                           isDense: true,
                           contentPadding: EdgeInsets.all(12),
                         ),
-                        items: <String>['English', 'Hindi', 'Punjabi','Language 1','Language 2']
-                            .map<DropdownMenuItem<String>>((String value) {
+                        items:  languages.map<DropdownMenuItem<String>>((item) {
+
                           return DropdownMenuItem<String>(
-                            value: value,
+                            value: item['id']+","+item["language"],
                             child: Text(
-                              value,
+                              item['language'],
                               style: TextStyle(
                                   color: Color(midnightBlue),
                                   fontWeight: FontWeight.w400,
@@ -452,6 +472,8 @@ var getprofilecontent = GetTherapistDetailRepo();
                         onChanged: (value) {
                           setState(() {
                             language = value;
+                            print(language.toString().substring(2));
+                            passlist.add(language.toString().substring(2));
                           });
                         },
                       ),
@@ -479,7 +501,13 @@ var getprofilecontent = GetTherapistDetailRepo();
                     ),),
                     minWidth: SizeConfig.screenWidth * 0.4,),
                     MaterialButton(onPressed:(){
-                      Navigator.of(context).pushNamed('/SearchResult');
+
+
+
+                      //print(checkboxValue.toString()+"  "+topic+""+price.round().toString()+""+language+""+selectedDate.toString().substring(0,10));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchResult(
+                      list:passlist,type:checkboxValue,topic:topictype,language:language,date:selectedDate.toString().substring(0,10),price:price.round().toString()
+                    )));
                     },
                       color: Color(backgroundColorBlue),
                       shape: RoundedRectangleBorder(
@@ -494,7 +522,7 @@ var getprofilecontent = GetTherapistDetailRepo();
               ),
               Container(
                 width: SizeConfig.screenWidth,
-                height: SizeConfig.screenHeight*0.6,
+                height: SizeConfig.screenHeight*0.55,
                 margin: EdgeInsets.symmetric(
                   vertical: SizeConfig.blockSizeVertical
                 ),
@@ -563,6 +591,8 @@ var getprofilecontent = GetTherapistDetailRepo();
   }
 dynamic Therapist = new List();
 dynamic mediaurl = new List();
+dynamic category=new List();
+dynamic languages=new List();
 
 void getCouncilorfromserver() async {
   setState(() {
@@ -605,6 +635,48 @@ void getCouncilorfromserver() async {
     );
   }
 }
+void getdatafromserver() async {
+  setState(() {
+    isLoading=true;
+  });
+
+  try {
+    final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/meta'));
+    print("bjkb" + response.body.toString());
+    if (response.statusCode == 200) {
+      final responseJson = json.decode(response.body);
+      languages=responseJson['languages'];
+      category=responseJson['content_categories'];
+
+      setState(() {
+        isError = false;
+        isLoading = false;
+        print('setstate');
+      });
+
+
+    } else {
+      print("bjkb" + response.statusCode.toString());
+      // showToast("Mismatch Credentials");
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+    }
+  } catch (e) {
+    print(e);
+    setState(() {
+      isError = true;
+      isLoading = false;
+    });
+    showAlertDialog(
+      context,
+      e.toString(),
+      "",
+    );
+  }
+}
+
 
 List <Widget> Councilorwidget (){
 List <Widget> councilorlist= new List();
@@ -613,6 +685,7 @@ for(int i =0; i<Therapist.length;i++){
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+
       Row(
         children: [
           Container(
@@ -663,9 +736,10 @@ for(int i =0; i<Therapist.length;i++){
                 ),
                 Row(
                   children: [
-                    Text("Counsellor",
+                    Text(Therapist[i]['type']=="1"?"Counsellor":Therapist[i]['type']=="2"?"Listener":"Therapist",
                       style: TextStyle(
                           color: Color(fontColorSteelGrey),
+                          fontWeight: FontWeight.w600,
                           fontSize: SizeConfig.blockSizeVertical * 2
                       ),),
                     Container(
@@ -734,7 +808,7 @@ for(int i =0; i<Therapist.length;i++){
         ),
         child: MaterialButton(
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile(getData: Therapist[i],mediaUrl: mediaurl,)));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile(getData: Therapist[i],mediaUrl: mediaurl,type:Therapist[i]['type'])));
           },
           child: Text("BOOK APPOINTMENT",
             style: TextStyle(

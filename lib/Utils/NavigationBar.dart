@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/CafeEvents.dart';
 import 'package:sal_user/UI/Connect.dart';
 import 'package:sal_user/UI/Exploreall.dart';
 import 'package:sal_user/UI/Home.dart';
@@ -90,7 +91,7 @@ class _NavigationBarState extends State<NavigationBar> {
         ),
         BottomNavigationBarItem(icon: InkWell(
           onTap: (){
-            Navigator.of(context).pushNamed('/CafeEvents');
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>CafeEvents()));
           },
           child: Container(child:
           Image.asset('assets/icons/nav cafe.png',

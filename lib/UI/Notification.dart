@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/models/notificationModal.dart';
+import 'package:sal_user/models/notificationRepo.dart';
 
 
 class NotificationsScreen extends StatefulWidget {
@@ -12,56 +15,56 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  // var notification  = NotificationRepo();
-  // List<Notifications> getPaymentsModal = new List();
+  var notification  = NotificationRepo();
+  List<Notifications> getPaymentsModal = new List();
   bool isloading = true;
 
   @override
   void initState() {
     super.initState();
-   isloading = false;
-    // notification
-    //     .notificationRepo(
-    //   context,
-    // )
-    //     .then((value) {
-    //   if (value != null) {
-    //     if (value.meta.status == "200") {
-    //       setState(() {
-    //         isloading = false;
-    //         getPaymentsModal.addAll(value.notifications);
-    //       });
-    //     } else {
-    //       setState(() {
-    //         isloading = false;
-    //       });
-    //       showAlertDialog(
-    //         context,
-    //         value.meta.message,
-    //         "",
-    //       );
-    //     }
-    //   } else {
-    //     setState(() {
-    //       isloading = false;
-    //
-    //     });
-    //     showAlertDialog(
-    //       context,
-    //       value.meta.message,
-    //       "",
-    //     );
-    //   }
-    // }).catchError((error) {
-    //   setState(() {
-    //     isloading = false;
-    //   });
-    //   showAlertDialog(
-    //     context,
-    //     error.toString(),
-    //     "",
-    //   );
-    // });
+    isloading = true;
+    notification
+        .notificationRepo(
+      context,
+    )
+        .then((value) {
+      if (value != null) {
+        if (value.meta.status == "200") {
+          setState(() {
+            isloading = false;
+            getPaymentsModal.addAll(value.notifications);
+          });
+        } else {
+          setState(() {
+            isloading = false;
+          });
+          showAlertDialog(
+            context,
+            value.meta.message,
+            "",
+          );
+        }
+      } else {
+        setState(() {
+          isloading = false;
+
+        });
+        showAlertDialog(
+          context,
+          value.meta.message,
+          "",
+        );
+      }
+    }).catchError((error) {
+      setState(() {
+        isloading = false;
+      });
+      showAlertDialog(
+        context,
+        error.toString(),
+        "",
+      );
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -108,15 +111,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("22/04/2021",
-                          style: TextStyle(
+                        Text(DateFormat("yMMMMd").format(DateTime.parse(getPaymentsModal.elementAt(index).createdAt)),style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
                             fontSize: SizeConfig.blockSizeVertical * 1.75
                         ),),
                         Container(
                           margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
-                          child:  Text("Lorem Ipsumm model is a dummy text",style: TextStyle(
+                          child:  Text(getPaymentsModal.elementAt(index).body,style: TextStyle(
                               color: Color(fontColorGray),
                               fontSize: SizeConfig.blockSizeVertical * 1.85
                           ),),
@@ -129,8 +131,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               },
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: 1,
-              //  itemCount:getPaymentsModal != null && getPaymentsModal.length > 0 ?  getPaymentsModal.length: 0,
+                itemCount:getPaymentsModal != null && getPaymentsModal.length > 0 ?  getPaymentsModal.length: 0,
                 primary: false,),
             ),
           ],
@@ -148,7 +149,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           new Center(
             child: new CircularProgressIndicator(
-              color: Colors.blue,
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
             ),
           ),
         ],

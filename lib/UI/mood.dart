@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:sal_user/UI/OnBoardScreens.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Widgets/Moodwidget.dart';
+import 'package:sal_user/data/repo/Addmoodrepo.dart';
 import 'Addnote.dart';
 import 'Splash1.dart';
 
@@ -11,6 +16,25 @@ class Mood extends StatefulWidget {
 }
 
 class _MoodState extends State<Mood> {
+  bool isError = false;
+  bool isLoading = false;
+  var moodid;
+  int _selectedIndex;
+  Addmoodrepo addmoodrepo=Addmoodrepo();
+  var image=[
+    "assets/icons/Group 7041.png",
+    "assets/icons/Group 7042.png",
+      "assets/icons/Group 7042.png",
+      "assets/icons/Group 7044.png",
+      "assets/icons/Group 7044.png",
+      "assets/icons/Group 7043.png"];
+
+  @override
+  void initState() {
+    getmoodsfromserver();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -58,21 +82,8 @@ class _MoodState extends State<Mood> {
               height: 300,
               child: GridView.count(
                 crossAxisCount: 3,
-                children: [
-                  Moodwidget(
-                    mood: "Happy",
-                    image: "assets/icons/Group 7041.png",
-                  ),
-                  Moodwidget(mood: "Sad", image: "assets/icons/Group 7042.png"),
-                  Moodwidget(
-                      mood: "Anxious", image: "assets/icons/Group 7042.png"),
-                  Moodwidget(
-                      mood: "Concerned", image: "assets/icons/Group 7044.png"),
-                  Moodwidget(
-                      mood: "Lonely", image: "assets/icons/Group 7044.png"),
-                  Moodwidget(
-                      mood: "Frustrated", image: "assets/icons/Group 7043.png"),
-                ],
+                children: moodswidget()
+
               ),
             ),
             Expanded(
@@ -101,8 +112,9 @@ class _MoodState extends State<Mood> {
                 child: Text("Done"),
                 textColor: Colors.white,
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
+                  addmoodrepo.addmood(context: context,moodid: moodid);
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
                 },
               ),
             )
@@ -111,4 +123,94 @@ class _MoodState extends State<Mood> {
       ),
     );
   }
+  dynamic moods= new List();
+  void getmoodsfromserver() async {
+    setState(() {
+      isLoading=true;
+    });
+
+    try {
+      final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/mood'));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+        moods=responseJson['moods'];
+print(moods);
+        setState(() {
+          isError = false;
+          isLoading = false;
+          print('setstate');
+        });
+
+
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
+  }
+  _onSelected(int index) {
+    setState(() => _selectedIndex = index);
+  }
+
+List<Widget>moodswidget(){
+  var opacuit=1.0;
+    List <Widget>moodlist=new List();
+    for(int i =0; i<moods.length;i++){
+      moodlist.add(GestureDetector(
+        onTap: (){
+          _onSelected(i);
+          print(moods[i]['id']);
+          moodid=moods[i]['id'];
+        },
+        child: Container(
+          child: Column(
+            children: [
+              Opacity(
+                opacity: _selectedIndex != null && _selectedIndex == i
+          ?0.7
+              :  1.0,
+                child: Container(
+
+                  height: 80,
+
+                  width: 100,
+                  decoration: BoxDecoration(
+
+                    image: DecorationImage(
+                      image: AssetImage(
+                        "assets/icons/Rectangle 412.png",
+                      ),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                  // color: Colors.blue,
+                  child: Image.asset(
+                      image[i]
+                  ),
+                ),
+              ),
+              Text(moods[i]['title']),
+            ],
+          ),
+        ),
+      ));
+    }
+return moodlist;
+}
 }

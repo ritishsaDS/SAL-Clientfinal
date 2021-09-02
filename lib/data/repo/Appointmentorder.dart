@@ -5,24 +5,43 @@ import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart'as http;
+import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
+import 'package:sal_user/models/Appointmentlistener.dart';
+import 'package:sal_user/models/Appointmenttherapistmodel.dart';
 import 'package:sal_user/models/appointmentmode.dart';
 
 
 class Appointmentorder {
 
-  static Future<void> diomwthod(AppointmentModel adddishmodel,context,mediaurl,data,session) async {
+  static Future<void> diomwthod(AppointmentModel adddishmodel,context,mediaurl,data,session,type,screen) async {
+    var types;
+    var model;
+    if(type=='1'){
+      types="counsellor";
+       model = AppointmentModel(clientId:adddishmodel.clientId,counsellorId: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+    else if(type=="2"){
+      types="listener";
+      model = Appointmentlistener(clientId:adddishmodel.clientId,listenerid: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+    else if(type=='4'){
+      types='therapist';
+      model = AppointmentTherapist(clientId:adddishmodel.clientId,therapistId: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
     dynamic loginwithserver=new List();
 
     print(adddishmodel.toJson());
-    var model = AppointmentModel(clientId:adddishmodel.clientId,counsellorId: adddishmodel.counsellorId,couponCode: "",date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
     try {
-      final response = await http.post(Uri.parse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor/order"),
+      final response = await http.post(Uri.parse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/$types/order"),
 
 
           body:json.encode(model));
-      print("bjkb" + response.statusCode.toString());
+      print("bjkb" + data.toString());
       print("bjkb" + model.toJson().toString());
      // showToast("Dish Added Successfully");
 
@@ -32,9 +51,16 @@ class Appointmentorder {
 
         loginwithserver = responseJson;
         if(loginwithserver['meta']['status']=="200"){
-          Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: mediaurl,getData:data
-              ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'])));
 
+          if(screen=="Schedule"){
+            Navigator.push(context,MaterialPageRoute(builder: (context)=>Sessions(mediaUrl: mediaurl,getData:data,date:adddishmodel.date,slot:adddishmodel.time,type:type,bill:loginwithserver)));
+
+          }
+        else{
+            Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: mediaurl,getData:data,
+                date:adddishmodel.date,slot:adddishmodel.time    ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],type:type,bill:loginwithserver)));
+
+          }
         }
         else{
           showAlertDialog(

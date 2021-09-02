@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nb_utils/nb_utils.dart' as utils;
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/login.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 
 
 class DTWalkThoughScreen extends StatefulWidget {
@@ -34,14 +36,14 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
     pages = [
       Container(
         alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: context.height() * 0.06),
+        margin: EdgeInsets.only(top: SizeConfig.screenWidth * 0.06),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Image.asset(
               'assets/onBoard1.png',
-              width: context.width(),
-              height: context.height() * 0.75,
+              width: SizeConfig.screenWidth,
+              height: SizeConfig.screenWidth * 0.75,
               fit: BoxFit.fitHeight,
             ),
           ],
@@ -53,14 +55,14 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
       ),*/
       Container(
         alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: context.height() * 0.06),
+        margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Image.asset(
               'assets/onBoard2.png',
-              width: context.width(),
-              height: context.height() * 0.65,
+              width: SizeConfig.screenWidth,
+              height: SizeConfig.screenHeight * 0.65,
               fit: BoxFit.fitHeight,
             ),
           ],
@@ -68,14 +70,14 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
       ),
       Container(
         alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: context.height() * 0.06),
+        margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Image.asset(
               'assets/onBoard3.png',
-              width: context.width(),
-              height: context.height() * 0.6,
+              width: SizeConfig.screenWidth,
+              height: SizeConfig.screenHeight * 0.6,
               fit: BoxFit.fitHeight,
             ),
           ],
@@ -83,12 +85,12 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
       )
       /* Container(
         alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: context.height()*0.04),
+        margin: EdgeInsets.only(top: SizeConfig.screenHeight*0.04),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Image.asset('assets/onboard.gif',width:  context.width(),
-              height: context.height() * 0.95,fit: BoxFit.fitHeight,),
+              height: SizeConfig.screenHeight * 0.95,fit: BoxFit.fitHeight,),
           ],
         ),
       ),*/
@@ -103,31 +105,88 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
 
   @override
   Widget build(BuildContext context) {
-    init();
+   // init();
     SizeConfig().init(context);
     return Scaffold(
       body: Container(
-        child: Stack(
+        child: Column(
           children: [
             Container(
+              height: SizeConfig.screenHeight*0.90,
               child: PageView(
                 controller: _pageController,
-                children: pages,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(top: SizeConfig.screenWidth * 0.06),
+                    child:
+                        Image.asset(
+                          'assets/onBoard1.png',
+                          width: SizeConfig.screenWidth,
+                          height: SizeConfig.screenHeight*0.60 ,
+                          fit: BoxFit.fitHeight,
+                        ),
+
+                  ),
+                  /* GifImage(
+        controller: controller,
+        image: AssetImage("assets/onboard.gif"),
+      ),*/
+                  Container(
+                    alignment: Alignment.topCenter,
+                    margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Image.asset(
+                          'assets/onBoard2.png',
+                          width: SizeConfig.screenWidth,
+                          height: SizeConfig.screenHeight*0.55 ,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topCenter,
+                    margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Image.asset(
+                          'assets/onBoard3.png',
+                          width: SizeConfig.screenWidth,
+                          height: SizeConfig.screenHeight*0.55 ,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
                 onPageChanged: (index) {
                   selectedIndex = index;
                   setState(() {});
                 },
               ),
             ),
-            AnimatedPositioned(
-              duration: Duration(seconds: 1),
-              bottom: SizeConfig.blockSizeVertical * 12,
-              left: 0,
-              right: 0,
-              child: DotIndicator(
-                pageController:  _pageController,
-                  pages: pages,
-                  indicatorColor: Colors.blue),
+
+            // AnimatedPositioned(
+            //   duration: Duration(seconds: 1),
+            //   bottom: SizeConfig.blockSizeVertical * 12,
+            //   left: 0,
+            //   right: 0,
+            //   child: Dotind(
+            //     pageController:  _pageController,
+            //       pages: pages,
+            //       indicatorColor: Colors.blue),
+            // ),
+            DotsIndicator(
+              dotsCount:3,
+              position: currentPage,
+              decorator: DotsDecorator(
+                color: Colors.grey, // Inactive color
+                activeColor: Colors.blue,
+              ),
             ),
             Positioned(
               bottom: 8,
@@ -140,7 +199,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                 child: Center(
                   child: Text('Get Started',
                       style: boldTextStyle(
-                          color: white,
+                          color: Colors.white,
                           size: (SizeConfig.blockSizeVertical * 2.25).toInt())),
                 ),
                 decoration: BoxDecoration(

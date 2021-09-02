@@ -4,6 +4,7 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ClientDetailsNotLogged.dart';
 import 'Schedulescreen.dart';
@@ -12,7 +13,8 @@ import 'Sessions.dart';
 class CounsellorProfile extends StatefulWidget {
   final Map<String, dynamic> getData;
   final String mediaUrl;
-  const CounsellorProfile({Key key, this.getData, this.mediaUrl}) : super(key: key);
+  final String type;
+  const CounsellorProfile({Key key, this.getData, this.mediaUrl,this.type}) : super(key: key);
 
   @override
   _CounsellorProfileState createState() => _CounsellorProfileState();
@@ -91,11 +93,11 @@ void initState(){
               onPressed: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                if( prefs.getString("cleintid")==null){
-                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SignUp(data:widget.getData,mediaurl:widget.mediaUrl)));
+                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SignUp(data:widget.getData,mediaurl:widget.mediaUrl,type:widget.type)));
 
                }else{
 
-                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DynamicEvent(data:widget.getData,mediaurl:widget.mediaUrl)));
+                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DynamicEvent(data:widget.getData,mediaurl:widget.mediaUrl,type:widget.type)));
 
                }
               },
@@ -143,7 +145,7 @@ void initState(){
                         elevation: 0.0,
                         centerTitle: true,
                         backgroundColor: Colors.transparent,
-                        title: Text("Counsellor Profile",
+                        title: Text(widget.type=="1"?"Counsellor":widget.type=="2"?"Listener":"Therapist",
                           style: GoogleFonts.openSans(
                             color: Colors.white,
                           ),),
@@ -192,7 +194,7 @@ void initState(){
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Counsellor",
+                            Text(widget.type=="1"?"Counsellor":widget.type=="2"?"Listener":"Therapist",
                               style: GoogleFonts.openSans(
                                 color: Color(fontColorSteelGrey),
                               ),),

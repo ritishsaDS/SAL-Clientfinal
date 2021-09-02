@@ -1,7 +1,10 @@
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:nb_utils/nb_utils.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:sal_user/UI/Callpage.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
@@ -33,6 +36,36 @@ Widget listTileCafe1(BuildContext context,
               color: Color(fontColorGray),
               fontWeight: FontWeight.w400
             ),),
+          ),
+          GestureDetector(
+            onTap: () async {
+              toast("In Progress");
+              await _handleCameraAndMic(Permission.camera);
+              await _handleCameraAndMic(Permission.microphone);
+              // push video page with given channel name
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CallPage(
+                    channelName: "Channel",
+                    name:"VideoCall",
+                    role: ClientRole.Broadcaster,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: AssetImage('assets/icons/Ellipse 3.png'),
+                      fit: BoxFit.cover
+                  )
+              ),
+              child: Image.asset('assets/icons/video call.png',
+                scale: SizeConfig.blockSizeVertical * 0.5,),
+              padding: EdgeInsets.all(SizeConfig.blockSizeVertical * 1.8),
+            ),
           ),
           Container(
             width: SizeConfig.screenWidth * 0.25,
@@ -67,4 +100,7 @@ Widget listTileCafe1(BuildContext context,
       ),
     ),
   );
+}Future<void> _handleCameraAndMic(Permission permission) async {
+  final status = await permission.request();
+  print(status);
 }

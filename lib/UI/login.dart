@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkedin_login/linkedin_login.dart';
 import 'package:sal_user/UI/Professionalinfo.dart';
 import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/UI/webview.dart';
@@ -13,6 +17,7 @@ import 'package:sal_user/data/repo/sendOtpRepo.dart';
 import 'Otp.dart';
 import 'package:sal_user/Utils/Dialog.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:linkedin_auth/linkedin_auth.dart';
 
 
 TextEditingController mobileController = TextEditingController();
@@ -25,21 +30,30 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  Map userfb = {};
   GlobalKey<FormState> loginForm = GlobalKey<FormState>();
+  final String redirectUrl = 'https://smarttersstudio.com';
+  final String clientId = '78el5r2y1dwp4j';
+  final String clientSecret = 'RnyXiCNz3cahNx1g';
 
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
   var sendOtp = SendOtptoPhoneRepo();
   String countryCode = "";
-
+  static final FacebookLogin facebookSignIn = new FacebookLogin();
   @override
   void initState() {
     super.initState();
     countryCode = "91";
+    // LinkedInLogin.initialize(context,
+    //     clientId: clientId,
+    //     clientSecret: clientSecret,
+    //     redirectUri: redirectUrl);
   }
   GoogleSignInAccount _userObj;
+  Map _userObjfb = {};
   bool isLoggedIn = false;
   var profileData;
-  Map userfb = {};
+ // Map userfb = {};
   //var facebookLogin = FacebookLogin();
 
   GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -290,30 +304,83 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 SizedBox(width: SizeConfig.blockSizeHorizontal * 4,),
-                                Container(
-                                  child: SvgPicture.asset("assets/icons/facebookIcon.svg"),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Color(borderColor),width: 1
-                                      ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(8.0))),
-                                  width: SizeConfig.blockSizeHorizontal * 20,
-                                  height: SizeConfig.blockSizeVertical * 6,
-                                  padding: EdgeInsets.all(8),
+                                GestureDetector(
+                                  onTap: (){
+                                    _login();
+                                  },
+                                  child: Container(
+                                    child: SvgPicture.asset("assets/icons/facebookIcon.svg"),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Color(borderColor),width: 1
+                                        ),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8.0))),
+                                    width: SizeConfig.blockSizeHorizontal * 20,
+                                    height: SizeConfig.blockSizeVertical * 6,
+                                    padding: EdgeInsets.all(8),
+                                  ),
                                 ),
                                 SizedBox(width: SizeConfig.blockSizeHorizontal * 4,),
-                                Container(
-                                  child: SvgPicture.asset("assets/icons/linkedIn.svg"),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Color(borderColor),width: 1
+                                GestureDetector(
+                                  onTap: (){
+                                    // LinkedInLogin.loginForAccessToken(
+                                    //     destroySession: true,
+                                    //     appBar: AppBar(
+                                    //       title: Text('Demo Login Page'),
+                                    //     ))
+                                    //     .then((accessToken) => print(accessToken))
+                                    //     .catchError((error) {
+                                    //   print(error.errorDescription);
+                                    // });
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            LinkedInUserWidget(
+                                              appBar: AppBar(
+                                                title: Text("SAL USer"),
+                                              ),
+                                              redirectUrl: redirectUrl,
+                                              clientId: clientId,
+                                              clientSecret: clientSecret,
+                                              onGetUserProfile: (LinkedInUserModel linkedInUser) async{
+
+                                                Map<String, dynamic> postJson = {
+                                                  "user_id": linkedInUser.userId,
+                                                  "email": linkedInUser.email.elements[0].handleDeep.emailAddress,
+                                                 // "pic_url": profilePic,
+                                                  "name": linkedInUser.firstName.localized.label + ' ' + linkedInUser.lastName.localized.label,
+                                                  "token": linkedInUser.token.accessToken,
+                                                  "expires_in": linkedInUser.token.expiresIn
+                                                };
+                                                setState(() {
+                                                  var result;
+                                                  result = postJson;
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                              catchError: (LinkedInErrorObject error) {
+                                                print('Error description: ${error.description} Error code: ${error.statusCode.toString()}');
+                                              },
+                                            ),
+                                        fullscreenDialog: true,
                                       ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(8.0))),
-                                  width: SizeConfig.blockSizeHorizontal * 20,
-                                  height: SizeConfig.blockSizeVertical * 6,
-                                  padding: EdgeInsets.all(8),
+                                    );
+                                  },
+                                  child: Container(
+                                    child: SvgPicture.asset("assets/icons/linkedIn.svg"),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Color(borderColor),width: 1
+                                        ),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8.0))),
+                                    width: SizeConfig.blockSizeHorizontal * 20,
+                                    height: SizeConfig.blockSizeVertical * 6,
+                                    padding: EdgeInsets.all(8),
+                                  ),
                                 )
                               ],
                             )
@@ -379,51 +446,39 @@ class _LoginScreenState extends State<LoginScreen> {
         print("jejjjnkjnkek");
         print(_userObj.displayName);
         if (_userObj.displayName != null) {
-          // try {
-          //   final response = await http.post(checklogin, body: {
-          //     "email": _userObj.email,
-          //     // "password": "1234",
-          //   });
-          //   print("bjkb" + response.statusCode.toString());
-          //   if (response.statusCode == 200) {
-          //     final responseJson = json.decode(response.body);
-          //
-          //     loginwithserver = responseJson;
-          //     print(loginwithserver);
-          //     Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) => PinField(
-          //                 email: _userObj.email,
-          //                 message: loginwithserver['message'])));
-          //     // showToast("");
-          //     // savedata();
-          //     setState(() {
-          //       isError = false;
-          //       isLoading = false;
-          //       print('setstate');
-          //     });
-          //   } else {
-          //     print("bjkb" + response.statusCode.toString());
-          //     showToast("Mismatch Credentials");
-          //     setState(() {
-          //       isError = true;
-          //       isLoading = false;
-          //     });
-          //   }
-          // } catch (e) {
-          //   print(e);
-          //   setState(() {
-          //     isError = true;
-          //     isLoading = false;
-          //   });
-          // }
-          // signup(_userObj.displayName, _userObj.email,
-          //     "google");
+
         }
       });
     }).catchError((e) {
       print(e);
     });
   }
+
+  Future<Null> _login() async {
+    final FacebookLoginResult result =
+    await facebookSignIn.logIn(['email']);
+
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final FacebookAccessToken accessToken = result.accessToken;
+        print('''
+         Logged in!
+         
+         Token: ${accessToken.token}
+         User id: ${accessToken.userId}
+         Expires: ${accessToken.expires}
+         Permissions: ${accessToken.permissions}
+         Declined permissions: ${accessToken.declinedPermissions}
+         ''');
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        print('Login cancelled by the user.');
+        break;
+      case FacebookLoginStatus.error:
+        print('Something went wrong with the login process.\n'
+            'Here\'s the error Facebook gave us: ${result.errorMessage}');
+        break;
+    }
+  }
+
 }

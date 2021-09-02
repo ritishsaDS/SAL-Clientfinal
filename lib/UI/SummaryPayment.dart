@@ -12,7 +12,11 @@ class SummaryPayment extends StatefulWidget {
   final String mediaUrl;final String sessionNumbers;
   String client_id;String counsellor_id;String appointment_id;
   dynamic billing;var order;
-   SummaryPayment({Key key, this.getData, this.billing,this.order,this.mediaUrl, this.sessionNumbers,this.appointment_id,this.client_id,this.counsellor_id}) : super(key: key);
+  var type;
+  var date;
+  var slot;
+  dynamic bill;
+   SummaryPayment({Key key,this.date,this.slot, this.getData, this.billing,this.order,this.mediaUrl,this.type,this.bill, this.sessionNumbers,this.appointment_id,this.client_id,this.counsellor_id}) : super(key: key);
 
   @override
   _SummaryPaymentState createState() => _SummaryPaymentState();
@@ -104,12 +108,12 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                                     fontWeight: FontWeight.w600,
                                     fontSize: SizeConfig.blockSizeVertical * 2
                                 ),),
-                              Text("Counsellor",
+                              Text(widget.type=="1"?"Counsellor":widget.type=="2"?"Listener":"Therapist",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: SizeConfig.blockSizeVertical * 2
                                 ),),
-                              Text("10th July,2020 at 8 AM",
+                              Text(widget.date.toString().substring(0,10),
                                 style: TextStyle(
                                     color: Colors.white
                                 ),)
@@ -152,7 +156,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                             color: Colors.white,
                             fontWeight: FontWeight.bold
                         ),),
-                        Text("₹ ${widget.getData['price']}",style: TextStyle(
+                        Text("₹ ${widget.bill['billing']==null?widget.sessionNumbers:widget.bill['billing']['paid_amount']}",style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold
                         ),)
@@ -233,7 +237,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                 right: SizeConfig.screenWidth * 0.05
               ),
               child: MaterialButton(onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Razor(payment:widget.billing,order:widget.order)));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Razor(payment:widget.billing,order:widget.order,data:widget.getData,date:widget.date,type:widget.type)));
 
 
                 // showDialog(context: context, builder: (context){
@@ -348,7 +352,7 @@ class _SummaryPaymentState extends State<SummaryPayment> {
                 //   );
 
               },
-                child: Text("CONTINUEss",
+                child: Text("CONTINUE",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600

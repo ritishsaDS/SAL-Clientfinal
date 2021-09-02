@@ -9,14 +9,22 @@ import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:sal_user/data/repo/CreatetherapistProfileRepo.dart';
 import 'package:sal_user/data/repo/verifyOtpRepo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Connect.dart';
 import 'Professionalinfo.dart';
 
 class OTPScreen extends StatefulWidget {
   String phonenumber;
   String screen;
-  OTPScreen({this.phonenumber,this.screen});
+  dynamic data;
+  dynamic mediaurl;
+  String type;
+  var dob;var gender;
+  OTPScreen(
+      {this.phonenumber, this.screen, this.type, this.data,this.gender,this.dob, this.mediaurl});
   @override
   _OTPScreenState createState() => _OTPScreenState();
 }
@@ -25,7 +33,8 @@ class _OTPScreenState extends State<OTPScreen> {
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
   var digit;
   var verifyOtp = VerifyOtpRepo();
- // var sendOtp = send.SendOtptoPhone();
+  var createUser = CreateTherapistProfileRepo();
+  // var sendOtp = send.SendOtptoPhone();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -74,15 +83,13 @@ class _OTPScreenState extends State<OTPScreen> {
                   print("Changed: " + pin);
                 },
                 onCompleted: (pin) {
-                  digit=pin;
+                  digit = pin;
                   print(digit);
                   print("Completed: " + pin);
 
-                 setState(() {
-                   selected=true;
-                 });
-
-
+                  setState(() {
+                    selected = true;
+                  });
                 },
               ),
               SizedBox(
@@ -100,68 +107,123 @@ class _OTPScreenState extends State<OTPScreen> {
           ),
         ),
       ),
-      floatingActionButton:FloatingActionButton(
-          child: Icon(Icons.arrow_forward_ios,color: Colors.white,),
-          backgroundColor: selected == true? Colors.blue : Colors.grey,
+      floatingActionButton: FloatingActionButton(
+          child: Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.white,
+          ),
+          backgroundColor: selected == true ? Colors.blue : Colors.grey,
           onPressed: () {
-            if (digit.isNotEmpty
-            ) {
+            if (digit.isNotEmpty) {
               Dialogs.showLoadingDialog(context, loginLoader);
               verifyOtp
-                  .verifyOtp(
-
-                  phone: "91"+widget.phonenumber,
-                  otp: digit
-
-              ).then((value) async {
-
+                  .verifyOtp(phone: "91"+widget.phonenumber, otp: digit)
+                  .then((value) async {
                 if (value != null) {
+                  print(value.meta.status);
                   if (value.meta.status == "200") {
                     Navigator.of(loginLoader.currentContext,
-                        rootNavigator: true)
+                            rootNavigator: true)
                         .pop();
 
-                    toast(value.meta.message);
-                    if(widget.screen=="Home"){setState(() {
-                      Navigator.push(
+                    // toast(value.meta.message);
+                    print(value.meta.message);
+                    if (widget.screen == "Home") {
+                      setState(() {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfessionalInfo1()));
+                      });
+                    } else {
+                      Dialogs.showLoadingDialog(context, loginLoader);
+                      /* Future.delayed(Duration(seconds: 2)).then((value) {
+                  SharedPreferencesTest().checkIsLogin("0");
+                  Navigator.of(context).pushNamed('/Price5');
+                });*/
+                      // print(mobileController.text);
+                      createUser
+                          .createCounsellor(
+                              age: widget.dob,
+                              gender: widget.gender,
+                              context: context,
+                              timezone: "4:50",
+                              device_id: "frst5533",
+                              location: "45.333",
+                              email: email.text,
+                              experience: experience.text,
+                              first_name: firstNameController.text,
+                              last_name: lastNameController.text,
+                              phone: "91"+phone.text)
+                          .then((value) async {
+                        if (value != null) {
+                          print(value.meta.status);
+                          print(createUser.createCounsellor());
+                          if (value.meta.status == "200") {
+                            Navigator.of(loginLoader.currentContext,
+                                    rootNavigator: true)
+                                .pop();
+                            print(value.meta.message);
+                            print(value.meta.status);
+                            print(value.clientId);
+
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+
+                            prefs.setString("cleintid", value.clientId);
+                            prefs.setString("email", email.text);
+                            prefs.setString("phone",  "91"+phone.text);
+                            prefs.setString("name",  firstNameController.text);
+
+                            ;
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Connect()));
+                          } else {
+                            Navigator.of(loginLoader.currentContext,
+                                    rootNavigator: true)
+                                .pop();
+                            showAlertDialog(
+                              context,
+                              value.meta.message,
+                              "",
+                            );
+                          }
+                        }
+                      }).catchError((error) {
+                        Navigator.of(loginLoader.currentContext,
+                                rootNavigator: true)
+                            .pop();
+                        showAlertDialog(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => ProfessionalInfo1()));
-                    });}
-                    else{
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SignUp()));
+                          error.toString(),
+                          "",
+                        );
+                      });
                     }
 
-                    if(value.therapist!=null){
-                     // SharedPreferences prefs=await SharedPreferences.getInstance();
-                     //  prefs.setString("therapistid",value.therapist.therapistId );
-                     //  prefs.remove("firstname");
-                     //  prefFs.remove("lastname");
-                     //  prefs.setString("firstname",value.therapist.firstName );
-                     //  prefs.setString("lastname",value.therapist.lastName );
-                     //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));
+                    if (value.therapist != null) {
+                      // SharedPreferences prefs=await SharedPreferences.getInstance();
+                      //  prefs.setString("therapistid",value.therapist.therapistId );
+                      //  prefs.remove("firstname");
+                      //  prefFs.remove("lastname");
+                      //  prefs.setString("firstname",value.therapist.firstName );
+                      //  prefs.setString("lastname",value.therapist.lastName );
+                      //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));
 
-                    }
-                    else{
-
+                    } else {
                       // // Navigator.push(context, MaterialPageRoute(builder: (conext){
                       // //   return Price1(getOtp:  firstController.text
                       // //   );
                       // }));
 
                     }
-
-
-
-
                   } else {
                     // firstController.clear();
                     //
                     Navigator.of(loginLoader.currentContext,
-                        rootNavigator: true)
+                            rootNavigator: true)
                         .pop();
                     showAlertDialog(
                       context,
@@ -170,8 +232,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     );
                   }
                 } else {
-                  Navigator.of(loginLoader.currentContext,
-                      rootNavigator: true)
+                  Navigator.of(loginLoader.currentContext, rootNavigator: true)
                       .pop();
                   showAlertDialog(
                     context,
@@ -180,8 +241,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   );
                 }
               }).catchError((error) {
-                Navigator.of(loginLoader.currentContext,
-                    rootNavigator: true)
+                Navigator.of(loginLoader.currentContext, rootNavigator: true)
                     .pop();
                 showAlertDialog(
                   context,
@@ -189,11 +249,10 @@ class _OTPScreenState extends State<OTPScreen> {
                   "",
                 );
               });
-            }else{
-              toast("Otp is required");
+            } else {
+              //  toast("Otp is required");
             }
-          }
-      ),
+          }),
     );
   }
 }

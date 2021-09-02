@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/base/BaseRepository.dart';
 import 'package:sal_user/models/bookedappointment.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UpcomingAppointmentRepo extends BaseRepository {
   Future<Appointmentbook> upcomingAppointmentRepo(
@@ -11,7 +12,7 @@ class UpcomingAppointmentRepo extends BaseRepository {
       ) async {
     SharedPreferences prefs= await SharedPreferences.getInstance();
    print( prefs.getString("cleintid"));
-    final uri = 'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/upcoming?client_id=g29bg6fntbmqa';
+    final uri = 'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/upcoming?client_id=${prefs.getString("cleintid")}';
     var response = await Dio().get(uri,
         options: Options(
           headers: {

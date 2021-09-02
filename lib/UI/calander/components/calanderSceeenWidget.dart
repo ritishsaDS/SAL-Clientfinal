@@ -3,7 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/data/repo/Calendarrepo.dart';
+import 'package:sal_user/models/Calendarmodel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipedetector/swipedetector.dart';
 
 import 'custom_calendar.dart';
@@ -21,17 +25,18 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
   List<Calendar> _sequentialDates;
   var next;
   var start;
+  var apidate;
   int midYear;
   CalendarViews _currentView = CalendarViews.dates;
   final List<String> _weekDays = [
     //MON
-    'T2',
-    'T3',
-    'T4',
-    'T5',
-    'T6',
-    'T7',
-    'CN',
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
   ];
   final List<String> _monthNames = [
     'January',
@@ -55,23 +60,87 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
   var listOfDates;
   var value;
   dynamic notes = new List();
-
+  var upcomintAppointments = Calendarrepo();
+  bool  isloading = true;
+  List<Calendarmodel> calendarmodel = new List();
   @override
   void initState() {
-    super.initState();
-    getdot();
-    //getnotescountbymonth();
-    getnextdate();
-   // getNotesdate();
-    //getnotescount(
-        //_selectedDateTime == null ? DateTime.now() : _selectedDateTime);
     final date = DateTime.now();
     _currentDateTime = DateTime(date.year, date.month);
     _selectedDateTime = DateTime(date.year, date.month, date.day);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() => _getCalendar());
     });
+    super.initState();
+    isloading = true;
+    upcomintAppointments
+        .upcomingAppointmentRepo(
+      context,
+    )
+        .then((value) {
+      print("value");
+      print(value);
+      if (value != null) {
+        if (value.meta.status == "200") {
+          setState(() {
+            isloading = false;
+          });
+          print("jnjnjonaeno");
+
+          DateTime.parse(value.moodResults.elementAt(0).date.toString()).isAtSameMomentAs(DateTime.now());
+          print( DateTime.parse(value.moodResults.elementAt(0).date.toString()).isAtSameMomentAs(DateTime.parse(date.day.toString())));
+         // print(_sequentialDates.where((element) => element.date.weekday==DateTime.parse(value.moodResults.elementAt(0).date.toString())));
+         // _sequentialDates.toString().contains(value.moodResults.elementAt(0).date.toString());
+         // print( _sequentialDates.toString().substring(0,10).contains(value.moodResults.elementAt(0).date.toString()));
+        //  appointments.addAll(value.appointments);
+          print("appointments.length");
+         /// print(appointments.length);
+
+          //toast(value.meta.message);
+          /*  SharedPreferencesTest().checkIsLogin("0");
+                                          SharedPreferencesTest()
+                                              .saveToken("set", value: value.token);*/
+
+          /*  Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (conext) {
+                    return OTPScreen(
+                      phoneNumber: mobileController.text,
+                    );
+                  }));*/
+        } else {
+          showAlertDialog(
+            context,
+            value.meta.message,
+            "",
+          );
+        }
+      } else {
+        showAlertDialog(
+          context,
+          "No data found",
+          "",
+        );
+      }
+    }).catchError((error) {
+      showAlertDialog(
+        context,
+        error.toString(),
+        "",
+      );
+    });
   }
+
+  // void initState() {
+  //   super.initState();
+  //   getdot();
+  //   //getnotescountbymonth();
+  //   getnextdate();
+  //  // getNotesdate();
+  //   //getnotescount(
+  //       //_selectedDateTime == null ? DateTime.now() : _selectedDateTime);
+  //
+  // }
 
   // String (DateTime solar) {
   //   List<int> lunar = CalendarConverter.solarToLunar(
@@ -201,10 +270,12 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
             height: 10,
           ),
           Container(
-            height: getProportionateScreenHeight(400),
+            margin: EdgeInsets.symmetric(horizontal: 10),
+           height: getProportionateScreenHeight(390),
            // padding: EdgeInsets.only(left:16,right: 16),
             child: _calendarBody(),
           ),
+
         ],
       ),
     );
@@ -253,13 +324,16 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
       },
       child: GridView.builder(
 
-        shrinkWrap: true,
+       // shrinkWrap: true,
         padding: EdgeInsets.zero,
+
         itemCount: _sequentialDates.length + 7,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          mainAxisSpacing: 30,
+          mainAxisSpacing: 5,
+
           crossAxisCount: 7,
-          crossAxisSpacing: 20,
+          crossAxisSpacing: 14,
+          childAspectRatio: 7/9
         ),
         itemBuilder: (context, index) {
           if (index < 7) return _weekDayTitle(index);
@@ -297,10 +371,15 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
 
   // calendar header
   Widget _weekDayTitle(int index) {
-    return Text(
-      _weekDays[index],
-      style: TextStyle(
-          color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+    return Container(
+      margin: EdgeInsets.only(top:20),
+      child: Center(
+        child: Text(
+          _weekDays[index],
+          style: TextStyle(
+              color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 
@@ -315,19 +394,12 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
               _getPrevMonth();
             }
             setState(() => _selectedDateTime = calendarDate.date);
-            SharedPreferences preferences =
-                await SharedPreferences.getInstance();
-            setState(() async {
-              preferences.setString(
-                  "selecteddate", _selectedDateTime.toString());
-              print(preferences.getString("selecteddate"));
-             // getnotescount(_selectedDateTime);
-              isLoading = true;
-            });
-            //print(DateTime.parse(next));
+
+            print(_selectedDateTime);
           }
         },
         child:  Container(
+
           margin: EdgeInsets.only(left: 7,right: 7),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -339,9 +411,9 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
                       opacity: 1.0,
                       child: Container(
 
-                        height: 25,
-
+                       height: 25,
                         width: 60,
+
                         decoration: BoxDecoration(
 
                           image: DecorationImage(
@@ -350,7 +422,7 @@ scale: 2,
                               "assets/icons/Rectangle 412.png",
                             ),
 
-                            fit: BoxFit.fitWidth,
+                            fit: BoxFit.fill,
 
                           ),
                         ),
@@ -467,7 +539,7 @@ scale: 2,
         InkWell(
           onTap: () => setState(() => _currentView = CalendarViews.year),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding:  EdgeInsets.all(10.0),
             child: Text(
               '${_currentDateTime.year}',
               style: TextStyle(

@@ -11,8 +11,15 @@ import 'package:sal_user/UI/Myprofile.dart';
 import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/UI/Settings.dart';
 import 'package:sal_user/UI/SummaryPayment.dart';
+import 'package:sal_user/UI/calander/calander_screen.dart';
+import 'package:sal_user/UI/calander/components/custom_calendar.dart';
+import 'package:sal_user/UI/mood.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/data/repo/upcomingappointmentrepo.dart';
+import 'package:sal_user/models/bookedappointment.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu({Key key}) : super(key: key);
@@ -22,6 +29,72 @@ class DrawerMenu extends StatefulWidget {
 }
 
 class _DrawerMenuState extends State<DrawerMenu> {
+  var upcomintAppointments = UpcomingAppointmentRepo();
+  bool  isloading = true;
+  List<Appointment> appointments = new List();
+  var name="";
+  void initState() {
+    super.initState();
+    getname();
+    isloading = true;
+    upcomintAppointments
+        .upcomingAppointmentRepo(
+      context,
+    )
+        .then((value) {
+      print("value");
+      print(value);
+      if (value != null) {
+        if (value.meta.status == "200") {
+          setState(() {
+            isloading = false;
+          });
+          print("jnjnjonaeno");
+          appointments.addAll(value.appointments);
+          print("appointments.length");
+          print(appointments.length);
+
+          //toast(value.meta.message);
+          /*  SharedPreferencesTest().checkIsLogin("0");
+                                          SharedPreferencesTest()
+                                              .saveToken("set", value: value.token);*/
+
+          /*  Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (conext) {
+                    return OTPScreen(
+                      phoneNumber: mobileController.text,
+                    );
+                  }));*/
+        } else {
+          showAlertDialog(
+            context,
+            value.meta.message,
+            "",
+          );
+        }
+      } else {
+        showAlertDialog(
+          context,
+          "No data found",
+          "",
+        );
+      }
+    }).catchError((error) {
+      showAlertDialog(
+        context,
+        error.toString(),
+        "",
+      );
+    });
+  }
+  Future<void> getname() async {
+    SharedPreferences prefs=await SharedPreferences.getInstance();
+    print(prefs.getString("name"));
+    setState(() {
+      name=prefs.getString("name");
+    });
+  }
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -45,16 +118,17 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     ),
                     child: CircleAvatar(
                       radius: SizeConfig.blockSizeVertical * 5,
-                      backgroundImage: AssetImage('assets/bg/profile.png'),
+                      backgroundImage: Image.network(  'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png').image,
                     ),
-                  ),
+                    ),
+
                   Container(
                     width: SizeConfig.screenWidth,
                     alignment: Alignment.center,
                     margin:
                         EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
                     child: Text(
-                      "Suman",
+                      name==null?"":name,
                       style: GoogleFonts.openSans(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -110,6 +184,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("My Sessions"),
               leading:
                   ImageIcon(Image.asset('assets/icons/availability.png').image),
+              trailing: Container(child: CircleAvatar(radius:15,child: Text(appointments.length.toString()),),),
             ),
             ListTile(
               title: Text("Bookings"),
@@ -139,10 +214,10 @@ class _DrawerMenuState extends State<DrawerMenu> {
                   ImageIcon(Image.asset('assets/icons/assessments.png').image),
             ),
             ListTile(
-              title: Text("Payments"),
+              title: Text("My Moods"),
               leading: ImageIcon(Image.asset('assets/icons/payment.png').image),
               onTap: () {
-               Navigator.push(context, MaterialPageRoute(builder: (context)=>SummaryPayment()));
+               Navigator.push(context, MaterialPageRoute(builder: (context)=>Mood()));
               },
             ),
             ListTile(

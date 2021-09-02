@@ -8,15 +8,26 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/Dialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/CreatetherapistProfileRepo.dart';
+import 'package:sal_user/data/repo/sendOtpRepo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Myprofile.dart';
+import 'Otp.dart';
 import 'Schedulescreen.dart';
 import 'login.dart';
-
+TextEditingController firstNameController = TextEditingController();
+TextEditingController lastNameController = TextEditingController();
+TextEditingController phone = TextEditingController();
+TextEditingController price2 = TextEditingController();
+TextEditingController about = TextEditingController();
+TextEditingController experience = TextEditingController();
+TextEditingController email = TextEditingController();
+DateTime selectedDob= DateTime.now();
 class SignUp extends StatefulWidget{
   dynamic data;
   dynamic mediaurl;
-  SignUp({this.data,this.mediaurl});
+  dynamic type;
+  SignUp({this.data,this.mediaurl,this.type});
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -25,13 +36,23 @@ class _SignUpState extends State<SignUp> {
   GlobalKey<FormState> nameForm = GlobalKey<FormState>();
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
 
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
-  TextEditingController phone = TextEditingController();
-  TextEditingController price2 = TextEditingController();
-  TextEditingController about = TextEditingController();
-  TextEditingController experience = TextEditingController();
-  TextEditingController email = TextEditingController();
+  String date = DateTime.now().toString();
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDob,
+      firstDate: DateTime(1980, 1),
+      lastDate: DateTime(2101),
+      currentDate: selectedDob,
+    );
+
+    if (picked != null && picked != selectedDob) {
+      setState(() {
+        selectedDob = picked;
+      });
+    }
+  }
+
   FocusNode firstNameFocusNode;
   FocusNode lastNameFocusNode;
   var createUser = CreateTherapistProfileRepo();
@@ -39,7 +60,7 @@ class _SignUpState extends State<SignUp> {
   bool filledFn = false;
   bool filledLn = false;
   String radioValue = "";
-
+  var sendOtp = SendOtptoPhoneRepo();
   @override void initState() {
     // TODO: implement initState
     // print(widget.gender);
@@ -268,69 +289,38 @@ class _SignUpState extends State<SignUp> {
                     ),
 
                     SizedBox(height: 10,),
+                    Text("DOB"),
+                    SizedBox(height: 5,),
                     Container(
                       width:MediaQuery.of(context).size.width,
-                      child: TextFormField(
-                        controller: about,
-                        // focusNode: firstNameFocusNode,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.name,
-                        // maxLines: 5,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
+                      child: InkWell(
+                        onTap: () {
+                          selectDate(context);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                         // alignment: Alignment.center,
+                          width: SizeConfig.screenWidth * 0.3,
+                          child: Text(
+                            "${selectedDob.day}" +
+                                "/" +
+                                "${selectedDob.month}" +
+                                "/" +
+                                "${selectedDob.year}"
+                                    .split(' ')[0]
+                                    .replaceAll("-", "/"),
+                            style: TextStyle(
+                                fontSize:
+                                SizeConfig.blockSizeVertical *
+                                    2),
                           ),
-                          disabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          hintText: "Date Of Birth",
-                          isDense: true,
-                          contentPadding: EdgeInsets.all(SizeConfig.blockSizeVertical * 1.5),
+                          height: SizeConfig.blockSizeVertical * 4,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey[800],
+                              ),
+                              borderRadius: BorderRadius.circular(5)),
                         ),
-                        onFieldSubmitted: (term){
-                          firstNameFocusNode.unfocus();
-                          FocusScope.of(context).requestFocus(lastNameFocusNode);
-                          filledFn = true;
-                        },
-                        onChanged: (v){
-                          setState(() {
-                            filledFn = true;
-                          });
-                        },
-                        validator: (c){
-                          if(c.isEmpty)
-                            return "Please fill required fields";
-                        },
                       ),
                     ),
                     SizedBox(height: 10,),
@@ -340,7 +330,7 @@ class _SignUpState extends State<SignUp> {
                         controller: experience,
                         // focusNode: firstNameFocusNode,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.number,
 
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -472,7 +462,8 @@ class _SignUpState extends State<SignUp> {
                         controller: phone,
                         // focusNode: firstNameFocusNode,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.number,
+                        maxLength: 12,
 
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -542,7 +533,8 @@ class _SignUpState extends State<SignUp> {
             ),
             Container(child:MaterialButton(
               onPressed: () {
-                print(email.text);
+                print(radioValue.toString());
+                print(selectedDob.toString().substring(0,10));
                 Dialogs.showLoadingDialog(context, loginLoader);
                 /* Future.delayed(Duration(seconds: 2)).then((value) {
                   SharedPreferencesTest().checkIsLogin("0");
@@ -551,8 +543,9 @@ class _SignUpState extends State<SignUp> {
                // print(mobileController.text);
                 createUser
                     .createCounsellor(
-                  age: "20",context: context,timezone: "4:50",device_id: "frst5533",location: "45.333",email: email.text
-              ,experience: experience.text,first_name: firstNameController.text,last_name: lastNameController.text,phone: phone.text  )
+
+                  age:selectedDob.toString().substring(0,10),context: context,timezone: "4:50",device_id: "frst5533",gender: radioValue.toString(),location: "45.333",email: email.text
+              ,experience: experience.text,first_name: firstNameController.text,last_name: lastNameController.text,phone:"91"+ phone.text  )
                     .then((value) async {
                   if (value != null) {
                     print(value.meta.status);
@@ -567,8 +560,11 @@ class _SignUpState extends State<SignUp> {
                       print(value.clientId);
                     
                       SharedPreferences prefs= await SharedPreferences.getInstance();
-                      
+
                       prefs.setString("cleintid", value.clientId);
+                      prefs.setString("email", email.text);
+                      prefs.setString("phone",  "91"+phone.text);
+                      prefs.setString("name",  firstNameController.text);
                       
                       ;                    Navigator.push(
                           context,
@@ -587,7 +583,58 @@ class _SignUpState extends State<SignUp> {
                       );
                       if(value.meta.message=="Verify phone number wth OTP"){
                         print("knrjorn");
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen(screen:"Signup")));
+
+
+                          Dialogs.showLoadingDialog(
+                              context, loginLoader);
+                          sendOtp
+                              .sendOtp(
+                            context: context,
+                            phone:"91"+  phone.text,
+                          )
+                              .then((value) {
+                            if (value != null) {
+                              if (value.meta.status == "200") {
+                                Navigator.of(loginLoader.currentContext,
+                                    rootNavigator: true)
+                                    .pop();
+                                Navigator.push(context,
+                                    MaterialPageRoute(
+                                        builder: (conext) {
+                                          return OTPScreen(phonenumber:phone.text,screen:"Signup",data:widget.data,mediaurl:widget.mediaurl,type:widget.type,gender:radioValue.toString(),dob:selectedDob.toString().substring(0,10));
+                                        }));
+                              } else {
+                                Navigator.of(loginLoader.currentContext,
+                                    rootNavigator: true)
+                                    .pop();
+                                showAlertDialog(
+                                  context,
+                                  value.meta.message,
+                                  "",
+                                );
+                              }
+                            } else {
+                              Navigator.of(loginLoader.currentContext,
+                                  rootNavigator: true)
+                                  .pop();
+                              showAlertDialog(
+                                context,
+                                value.meta.message,
+                                "",
+                              );
+                            }
+                          }).catchError((error) {
+                            Navigator.of(loginLoader.currentContext,
+                                rootNavigator: true)
+                                .pop();
+                            showAlertDialog(
+                              context,
+                              error.toString(),
+                              "",
+                            );
+                          });
+
+                       // Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen(screen:"Signup")));
                       }
                       else{
                         print(value.meta.message);

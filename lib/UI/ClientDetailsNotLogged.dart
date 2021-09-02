@@ -10,6 +10,7 @@ import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/validator.dart';
 import 'package:sal_user/data/repo/CreatetherapistProfileRepo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ClientDetails extends StatefulWidget {
   final Map<String, dynamic> getData;
@@ -165,8 +166,9 @@ class _ClientDetailsState extends State<ClientDetails> {
                                     SizeConfig.blockSizeVertical * 1.75),
                           ),
                           validator: (s) {
-                            if (s.trim().isEmpty)
-                              return utils.errorThisFieldRequired;
+                            if (s.trim().isEmpty) {
+                              return ;
+                            }
                             return null;
                           },
                         ),
@@ -233,7 +235,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                           ),
                           validator: (s) {
                             if (s.trim().isEmpty)
-                              return utils.errorThisFieldRequired;
+                              return "";
                             if (!validateEmail(email.text))
                               return "Invalid Email";
                             return null;
@@ -302,7 +304,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                           ),
                           validator: (s) {
                             if (s.trim().isEmpty)
-                              return utils.errorThisFieldRequired;
+                              return  "";
                             /*   if (!validateEmail(emailController.text))
                               return invalid_email;*/
                             return null;
@@ -463,7 +465,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                               },
                               validator: (s) {
                                 if (s.trim().isEmpty)
-                                  return utils.errorThisFieldRequired;
+                                  return "";
                                 /*   if (!validateEmail(emailController.text))
                               return invalid_email;*/
                                 return null;
@@ -580,7 +582,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 });
 
                               } else {
-                                utils.toast("Please fill required fields");
+                                toast("Please fill required fields");
                               }
                             }
                           },

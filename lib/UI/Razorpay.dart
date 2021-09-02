@@ -4,13 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sal_user/data/repo/Eventpaymentrepo.dart';
 import 'package:sal_user/data/repo/paymentrepo.dart';
 
 
 class Razor extends StatefulWidget {
   dynamic order;
   dynamic payment;
-  Razor({this.order,this.payment});
+  dynamic data;
+  var date;
+  dynamic type;
+  var screen;
+  Razor({this.order,this.payment,this.data,this.date,this.type,this.screen});
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -77,7 +82,10 @@ class _MyAppState extends State<Razor> {
         msg: "SUCCESS: " + response.paymentId, toastLength: Toast.LENGTH_SHORT);
     print("jjasdvjdvji"+widget.order);
     print("jjasdvjdvji"+response.paymentId);
-    Succespaymentrepo.diomwthod(context,widget.order,response.paymentId);
+    if(widget.screen=="Event"){
+      Eventpaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen);
+    }
+    Succespaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen);
   //  successapi();
   }
 
