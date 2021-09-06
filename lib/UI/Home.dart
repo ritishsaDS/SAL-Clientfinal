@@ -148,7 +148,9 @@ getHomedata();
                         borderRadius:
                             BorderRadius.only(topRight: Radius.circular(65)),
                         color: Colors.white),
-                    child: Column(
+                    child:isLoading?Center(
+                       child: CircularProgressIndicator(color: Colors.blue,),
+                    ): Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

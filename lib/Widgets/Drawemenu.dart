@@ -33,6 +33,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
   bool  isloading = true;
   List<Appointment> appointments = new List();
   var name="";
+  var photo;
   void initState() {
     super.initState();
     getname();
@@ -90,9 +91,11 @@ class _DrawerMenuState extends State<DrawerMenu> {
   }
   Future<void> getname() async {
     SharedPreferences prefs=await SharedPreferences.getInstance();
+    
     print(prefs.getString("name"));
     setState(() {
       name=prefs.getString("name");
+      photo=  prefs.getString("photo");
     });
   }
   @override
@@ -118,7 +121,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     ),
                     child: CircleAvatar(
                       radius: SizeConfig.blockSizeVertical * 5,
-                      backgroundImage: Image.network(  'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png').image,
+                      backgroundImage:photo!=null?Image.network(photo).image: Image.network(  'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png').image,
                     ),
                     ),
 

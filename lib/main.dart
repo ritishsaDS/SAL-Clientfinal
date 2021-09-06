@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:sal_user/UI/OnBoardScreens.dart';
 
 import 'UI/MySessions.dart';
@@ -8,7 +9,8 @@ import 'UI/login.dart';
 import 'UI/mood.dart';
 
 void main() {
-   initializeDateFormatting().then((_) => runApp(MentalHealth()));
+
+   runApp(MentalHealth());
 }
 
 class MentalHealth extends StatelessWidget {

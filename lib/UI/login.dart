@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkedin_login/linkedin_login.dart';
@@ -39,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
   var sendOtp = SendOtptoPhoneRepo();
   String countryCode = "";
-  static final FacebookLogin facebookSignIn = new FacebookLogin();
+ // static  FacebookAuth facebookAuth ;
   @override
   void initState() {
     super.initState();
@@ -306,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 SizedBox(width: SizeConfig.blockSizeHorizontal * 4,),
                                 GestureDetector(
                                   onTap: (){
-                                    _login();
+                                  //  _login();
                                   },
                                   child: Container(
                                     child: SvgPicture.asset("assets/icons/facebookIcon.svg"),
@@ -454,31 +453,41 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  Future<Null> _login() async {
-    final FacebookLoginResult result =
-    await facebookSignIn.logIn(['email']);
-
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        final FacebookAccessToken accessToken = result.accessToken;
-        print('''
-         Logged in!
-         
-         Token: ${accessToken.token}
-         User id: ${accessToken.userId}
-         Expires: ${accessToken.expires}
-         Permissions: ${accessToken.permissions}
-         Declined permissions: ${accessToken.declinedPermissions}
-         ''');
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        print('Login cancelled by the user.');
-        break;
-      case FacebookLoginStatus.error:
-        print('Something went wrong with the login process.\n'
-            'Here\'s the error Facebook gave us: ${result.errorMessage}');
-        break;
-    }
-  }
+  // Future<UserCredential> signInWithFacebook() async {
+  //   // Trigger the sign-in flow
+  //   final LoginResult loginResult = await FacebookAuth.instance.login();
+  //
+  //   // Create a credential from the access token
+  //   final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken.token);
+  //
+  //   // Once signed in, return the UserCredential
+  //   return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+  // }
+  // Future<Null> _login() async {
+  //   final Face result =
+  //   await facebookSignIn.logIn(['email']);
+  //
+  //   switch (result.status) {
+  //     case FacebookLoginStatus.loggedIn:
+  //       final FacebookAccessToken accessToken = result.accessToken;
+  //       print('''
+  //        Logged in!
+  //
+  //        Token: ${accessToken.token}
+  //        User id: ${accessToken.userId}
+  //        Expires: ${accessToken.expires}
+  //        Permissions: ${accessToken.permissions}
+  //        Declined permissions: ${accessToken.declinedPermissions}
+  //        ''');
+  //       break;
+  //     case FacebookLoginStatus.cancelledByUser:
+  //       print('Login cancelled by the user.');
+  //       break;
+  //     case FacebookLoginStatus.error:
+  //       print('Something went wrong with the login process.\n'
+  //           'Here\'s the error Facebook gave us: ${result.errorMessage}');
+  //       break;
+  //   }
+  // }
 
 }

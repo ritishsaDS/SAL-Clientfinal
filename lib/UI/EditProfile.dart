@@ -1,17 +1,23 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/Utils/ActionSheet.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/Dialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/data/repo/Uploadimage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Myprofile.dart';
+import 'Professionalinfo.dart';
 
 class Editprofile extends StatefulWidget{
   var firstname;
@@ -19,15 +25,18 @@ class Editprofile extends StatefulWidget{
   var gender;
   var phone;
   var email;
-  Editprofile({this.lastname,this.gender,this.email,this.firstname,this.phone,});
+  var photo;
+  Editprofile({this.lastname,this.gender,this.email,this.firstname,this.phone,this.photo});
   @override
   _EditprofileState createState() => _EditprofileState();
 }
 
 class _EditprofileState extends State<Editprofile> {
+  var imagefromserver;
 
   bool   isError = false;
-
+  var uploadImage = UploadImagesRepo();
+  String profileimage;
   bool isloding = false;
   GlobalKey<FormState> nameForm = GlobalKey<FormState>();
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
@@ -99,22 +108,170 @@ radioValue=widget.gender;
           height: MediaQuery.of(context).size.height * 1.05,
           child: Column(children: [
             Container(
-              width: SizeConfig.screenWidth,
-              alignment: Alignment.center,
-              child: Container(
-                margin: EdgeInsets.only(
-                    top: SizeConfig.screenHeight * 0.05),
-                width: SizeConfig.screenWidth * 0.25,
-                height: SizeConfig.screenHeight * 0.12,
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: ClipRRect(
-                  child: Image.network(
-                      'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png'),
-                  borderRadius: BorderRadius.circular(60),
-                ),
+              margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 4.5),
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.topCenter,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.blue,
+                      radius: SizeConfig.blockSizeVertical * 7.5,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: SizeConfig.blockSizeVertical * 7.45,
+                        child: Container(
+                          height: 90,
+                          width: 90,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: image != null
+                                    ? FileImage(File(image.path))
+                                    :widget.photo==null? NetworkImage("https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png"):NetworkImage(widget.photo),
+                                fit: BoxFit.fill),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: SizeConfig.blockSizeHorizontal * 55,
+                        top: SizeConfig.blockSizeVertical * 10),
+                    child: InkWell(
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                        showCupertinoModalPopup(
+                            context: context,
+                            builder: (BuildContext context) => ActionSheet()
+                                .actionSheet(context, onCamera: () {
+
+                              FocusScope.of(context).unfocus();
+                              chooseCameraFile().then((File file) {
+                                if (file != null) {
+                                  Dialogs.showLoadingDialog(context, loginLoader);
+                                  uploadImage
+                                      .uploadImage(
+                                      context, image: image
+                                  )
+                                      .then((value) {
+                                        print(value);
+                                    if (value != null) {
+                                      if (value.meta.status == "200") {
+                                        setState(() {
+                                          profileimage = value.file.toString();
+                                          print("jnsdamkod"+ value.file.toString());
+                                        });
+                                        Navigator.of(loginLoader.currentContext,
+                                            rootNavigator: true)
+                                            .pop();
+                                      } else {
+                                        Navigator.of(loginLoader.currentContext,
+                                            rootNavigator: true)
+                                            .pop();
+                                        showAlertDialog(
+                                          context,
+                                          value.meta.message,
+                                          "",
+                                        );
+                                      }
+                                    } else {
+                                      Navigator.of(loginLoader.currentContext,
+                                          rootNavigator: true)
+                                          .pop();
+                                      showAlertDialog(
+                                        context,
+                                        value.meta.message,
+                                        "",
+                                      );
+                                    }
+                                  }).catchError((error) {
+                                    Navigator.of(loginLoader.currentContext,
+                                        rootNavigator: true)
+                                        .pop();
+                                    showAlertDialog(
+                                      context,
+                                      error.toString(),
+                                      "",
+                                    );
+                                  });
+                                }
+                              }).catchError((onError) {});
+                            }, onGallery: () {
+
+                              FocusScope.of(context).unfocus();
+                              androidchooseImageFile().then((value) {
+                                if (value != null) {
+                                  Dialogs.showLoadingDialog(context, loginLoader);
+                                  uploadImage
+                                      .uploadImage(
+                                      context, image: image
+                                  )
+                                      .then((value) {
+                                    if (value != null) {
+                                      if (value.meta.status == "200") {
+                                        setState(() {
+                                          profileimage = value.file.toString();
+                                        });
+                                        Navigator.of(loginLoader.currentContext,
+                                            rootNavigator: true)
+                                            .pop();
+                                      } else {
+                                        Navigator.of(loginLoader.currentContext,
+                                            rootNavigator: true)
+                                            .pop();
+                                        showAlertDialog(
+                                          context,
+                                          value.meta.message,
+                                          "",
+                                        );
+                                      }
+                                    } else {
+                                      Navigator.of(loginLoader.currentContext,
+                                          rootNavigator: true)
+                                          .pop();
+                                      showAlertDialog(
+                                        context,
+                                        value.meta.message,
+                                        "",
+                                      );
+                                    }
+                                  }).catchError((error) {
+                                    Navigator.of(loginLoader.currentContext,
+                                        rootNavigator: true)
+                                        .pop();
+                                    showAlertDialog(
+                                      context,
+                                      error.toString(),
+                                      "",
+                                    );
+                                  });
+                                }
+                                setState(() {
+                                  //  loading = true;
+                                });
+                              }).catchError((onError) {});
+                            }, text: "Select profile image"));
+                      },
+                      child: Container(
+                        width: SizeConfig.blockSizeVertical * 4.5,
+                        height: SizeConfig.blockSizeVertical * 4.5,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Container(
+                          child: Icon(
+                            Icons.add_circle,
+                            color: Colors.blue,
+                            size: SizeConfig.blockSizeVertical * 5,
+                          ),
+                          alignment: Alignment.centerRight,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
             Container(
@@ -306,7 +463,7 @@ radioValue=widget.gender;
                         controller: dob,
                         // focusNode: firstNameFocusNode,
                         textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.number,
                        // maxLines: 5,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -345,7 +502,7 @@ radioValue=widget.gender;
                                   color: Color(fontColorGray)
                               )
                           ),
-                          hintText: "Date Of Birth",
+                          hintText: "Age",
                           isDense: true,
                           contentPadding: EdgeInsets.all(SizeConfig.blockSizeVertical * 1.5),
                         ),
@@ -603,7 +760,9 @@ radioValue=widget.gender;
       "gender": radioValue.toString(),
       "last_name": lastNameController.text,
       "location": "45.33",
-      "timezone": "+5:30"
+      "timezone": "+5:30",
+      "photo":profileimage,
+      "topicid":list
     };
     var uri =
         "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client?client_id=${prefs.getString("cleintid")}";
@@ -618,6 +777,16 @@ radioValue=widget.gender;
        // profile = responseJson['client'];
         // counsellorid=upcominglist['appointment_slots'][0]['counsellor_id'];
         //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
+
+        if(responseJson["meta"]['status']=="200"){
+          showAlertDialog(
+            context,
+            "Profile Updated",
+          "",
+
+          );
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyProfile()));
+        }
         setState(() {
           isError = false;
           isloding = false;
@@ -643,5 +812,40 @@ radioValue=widget.gender;
         "",
       );
     }
+  }
+  File image;
+  Future<File> chooseCameraFile() async {
+    await ImagePicker.platform
+        .pickImage(
+      source: ImageSource.camera,
+    )
+        .then((value) async {
+      setState(() {
+        FocusScope.of(context).unfocus();
+        image = new File(value.path);
+      });
+      if (image.path != null) {}
+
+    }).catchError((error) {
+      print(error.toString());
+    });
+    return image;
+  }
+
+  Future<File> androidchooseImageFile() async {
+    await ImagePicker.platform
+        .pickImage(
+      source: ImageSource.gallery,
+    )
+        .then((value) async {
+      setState(() {
+        FocusScope.of(context).unfocus();
+        image = new File(value.path);
+      });
+      if (image.path != null) {}
+    }).catchError((error) {
+      print(error.toString());
+    });
+    return image;
   }
   }

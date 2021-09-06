@@ -15,27 +15,9 @@ class _SplashState extends State<Splash> {
   VideoPlayerController _controller;
 
   @override
-    void initState()
+    void initState(){
+    videoplay();
 
-    {
-      _controller = VideoPlayerController.asset('assets/splashvideo.mp4')
-        ..initialize().then((_) {
-          // Once the video has been loaded we play the video and set looping to true.
-          _controller.play();
-          _controller.setLooping(true);
-          _controller.setVolume(0.0);
-          _controller.play();
-          // Ensure the first frame is shown after the video is initialized.
-          setState(() {});
-        });
-      Timer(Duration(seconds: 10),
-          ()=>Navigator.pushReplacement(context,
-                                        MaterialPageRoute(builder:
-                                                          (context) =>
-                                                              DTWalkThoughScreen()
-                                                         )
-                                       )
-         );
       // TODO: implement initState
       super.initState();
     }
@@ -59,5 +41,26 @@ class _SplashState extends State<Splash> {
         ),
       ),
     );
+  }
+  void videoplay(){
+
+      _controller = VideoPlayerController.asset('assets/splashvideo.mp4')
+        ..initialize().then((_) {
+          // Once the video has been loaded we play the video and set looping to true.
+          _controller.play();
+          _controller.setLooping(true);
+          _controller.setVolume(0.0);
+          _controller.play();
+          // Ensure the first frame is shown after the video is initialized.
+          setState(() {});
+        });
+      Timer(Duration(seconds: 10),
+              ()=>Navigator.pushReplacement(context,
+              MaterialPageRoute(builder:
+                  (context) =>
+                  DTWalkThoughScreen()
+              )
+          )
+      );
   }
 }

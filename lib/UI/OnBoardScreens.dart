@@ -32,76 +32,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
     super.initState();
   }
 
-  init() async {
-    pages = [
-      Container(
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: SizeConfig.screenWidth * 0.06),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Image.asset(
-              'assets/onBoard1.png',
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.screenWidth * 0.75,
-              fit: BoxFit.fitHeight,
-            ),
-          ],
-        ),
-      ),
-      /* GifImage(
-        controller: controller,
-        image: AssetImage("assets/onboard.gif"),
-      ),*/
-      Container(
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Image.asset(
-              'assets/onBoard2.png',
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.screenHeight * 0.65,
-              fit: BoxFit.fitHeight,
-            ),
-          ],
-        ),
-      ),
-      Container(
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Image.asset(
-              'assets/onBoard3.png',
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.screenHeight * 0.6,
-              fit: BoxFit.fitHeight,
-            ),
-          ],
-        ),
-      )
-      /* Container(
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: SizeConfig.screenHeight*0.04),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Image.asset('assets/onboard.gif',width:  context.width(),
-              height: SizeConfig.screenHeight * 0.95,fit: BoxFit.fitHeight,),
-          ],
-        ),
-      ),*/
-    ];
-    setState(() {});
-  }
 
-  @override
-  void setState(fn) {
-    if (mounted) super.setState(fn);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,16 +101,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
               ),
             ),
 
-            // AnimatedPositioned(
-            //   duration: Duration(seconds: 1),
-            //   bottom: SizeConfig.blockSizeVertical * 12,
-            //   left: 0,
-            //   right: 0,
-            //   child: Dotind(
-            //     pageController:  _pageController,
-            //       pages: pages,
-            //       indicatorColor: Colors.blue),
-            // ),
+
             DotsIndicator(
               dotsCount:3,
               position: currentPage,
@@ -188,10 +110,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                 activeColor: Colors.blue,
               ),
             ),
-            Positioned(
-              bottom: 8,
-              left: 15,
-              child: Container(
+            Container(
                 margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 6),
               alignment: Alignment.center,
                 width: SizeConfig.blockSizeHorizontal * 80,
@@ -211,7 +130,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                     MaterialPageRoute(
                         builder: (BuildContext context) => LoginScreen(screen:"Home")));
               }),
-            ),
+
           ],
         ),
       ),

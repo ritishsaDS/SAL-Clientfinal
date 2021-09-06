@@ -20,6 +20,7 @@ class MyProfile extends StatefulWidget {
 class _MyProfileState extends State<MyProfile> {
   @override
   void initState() {
+    print(list);
     getid();
   }
 
@@ -89,7 +90,8 @@ class _MyProfileState extends State<MyProfile> {
                                                             lastname: profile[
                                                                 'last_name'],email:profile['email'],
                                                           gender:profile['gender'],
-                                                          phone:profile['phone']
+                                                          phone:profile['phone'],
+                                                          photo:"https://sal-prod.s3.ap-south-1.amazonaws.com/${profile['photo']}"
                                                         )));
                                           },
                                           child: Icon(
@@ -146,8 +148,8 @@ class _MyProfileState extends State<MyProfile> {
                                         borderRadius: BorderRadius.circular(15),
                                       ),
                                       child: ClipRRect(
-                                        child: Image.network(
-                                            'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png'),
+                                        child:profile['photo']==null? Image.network("https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png"):Image.network("https://sal-prod.s3.ap-south-1.amazonaws.com/${profile['photo']}"),
+
                                         borderRadius: BorderRadius.circular(60),
                                       ),
                                     ),
@@ -168,7 +170,9 @@ class _MyProfileState extends State<MyProfile> {
                                     height: 10,
                                   ),
                                   Center(
-                                    child: Text(
+                                    child:isloding==true?Center(
+                                      child: CircularProgressIndicator(color: Colors.blue,),
+                                    ): Text(
                                       profile['first_name'] == null
                                           ? ""
                                           : profile['first_name'] +
@@ -423,6 +427,7 @@ class _MyProfileState extends State<MyProfile> {
   Future<void> getprofile(email) async {
     setState(() {
       isloding = true;
+      isLoading=true;
     });
     var uri =
         "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client?email=${email}";
@@ -433,6 +438,11 @@ class _MyProfileState extends State<MyProfile> {
         final responseJson = json.decode(response.body);
         print(responseJson);
         profile = responseJson['client'];
+       if(profile['photo']!=null){
+         SharedPreferences prefs=await SharedPreferences.getInstance();
+         prefs.setString("photo","https://sal-prod.s3.ap-south-1.amazonaws.com/${profile['photo']}");
+       }
+       else{}
         // counsellorid=upcominglist['appointment_slots'][0]['counsellor_id'];
         //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
         setState(() {
@@ -446,6 +456,7 @@ class _MyProfileState extends State<MyProfile> {
         setState(() {
           isError = true;
           isloding = false;
+          isLoading=false;
         });
       }
     } catch (e) {
@@ -453,6 +464,7 @@ class _MyProfileState extends State<MyProfile> {
       setState(() {
         isError = true;
         isloding = false;
+        isLoading=false;
       });
       showAlertDialog(
         context,
