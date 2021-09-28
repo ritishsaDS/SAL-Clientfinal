@@ -3,8 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 
+import 'AppointmentCancel.dart';
+import 'Cancelreason.dart';
+
 class CounsellorProfile2 extends StatefulWidget {
-  const CounsellorProfile2({Key key}) : super(key: key);
+  var type;
+  var appointment;
+  var lname;
+  var name;
+  CounsellorProfile2({this.appointment,this.type,this.name,this.lname});
+  //const CounsellorProfile2({Key key}) : super(key: key);
 
   @override
   _CounsellorProfile2State createState() => _CounsellorProfile2State();
@@ -38,7 +46,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
           children: [
             MaterialButton(
               onPressed: (){
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Cancelreason()));
               },
               color: Colors.white,
               child: Text("CANCEL",style: TextStyle(
@@ -54,7 +62,15 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
             ),
             MaterialButton(
               onPressed: (){
-                Navigator.of(context).pushNamed('/ClientDetails');
+                Navigator.push(context, MaterialPageRoute(builder: (conetxt)=>CounsellorProfile2(
+                  appointment: widget.appointment,
+                  name:widget.name.toString(),
+                  type: widget.type,
+
+
+
+                )));
+               // Navigator.of(context).pushNamed('/ClientDetails');
               },
               color: Color(backgroundColorBlue),
               child: Text("RESCHEDULE",style: TextStyle(
@@ -137,7 +153,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                         margin: EdgeInsets.only(top: 8),
                         width: SizeConfig.screenWidth,
                         alignment: Alignment.center,
-                        child: Text("Dr Sushmita Sinha",
+                        child: Text("Dr ${widget.name} ${widget.lname}",
                           style: GoogleFonts.openSans(
                               color: Color(backgroundColorBlue),
                               fontSize: SizeConfig.blockSizeVertical * 2.5,

@@ -395,6 +395,7 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                   InkWell(
                     onTap: (){
                       setState(() {
+                        selected = true;
                         if(stress==true&&selected==true){
                           setState(() {
                             stress=false;
@@ -403,6 +404,7 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                           });}
                         else{
                           stress=true;
+                          selected=true;
                         list.add("Stress");
 
                         }
@@ -435,8 +437,10 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                   InkWell(
                     onTap: (){
                       setState(() {
+                        selected = true;
                         if(motivation==true&&selected==true){
                           setState(() {
+
                             motivation=false;
                             list.remove("Self Motivation");
 
@@ -478,6 +482,7 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                       setState(() {
                         if(others==true&&selected ==true){
                           setState(() {
+                            selected = true;
                             others=false;
                             list.remove("Others");
 

@@ -24,7 +24,60 @@ bool  isError = true;
 bool isLoading = false;
 bool isloding = false;
   String topic;
-
+int _selectedIndex = 0;
+var moodstatic = [
+  "0:30",
+  "1:00",
+  "1:30",
+  "2:00",
+  "2:30",
+  "3:00",
+  "3:30",
+  "4:00",
+  "4:30",
+  "5:00",
+  "5:30",
+  "6:00",
+  "6:30",
+  "7:00",
+  "7:30",
+  "8:00",
+  "8:30",
+  "9:00",
+  "9:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  '20:00',
+  '20:30',
+  "21:00",
+  "21:30",
+  "22:00",
+  "22:30",
+  "23:00",
+  "23:30"
+      "24:00"
+];
+_onSelected(int index) {
+  setState(() => _selectedIndex = index);
+}
   var topictype;
   String languageid;
   String language;
@@ -55,6 +108,15 @@ var connectforid=[
 
     date.text = DateFormat.yMd().format(selectedDate);
   }
+int _selectedIndexs =0;
+var therapist ;
+
+_onSelectedslot(int index,therapistid) {
+  setState((){
+    _selectedIndexs = index;
+    therapist=therapistid;
+  });
+}
 @override
   void initState() {
   gettherapist();
@@ -289,7 +351,7 @@ var connectforid=[
                                   dense: true,
                                   contentPadding: EdgeInsets.zero,
                                   activeColor: Color(backgroundColorBlue),
-                                  value: 3,
+                                  value: 4,
                                   groupValue: checkboxValue,
                                   onChanged: (value){
                                     setState(() {
@@ -374,7 +436,7 @@ var connectforid=[
                                     color: Color(backgroundColorBlue),
                                     fontWeight: FontWeight.w600
                                 ),),
-                              Text("₹ ${ price.round().toString()} - ₹ 650",
+                              Text("₹ ${ price.round().toString()} - ₹ 2500",
                               style: TextStyle(
                                 color: Color(fontColorSteelGrey),
                                 fontWeight: FontWeight.w600
@@ -389,9 +451,9 @@ var connectforid=[
                             ),
                             child: Slider(
                               min: 0,
-                              max: 650,
+                              max: 2500,
                               value: price,
-                              divisions: 300,
+                              divisions: 50 ,
                               label: price.round().toString(),
                               onChanged: (value){
                                 setState(() {
@@ -522,7 +584,7 @@ var connectforid=[
               ),
               Container(
                 width: SizeConfig.screenWidth,
-                height: SizeConfig.screenHeight*0.55,
+                height: SizeConfig.screenHeight*0.45,
                 margin: EdgeInsets.symmetric(
                   vertical: SizeConfig.blockSizeVertical
                 ),
@@ -532,6 +594,40 @@ var connectforid=[
                   children: Councilorwidget(),
                 ),
               ),
+              Container(
+                height: 50,
+                child:GridView.builder(
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 20,
+                        childAspectRatio: 3 / 3,
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20),
+                    itemCount: eventlength.length,
+                    itemBuilder: (BuildContext ctx, index) {
+                      return Container(
+                        padding: EdgeInsets.all(2),
+                        alignment: Alignment.center,
+                        child: GestureDetector(onTap:(){
+                          setState(() {
+                            _onSelected(index);
+
+
+                          });
+                          print(eventlength[index]);
+                          getCouncilorpagefromserver(eventlength[index]);
+                        },child: Center(child:eventlength.last<=index? Text((eventlength[index]+1).toString(),style: TextStyle(fontWeight: FontWeight.bold,color:   _selectedIndex != null && _selectedIndex == index
+                        ? Colors.white
+                          : Colors.black,)):Text((eventlength[index]+1).toString(),style: TextStyle(fontWeight: FontWeight.bold,color:   _selectedIndex != null && _selectedIndex == index
+                            ? Colors.white
+                            : Colors.black,),))),
+                        decoration: BoxDecoration(
+                         color:   _selectedIndex != null && _selectedIndex == index
+                                ? Colors.blue
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                      );
+                    }),),
+
             ],
           ),
         ),
@@ -593,6 +689,9 @@ dynamic Therapist = new List();
 dynamic mediaurl = new List();
 dynamic category=new List();
 dynamic languages=new List();
+dynamic slots=new List();
+var pages;
+var eventlength=[];
 
 void getCouncilorfromserver() async {
   setState(() {
@@ -606,7 +705,12 @@ void getCouncilorfromserver() async {
       final responseJson = json.decode(response.body);
       mediaurl=responseJson['media_url'];
       Therapist=responseJson['counsellors'];
-
+pages=responseJson['no_pages'];
+      slots=responseJson['slots'];
+      List<String> cddc = List<String>.generate(int.parse(pages), (counter) {
+        // print("item" + counter.toString());
+        eventlength.add(counter);
+      });
       setState(() {
         isError = false;
         isLoading = false;
@@ -635,6 +739,56 @@ void getCouncilorfromserver() async {
     );
   }
 }
+void getCouncilorpagefromserver(page) async {
+  setState(() {
+    isLoading=true;
+  });
+
+  try {
+    final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?page=${page}'));
+    print("bjkb" + response.body.toString());
+    if (response.statusCode == 200) {
+      final responseJson = json.decode(response.body);
+    setState(() {
+      mediaurl=responseJson['media_url'];
+      Therapist=responseJson['counsellors'];
+      pages=responseJson['no_pages'];
+      eventlength.clear();
+      List<String> cddc = List<String>.generate(int.parse(pages), (counter) {
+        // print("item" + counter.toString());
+
+        eventlength.add(counter);
+      });
+    });
+      setState(() {
+        isError = false;
+        isLoading = false;
+        print('setstate');
+      });
+
+
+    } else {
+      print("bjkb" + response.statusCode.toString());
+      // showToast("Mismatch Credentials");
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+    }
+  } catch (e) {
+    print(e);
+    setState(() {
+      isError = true;
+      isLoading = false;
+    });
+    showAlertDialog(
+      context,
+      e.toString(),
+      "",
+    );
+  }
+}
+
 void getdatafromserver() async {
   setState(() {
     isLoading=true;
@@ -681,6 +835,7 @@ void getdatafromserver() async {
 List <Widget> Councilorwidget (){
 List <Widget> councilorlist= new List();
 for(int i =0; i<Therapist.length;i++){
+
   councilorlist.add(Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -699,7 +854,7 @@ for(int i =0; i<Therapist.length;i++){
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(mediaurl+Therapist[i]['photo'],fit: BoxFit.cover,),
+              child:Therapist[i]['photo']==null?Image.asset('assets/bg/person.png',fit: BoxFit.cover,):Therapist[i]['photo']==""?Image.asset('assets/bg/person.png',fit: BoxFit.cover,): Image.network(mediaurl+Therapist[i]['photo'],fit: BoxFit.cover,),
             ),
           ),
           Container(
@@ -778,28 +933,9 @@ for(int i =0; i<Therapist.length;i++){
               vertical: SizeConfig.blockSizeVertical
           ),
           height: SizeConfig.blockSizeVertical * 6,
-          child: ListView.builder(itemBuilder: (context, int index){
-            return Container(
-              width: SizeConfig.screenWidth * 0.2,
-              padding:EdgeInsets.all(8),
-              margin: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.blockSizeHorizontal
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Color(fontColorGray),
-                ),
-              ),
-              child: Text("9:00"),
-              alignment: Alignment.center,
-            );
-          },
-            primary: false,
-            itemCount: 4,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+          child: ListView(
             scrollDirection: Axis.horizontal,
+            children: slotarray(slots[Therapist[i]['id']],Therapist[i]['id']),
           )
       ),
       Container(
@@ -828,6 +964,54 @@ for(int i =0; i<Therapist.length;i++){
 }
 return councilorlist;
 }
+
+List <Widget> slotarray(id,therapistid){
+print("jnwejoen"+id.length.toString());
+
+if(id.length==0){
+  List<Widget>slotlist=new List();{
+    slotlist.add(Text("No Slot Available for today"));
+  }
+  return slotlist;
+}
+else{
+  var value=[];
+  print(id);
+  id[0].keys.forEach((key) {
+
+
+    value.add(key);
+  });
+  print(value.length);
+  List<Widget>slotlist=new List();
+  for(int i =0;i<value.length;i++){
+print("knejknp"+value[i].length.toString());
+
+    slotlist.add( value[i].length<3?GestureDetector(
+      onTap: (){
+        _onSelectedslot(i,therapistid);
+      },
+      child: Container(
+        width: SizeConfig.screenWidth * 0.2,
+        padding:EdgeInsets.all(8),
+        margin: EdgeInsets.symmetric(
+            horizontal: SizeConfig.blockSizeHorizontal
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color:_selectedIndexs != null && _selectedIndexs == i&&therapist==(therapistid)
+                ? Colors.blue
+                : Colors.grey,
+          ),
+        ),
+        child: Text(moodstatic[int.parse(value[i])].toString()),
+        alignment: Alignment.center,
+      ),
+    ):Container(),);
+  }
+  return slotlist;
+}}
 }
 
 

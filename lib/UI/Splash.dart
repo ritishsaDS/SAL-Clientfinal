@@ -25,13 +25,13 @@ class _SplashState extends State<Splash> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.white,
       body: Container(
         child:  SizedBox.expand(
           child: FittedBox(
             // If your background video doesn't look right, try changing the BoxFit property.
             // BoxFit.fill created the look I was going for.
-            fit: BoxFit.fill,
+            fit: BoxFit.fitWidth,
             child: SizedBox(
               width: _controller.value.size?.width ?? 0,
               height: _controller.value.size?.height ?? 0,

@@ -64,6 +64,7 @@ Widget pastappointmentwidget(
             ],
           ),
         ),
+
         SizedBox(
           height: SizeConfig.screenHeight * 0.2,
         ),

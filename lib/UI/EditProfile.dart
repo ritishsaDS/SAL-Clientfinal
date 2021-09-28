@@ -456,72 +456,72 @@ radioValue=widget.gender;
                         ),),),
                     ),
 
-                    SizedBox(height: 10,),
-                    Container(
-                      width:MediaQuery.of(context).size.width,
-                      child: TextFormField(
-                        controller: dob,
-                        // focusNode: firstNameFocusNode,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                       // maxLines: 5,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(fontColorGray)
-                              )
-                          ),
-                          hintText: "Age",
-                          isDense: true,
-                          contentPadding: EdgeInsets.all(SizeConfig.blockSizeVertical * 1.5),
-                        ),
-                        onFieldSubmitted: (term){
-                          firstNameFocusNode.unfocus();
-                          FocusScope.of(context).requestFocus(lastNameFocusNode);
-                          filledFn = true;
-                        },
-                        onChanged: (v){
-                          setState(() {
-                            filledFn = true;
-                          });
-                        },
-                        validator: (c){
-                          if(c.isEmpty)
-                            return "Please fill required fields";
-                        },
-                      ),
-                    ),
+                    // SizedBox(height: 10,),
+                    // Container(
+                    //   width:MediaQuery.of(context).size.width,
+                    //   child: TextFormField(
+                    //     controller: dob,
+                    //     // focusNode: firstNameFocusNode,
+                    //     textInputAction: TextInputAction.next,
+                    //     keyboardType: TextInputType.number,
+                    //    // maxLines: 5,
+                    //     decoration: InputDecoration(
+                    //       border: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(8),
+                    //           borderSide: BorderSide(
+                    //               color: Color(fontColorGray)
+                    //           )
+                    //       ),
+                    //       disabledBorder: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(8),
+                    //           borderSide: BorderSide(
+                    //               color: Color(fontColorGray)
+                    //           )
+                    //       ),
+                    //       enabledBorder: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(8),
+                    //           borderSide: BorderSide(
+                    //               color: Color(fontColorGray)
+                    //           )
+                    //       ),
+                    //       errorBorder: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(8),
+                    //           borderSide: BorderSide(
+                    //               color: Color(fontColorGray)
+                    //           )
+                    //       ),
+                    //       focusedBorder: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(8),
+                    //           borderSide: BorderSide(
+                    //               color: Color(fontColorGray)
+                    //           )
+                    //       ),
+                    //       focusedErrorBorder: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(8),
+                    //           borderSide: BorderSide(
+                    //               color: Color(fontColorGray)
+                    //           )
+                    //       ),
+                    //       hintText: "Age",
+                    //       isDense: true,
+                    //       contentPadding: EdgeInsets.all(SizeConfig.blockSizeVertical * 1.5),
+                    //     ),
+                    //     onFieldSubmitted: (term){
+                    //       firstNameFocusNode.unfocus();
+                    //       FocusScope.of(context).requestFocus(lastNameFocusNode);
+                    //       filledFn = true;
+                    //     },
+                    //     onChanged: (v){
+                    //       setState(() {
+                    //         filledFn = true;
+                    //       });
+                    //     },
+                    //     validator: (c){
+                    //       if(c.isEmpty)
+                    //         return "Please fill required fields";
+                    //     },
+                    //   ),
+                    // ),
                     SizedBox(height: 10,),
                     Container(
                       width:MediaQuery.of(context).size.width,
@@ -779,6 +779,7 @@ radioValue=widget.gender;
         //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
 
         if(responseJson["meta"]['status']=="200"){
+          prefs.setString("name", firstNameController.text);
           showAlertDialog(
             context,
             "Profile Updated",

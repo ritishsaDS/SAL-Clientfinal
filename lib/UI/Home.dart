@@ -190,21 +190,27 @@ getHomedata();
                             decoration: BoxDecoration(
                               color: Colors.white,
                               image: DecorationImage(
-                               image:Image.network(mediaurl+rommended[2]['background_photo']).image,
+                               image:Image.asset('assets/bg/Frame.png').image,
 
                               fit: BoxFit.fill,
                               ),
                             ),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children:[
                                   SizedBox(width: 15,),
                                   Text(
-                              "How Are You \n Feeling Today",
+                              "How Are You \nFeeling Today",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 22,
                                   fontWeight: FontWeight.w500),
-                                )]),
+                                ),
+                                Expanded(child: SizedBox(),),
+                                CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: Icon(Icons.arrow_forward_ios_rounded,color: Colors.blue,),)
+                                  ,SizedBox(width: 15,), ]),
                           ),
                         ),
                         Container(

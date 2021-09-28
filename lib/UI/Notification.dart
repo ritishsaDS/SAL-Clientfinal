@@ -105,27 +105,37 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   margin: EdgeInsets.only(
                       top: SizeConfig.blockSizeVertical*2
                   ),
-                  child: ListTile(
-                    tileColor: Color(whiteColor),
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(DateFormat("yMMMMd").format(DateTime.parse(getPaymentsModal.elementAt(index).createdAt)),style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                            fontSize: SizeConfig.blockSizeVertical * 1.75
-                        ),),
-                        Container(
-                          margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
-                          child:  Text(getPaymentsModal.elementAt(index).body,style: TextStyle(
-                              color: Color(fontColorGray),
-                              fontSize: SizeConfig.blockSizeVertical * 1.85
-                          ),),
-                        )
-                      ],
-                    ),
+                  child: Column(
+                    children: [
+                      ListTile(
 
+                        tileColor: Color(whiteColor),
+                        leading: CircleAvatar(radius:15,backgroundColor: Color(notificationbg),child: Icon(Icons.notifications_outlined,color: Color(notificationbell),size: 15,),),
+                        title: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(DateFormat("yMMMMd").format(DateTime.parse(getPaymentsModal.elementAt(index).createdAt)),style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                                fontSize: SizeConfig.blockSizeVertical * 1.75
+                            ),),
+                            Container(
+                              margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
+                              child:  Text(getPaymentsModal.elementAt(index).body,style: TextStyle(
+                                  color: Color(fontColorGray),
+                                  fontSize: SizeConfig.blockSizeVertical * 1.85
+                              ),),
+                            )
+                          ],
+                        ),
+
+                      ),
+                      Divider(
+                        thickness: 0.5,
+                        color: Color(0XFF445066),
+                      )
+                    ],
                   ),
                 );
               },

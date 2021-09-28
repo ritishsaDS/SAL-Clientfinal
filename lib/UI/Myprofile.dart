@@ -148,7 +148,7 @@ class _MyProfileState extends State<MyProfile> {
                                         borderRadius: BorderRadius.circular(15),
                                       ),
                                       child: ClipRRect(
-                                        child:profile['photo']==null? Image.network("https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png"):Image.network("https://sal-prod.s3.ap-south-1.amazonaws.com/${profile['photo']}"),
+                                        child:profile['photo']==""? Image.network("https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png"):Image.network("https://sal-prod.s3.ap-south-1.amazonaws.com/${profile['photo']}"),
 
                                         borderRadius: BorderRadius.circular(60),
                                       ),
@@ -218,11 +218,7 @@ class _MyProfileState extends State<MyProfile> {
                                         //     color: Color(fontColorSteelGrey),
                                         //   ),
                                         // ),
-                                        Image.asset(
-                                          'assets/icons/star.png',
-                                          height:
-                                              SizeConfig.blockSizeVertical * 2,
-                                        )
+
                                       ],
                                     ),
                                   ),

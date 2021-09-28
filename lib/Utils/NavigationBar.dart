@@ -69,7 +69,7 @@ class _NavigationBarState extends State<NavigationBar> {
             ),
             padding: EdgeInsets.all(SizeConfig.blockSizeVertical),),
         ),
-            label: "Booking"),
+            label: "Connect"),
         BottomNavigationBarItem(icon: InkWell(
           onTap: (){
             Navigator.push(context, MaterialPageRoute(builder: (context){

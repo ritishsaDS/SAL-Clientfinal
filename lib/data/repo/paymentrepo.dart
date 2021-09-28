@@ -47,7 +47,7 @@ class paymentrepo extends BaseRepository {
 class Succespaymentrepo extends BaseRepository {
 
   // BuildContext context;
-  static Future<void> diomwthod(context,mediaurl,data,therapist,date,type,screen) async {
+  static Future<void> diomwthod(context,mediaurl,data,therapist,date,type,screen,slot) async {
     var types;
     //var model;
     if(type=='1'){
@@ -166,7 +166,7 @@ class Succespaymentrepo extends BaseRepository {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("8:00 AM",
+                          Text(slot,
                             style: TextStyle(
                               color: Color(fontColorGray),
                             ),),

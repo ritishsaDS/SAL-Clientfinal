@@ -11,7 +11,8 @@ import 'package:table_calendar/table_calendar.dart';
 class RescheduleAppointmet extends StatefulWidget{
   var type;
   var appointment;
-  RescheduleAppointmet({this.appointment,this.type});
+  var name;
+  RescheduleAppointmet({this.appointment,this.type,this.name});
   @override
   _RescheduleAppointmetState createState() => _RescheduleAppointmetState();
 }
@@ -332,7 +333,7 @@ class _RescheduleAppointmetState extends State<RescheduleAppointmet> {
                   SharedPreferences prefs =await SharedPreferences.getInstance();
                   print( prefs.getString("cleintid"));
                  // data=   AppointmentModel(clientId: prefs.getString("cleintid") ,couponCode:"" ,date:  selectdate.toString(),noSession: "1",time: slotid);
-                  Reschedulebooking.diomwthod( widget.appointment,slotid,selectdate,context);
+                  Reschedulebooking.diomwthod( widget.appointment,slotid,selectdate,widget.type,widget.name,context);
 
 
                   // }else{

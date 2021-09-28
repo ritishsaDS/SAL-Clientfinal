@@ -176,12 +176,14 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("My Profile"),
               leading: ImageIcon(Image.asset('assets/icons/user.png').image),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MyProfile()));
               },
             ),
             ListTile(
               onTap: (){
+                Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>MySessions()));
               },
               title: Text("My Sessions"),
@@ -189,25 +191,28 @@ class _DrawerMenuState extends State<DrawerMenu> {
                   ImageIcon(Image.asset('assets/icons/availability.png').image),
               trailing: Container(child: CircleAvatar(radius:15,child: Text(appointments.length.toString()),),),
             ),
-            ListTile(
-              title: Text("Bookings"),
-              leading:
-                  ImageIcon(Image.asset('assets/icons/nav booking.png').image),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Connect()));
-              },
-            ),
-            ListTile(
-              title: Text("My Content"),
-              leading: ImageIcon(Image.asset('assets/icons/content.png').image),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MySessions()));
-              },
-            ),
+            // ListTile(
+            //   title: Text("Bookings"),
+            //   leading:
+            //       ImageIcon(Image.asset('assets/icons/nav booking.png').image),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>Connect()));
+            //   },
+            // ),
+            // ListTile(
+            //   title: Text("My Content"),
+            //   leading: ImageIcon(Image.asset('assets/icons/content.png').image),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     Navigator.push(context,
+            //         MaterialPageRoute(builder: (context) => MySessions()));
+            //   },
+            // ),
             ListTile(
               title: Text("Assessments"),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Assessments()));
                 // Navigator.push(context,
@@ -220,6 +225,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("My Moods"),
               leading: ImageIcon(Image.asset('assets/icons/payment.png').image),
               onTap: () {
+                Navigator.pop(context);
                Navigator.push(context, MaterialPageRoute(builder: (context)=>Mood()));
               },
             ),
@@ -227,6 +233,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("Help"),
               leading: ImageIcon(Image.asset('assets/icons/help.png').image),
               onTap: (){
+                Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>Help()));
               },
             ),
@@ -234,6 +241,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("About SAL"),
               leading: ImageIcon(Image.asset('assets/icons/about.png').image),
               onTap: (){
+                Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>AboutSAL()));
               },
             ),
@@ -241,6 +249,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("Settings"),
               leading: ImageIcon(Image.asset('assets/icons/settings.png').image),
               onTap: (){
+                Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>Settings()));
               },
             ),

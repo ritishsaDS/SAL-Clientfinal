@@ -168,8 +168,9 @@ class _DynamicEventState extends State<DynamicEvent> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -196,68 +197,96 @@ class _DynamicEventState extends State<DynamicEvent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TableCalendar(
-                events: _events,
-                initialCalendarFormat: CalendarFormat.week,
-                calendarStyle: CalendarStyle(
-                    canEventMarkersOverflow: true,
-                   highlightToday: false,
-                   weekendStyle: TextStyle(color: Colors.black),
-                  //outsideWeekendStyle: TextStyle(color: Colors.white60),
-                 // outsideStyle: TextStyle(color: Colors.white60),
-                  // outsideWeekendStyle:TextStyle(color: Colors.black) ,
-                   /// todayColor: Colors.orange,
-                    selectedColor: Theme.of(context).primaryColor,
-                    // todayStyle: TextStyle(
-                    //     fontWeight: FontWeight.bold,
-                    //     fontSize: 18.0,
-                    //     color: Colors.white)),
-                ),
-                headerStyle: HeaderStyle(
-                  headerMargin: EdgeInsets.symmetric(vertical: 5),
-                  formatButtonVisible: false,
-                  decoration: BoxDecoration(
-                    //color: Colors.blue,
-                      border: Border(bottom: BorderSide(color: Colors.blue))),
-                  centerHeaderTitle: true,
-                  leftChevronIcon:
-                  Icon(Icons.arrow_back_ios, size: 15, color: Colors.blue),
-                  rightChevronIcon:
-                  Icon(Icons.arrow_forward_ios, size: 15, color: Colors.blue),
-                  titleTextStyle: TextStyle(
-                      color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                startingDayOfWeek: StartingDayOfWeek.monday,
-                onDaySelected: (date, events,holidays) {
-                  setState(() {
-                    _selectedEvents = events;
-                    selectdate=date;
-                    print(selectdate);
-                  });
-                },
-                builders: CalendarBuilders(
-                  selectedDayBuilder: (context, date, events) => Container(
-                      margin:  EdgeInsets.all(4.0),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(40.0)),
-                      child: Text(
-                        date.day.toString(),
-                        style: TextStyle(color: Colors.white),
-                      )),
-                  // todayDayBuilder: (context, date, events) => Container(
-                  //     margin:  EdgeInsets.all(4.0),
-                  //     alignment: Alignment.center,
-                  //     decoration: BoxDecoration(
-                  //         color: Theme.of(context).primaryColor,
-                  //         borderRadius: BorderRadius.circular(40.0)),
-                  //     child: Text(
-                  //       date.day.toString(),
-                  //       style: TextStyle(color: Colors.white),
-                  //     )),
-                ),
-                calendarController: _controller,
+              Stack(
+                children: [
+                  TableCalendar(
+                    events: _events,
+                    initialCalendarFormat: CalendarFormat.week,
+                    calendarStyle: CalendarStyle(
+
+                        canEventMarkersOverflow: true,
+                       highlightToday: false,
+                       weekendStyle: TextStyle(color: Colors.black),
+                      //outsideWeekendStyle: TextStyle(color: Colors.white60),
+                     // outsideStyle: TextStyle(color: Colors.white60),
+                      // outsideWeekendStyle:TextStyle(color: Colors.black) ,
+                       /// todayColor: Colors.orange,
+                        selectedColor: Theme.of(context).primaryColor,
+                        // todayStyle: TextStyle(
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 18.0,
+                        //     color: Colors.white)),
+                    ),
+                    headerStyle: HeaderStyle(
+                      headerMargin: EdgeInsets.symmetric(vertical: 5),
+                     // formatButtonVisible: true,
+                     // formatButtonShowsNext: true,
+                      formatButtonDecoration: BoxDecoration(color: Colors.transparent),
+                      formatButtonTextStyle: TextStyle(color: Colors.transparent),
+                      //
+                      // decoration: BoxDecoration(
+                      //   //color: Colors.blue,
+                      //     border: Border(bottom: BorderSide(color: Colors.blue))),
+                      centerHeaderTitle: true,
+                      leftChevronIcon:
+                      Icon(Icons.arrow_back_ios, size: 15, color: Color(backgroundColorBlue)),
+                      rightChevronIcon:
+                      Icon(Icons.arrow_forward_ios, size: 15, color: Color(backgroundColorBlue)),
+
+                      titleTextStyle: TextStyle(
+                          color: Colors.white, fontSize: 12,),
+                    ),
+
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    onDaySelected: (date, events,holidays) {
+                      setState(() {
+                        _selectedEvents = events;
+                        selectdate=date;
+                        print(selectdate);
+                      });
+                    },
+                    builders: CalendarBuilders(
+                      selectedDayBuilder: (context, date, events) => Container(
+                          margin:  EdgeInsets.all(4.0),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: Color(0XFF0066B3),
+                              borderRadius: BorderRadius.circular(40.0)),
+                          child: Text(
+                            date.day.toString(),
+                            style: TextStyle(color: Colors.white),
+                          )),
+                      // todayDayBuilder: (context, date, events) => Container(
+                      //     margin:  EdgeInsets.all(4.0),
+                      //     alignment: Alignment.center,
+                      //     decoration: BoxDecoration(
+                      //         color: Theme.of(context).primaryColor,
+                      //         borderRadius: BorderRadius.circular(40.0)),
+                      //     child: Text(
+                      //       date.day.toString(),
+                      //       style: TextStyle(color: Colors.white),
+                      //     )),
+                    ),
+                    calendarController: _controller,
+                  ),
+                  Positioned(
+                      right: 5,
+                      top:60,
+                      child:  RotatedBox(
+                    quarterTurns: 3,
+                    child: GestureDetector(
+                      onTap: (){
+                        setState(() {
+                          _controller.toggleCalendarFormat();
+                        });
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,color: Colors.black,
+                        size: 15,
+                      ),
+                    ),
+                  ))
+                ],
               ),
               ..._selectedEvents.map((event) => Padding(
                 padding:  EdgeInsets.all(8.0),
@@ -306,16 +335,16 @@ Container(
 
           padding: EdgeInsets.all(5),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: _selectedIndex != null && _selectedIndex == index
-          ? Colors.blue
+          ? Color(backgroundColorBlue)
               : Colors.white,border: Border.all(color: _selectedIndex != null && _selectedIndex == index
-              ? Colors.blue
+              ? Color(backgroundColorBlue)
               : Colors.grey,)),
           child: Center(
             child: Text(
               moodstatic[index],
              style: TextStyle(color: _selectedIndex != null && _selectedIndex == index
                  ?Colors.white
-                 :  Color(midnightBlue), ),
+                 :  Colors.grey, ),
              // style: Theme.of(context).textTheme.headline5,
             ),
           ),

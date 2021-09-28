@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart' hide midnightBlue;
 import 'package:sal_user/UI/SummaryPayment.dart';
+import 'package:sal_user/UI/paymentclass.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
@@ -115,7 +116,7 @@ class _SessionsState extends State<Sessions> {
                       contentPadding: EdgeInsets.only(
                           left: SizeConfig.blockSizeHorizontal * 4
                       ),
-                      title: Text("1 session for Rs 500",style: TextStyle(
+                      title:widget.type=="2"?Text("Free"):   Text("1 session for Rs.${widget.bill['billing']['actual_amount']}",style: TextStyle(
                           color: Color(sessionRadio == 1 ? backgroundColorBlue : fontColorGray),
                           fontWeight: FontWeight.w600
                       ),),
@@ -216,7 +217,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("${widget.bill['billing']['actual_amount']}",
+                                  widget.type=="2"?Text("Free"):  Text("${widget.bill['billing']['actual_amount']}",
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -236,7 +237,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text(widget.bill['billing']['tax'],
+                                  widget.type=="2"?Text("Free"):   Text(widget.bill['billing']['tax'],
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -261,7 +262,7 @@ class _SessionsState extends State<Sessions> {
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
                                     ),),
-                                  Text(widget.bill['billing']['paid_amount'],
+                                  widget.type=="2"?Text("Free"):    Text(widget.bill['billing']['paid_amount'],
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
@@ -393,7 +394,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text(widget.bill['prices']==null?"600":widget.bill['prices']['price_3'].toString(),
+                                  widget.type=="2"?Text("Free"):   Text(widget.bill['prices']==null?"600":widget.bill['prices']['price_3'].toString(),
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -413,7 +414,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("Rs 108",
+                                  widget.type=="2"?Text("Free"):    Text( "${(18 / 100) * int.parse(widget.bill['prices']['price_3'])}",
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -438,7 +439,7 @@ class _SessionsState extends State<Sessions> {
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
                                     ),),
-                                  Text("Rs 608",
+                                  widget.type=="2"?Text("Free"):    Text("${int.parse(widget.bill['prices']['price_3'])+(18 / 100) * int.parse(widget.bill['prices']['price_3'])}",
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
@@ -570,7 +571,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text(widget.bill['prices']==null?"1799":widget.bill['prices']['price_5'],
+                                  widget.type=="2"?Text("Free"): Text(widget.bill['prices']==null?"1799":widget.bill['prices']['price_5'],
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -590,7 +591,7 @@ class _SessionsState extends State<Sessions> {
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),),
-                                  Text("Rs 360",
+                                  widget.type=="2"?Text("Free"):      Text( "${(18 / 100) * int.parse(widget.bill['prices']['price_5'])}",
                                     style: TextStyle(
                                         color: Color(fontColorGray)
                                     ),)
@@ -615,7 +616,7 @@ class _SessionsState extends State<Sessions> {
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
                                     ),),
-                                  Text("Rs 2360",
+                                  widget.type=="2"?Text("Free"):   Text("${int.parse(widget.bill['prices']['price_5'])+(18 / 100) * int.parse(widget.bill['prices']['price_5'])}",
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600
@@ -637,12 +638,15 @@ class _SessionsState extends State<Sessions> {
                 child: MaterialButton(
                   onPressed: () async {
                   if(sessionRadio > 0){
+                    var numbersession;
+                     numbersession=sessionRadio==2?numbersession=3:sessionRadio==3?numbersession=5:sessionRadio==1?numbersession=1:numbersession=1;
+                    print(sessionRadio);
                     var data;
                     SharedPreferences prefs =await SharedPreferences.getInstance();
                     print( prefs.getString("cleintid"));
                     data=   AppointmentModel(clientId: prefs.getString("cleintid"),counsellorId:widget.getData['id'] ,couponCode:"" ,date:  widget.date.toString(),noSession: "1",time: widget.slot);
 
-                    Appointmentorder.diomwthod( data,context,widget.mediaUrl,widget.getData,sessionRadio,widget.type,"Session");
+                    Appointmentorder.diomwthod( data,context,widget.mediaUrl,widget.getData,numbersession,widget.type,"Session",);
 
                   }
                   else{
@@ -697,7 +701,8 @@ else if(widget.type=='4'){
       print("bjkb" + response.statusCode.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
-        Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: widget.mediaUrl,getData: widget.getData,sessionNumbers: sessionRadio.toString(),)));
+      //  Navigator.push(context,MaterialPageRoute(builder: (context)=>payment(mediaUrl: widget.mediaUrl,getData: widget.getData,sessionNumbers: sessionRadio.toString(),)));
+        Navigator.push(context,MaterialPageRoute(builder: (context)=>payment()));
 
 
         setState(() {

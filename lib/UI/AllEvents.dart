@@ -231,10 +231,10 @@ class _AlleventsState extends State<Allevents> {
            ),
          ),
        ): Container(
-         child: Center(child: Text("No Upcoming Appointments", style:  TextStyle(color: Colors.black),)),
+         child: Center(child: Text("No Events Avaialable", style:  TextStyle(color: Colors.black),)),
        );
      }, itemCount: appointments.length,): Container(
-       child: Center(child: Text("No Upcoming Appointments", style:  TextStyle(color: Colors.black),)),
+       child: Center(child: Text("No Events Avaialable", style:  TextStyle(color: Colors.black),)),
      )
 
    );

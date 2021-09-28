@@ -85,7 +85,7 @@ class _MyAppState extends State<Razor> {
     if(widget.screen=="Event"){
       Eventpaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen);
     }
-    Succespaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen);
+    Succespaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen,"23:00");
   //  successapi();
   }
 

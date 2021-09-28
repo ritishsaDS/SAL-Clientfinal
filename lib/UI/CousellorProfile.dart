@@ -172,7 +172,7 @@ void initState(){
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: Image.network(widget.mediaUrl+ widget.getData['photo'],fit: BoxFit.cover,),
+                            child:widget.getData['photo']==null?Image.asset('assets/bg/person.png',fit: BoxFit.cover,):widget.getData['photo']==""?Image.asset('assets/bg/person.png',fit: BoxFit.cover,):Image.network(widget.mediaUrl+ widget.getData['photo'],fit: BoxFit.cover,),
                           ),
                         ),
                       ),

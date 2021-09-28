@@ -34,7 +34,7 @@ class UploadImagesRepo extends BaseRepository {
               )
           );
           print(response.statusCode);
-          print(response.request);
+          //print(response.request);
           final passEntity = UploadImagesModal.fromJson(response.data);
           return passEntity;
         } catch (error, stacktrace)

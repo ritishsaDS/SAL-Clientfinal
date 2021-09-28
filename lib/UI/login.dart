@@ -111,12 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         GestureDetector(
                           onTap: (){
-                            if(widget.screen=="Home"){
+
                               Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfessionalInfo1()));
-                            }
-                            else{
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>SignUp()));
-                            }
+
+
 
                           },
                           child: Text(

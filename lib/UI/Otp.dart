@@ -10,6 +10,7 @@ import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:sal_user/data/repo/CreatetherapistProfileRepo.dart';
+import 'package:sal_user/data/repo/sendOtpRepo.dart';
 import 'package:sal_user/data/repo/verifyOtpRepo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +33,7 @@ class OTPScreen extends StatefulWidget {
 class _OTPScreenState extends State<OTPScreen> {
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
   var digit;
+  var sendOtp = SendOtptoPhoneRepo();
   var verifyOtp = VerifyOtpRepo();
   var createUser = CreateTherapistProfileRepo();
   // var sendOtp = send.SendOtptoPhone();
@@ -95,12 +97,65 @@ class _OTPScreenState extends State<OTPScreen> {
               SizedBox(
                 height: 10,
               ),
-              Text(
-                "RESEND OTP",
-                style: GoogleFonts.openSans(
-                  fontWeight: FontWeight.w700,
-                  fontSize: SizeConfig.blockSizeVertical * 1.5,
-                  color: Color(backgroundColorBlue),
+              GestureDetector(
+                onTap: (){
+    Dialogs.showLoadingDialog(
+    context, loginLoader);
+    sendOtp
+        .sendOtp(
+    context: context,
+    phone: "+91" + widget.phonenumber,
+    )
+        .then((value) {
+    if (value != null) {
+    if (value.meta.status == "200") {
+    Navigator.of(loginLoader.currentContext,
+    rootNavigator: true)
+        .pop();
+    Navigator.push(context,
+    MaterialPageRoute(
+    builder: (conext) {
+    return OTPScreen(phonenumber:widget.phonenumber,screen:widget.screen);
+    }));
+    } else {
+    Navigator.of(loginLoader.currentContext,
+    rootNavigator: true)
+        .pop();
+    showAlertDialog(
+    context,
+    value.meta.message,
+    "",
+    );
+    }
+    } else {
+    Navigator.of(loginLoader.currentContext,
+    rootNavigator: true)
+        .pop();
+    showAlertDialog(
+    context,
+    value.meta.message,
+    "",
+    );
+    }
+    }).catchError((error) {
+    Navigator.of(loginLoader.currentContext,
+    rootNavigator: true)
+        .pop();
+    showAlertDialog(
+    context,
+    error.toString(),
+    "",
+    );
+    });
+
+                },
+                child: Text(
+                  "RESEND OTP",
+                  style: GoogleFonts.openSans(
+                    fontWeight: FontWeight.w700,
+                    fontSize: SizeConfig.blockSizeVertical * 1.5,
+                    color: Color(backgroundColorBlue),
+                  ),
                 ),
               ),
             ],

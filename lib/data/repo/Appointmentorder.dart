@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart'as http;
 import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/UI/SummaryPayment.dart';
+import 'package:sal_user/UI/paymentclass.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/models/Appointmentlistener.dart';
 import 'package:sal_user/models/Appointmenttherapistmodel.dart';
@@ -41,7 +42,7 @@ class Appointmentorder {
 
 
           body:json.encode(model));
-      print("bjkb" + data.toString());
+      print("bjkb" + response.request.toString());
       print("bjkb" + model.toJson().toString());
      // showToast("Dish Added Successfully");
 
@@ -57,8 +58,12 @@ class Appointmentorder {
 
           }
         else{
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: mediaurl,getData:data,
-                date:adddishmodel.date,slot:adddishmodel.time    ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],type:type,bill:loginwithserver)));
+            Navigator.push(context,MaterialPageRoute(builder: (context)=>payment(mediaUrl: mediaurl,getData:data,
+                  date:adddishmodel.date,slot:adddishmodel.time    ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],type:type,bill:loginwithserver)));
+    ;
+            //
+            // Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: mediaurl,getData:data,
+            //     date:adddishmodel.date,slot:adddishmodel.time    ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],type:type,bill:loginwithserver)));
 
           }
         }

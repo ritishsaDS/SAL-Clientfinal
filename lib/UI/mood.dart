@@ -24,7 +24,7 @@ class _MoodState extends State<Mood> {
   var image=[
     "assets/icons/Group 7041.png",
     "assets/icons/Group 7042.png",
-      "assets/icons/Group 7042.png",
+      "assets/icons/anxious.png",
       "assets/icons/Group 7044.png",
       "assets/icons/Group 7044.png",
       "assets/icons/Group 7043.png"];

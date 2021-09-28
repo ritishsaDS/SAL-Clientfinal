@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/Sessions.dart';
+import 'package:sal_user/UI/webview.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/Dialog.dart';
@@ -33,6 +34,7 @@ class SignUp extends StatefulWidget{
 }
 
 class _SignUpState extends State<SignUp> {
+  bool checkboxvalue=false;
   GlobalKey<FormState> nameForm = GlobalKey<FormState>();
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
 
@@ -79,6 +81,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    SizeConfig().init(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -463,9 +466,10 @@ class _SignUpState extends State<SignUp> {
                         // focusNode: firstNameFocusNode,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
-                        maxLength: 12,
+                        maxLength: 10,
 
                         decoration: InputDecoration(
+                          counterText: "",
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
@@ -528,9 +532,41 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
           SizedBox(
-
-              height: 40,
+height: 20,
             ),
+            Container(
+              margin: EdgeInsets.only(left:15),
+              child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+              Checkbox(value: checkboxvalue, onChanged: (val){
+                setState(() {
+                  checkboxvalue=val;
+                });
+              }),
+              Text("I Agree to ",style: GoogleFonts.openSans(
+
+                  fontSize: SizeConfig.blockSizeVertical * 1.7,
+                  fontWeight: FontWeight.w400),),
+              Container(
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>WebViewClass(link:"https://sal-foundation.com/about-sal")));
+
+                  },
+                  child: Text(
+                    "Terms & Condition",
+                    style: GoogleFonts.openSans(
+                        color: Color(backgroundColorBlue),
+                        fontSize: SizeConfig.blockSizeVertical * 2,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ),
+
+
+              )
+            ],),),
             Container(child:MaterialButton(
               onPressed: () {
                 print(radioValue.toString());

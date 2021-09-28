@@ -11,6 +11,8 @@ import 'package:sal_user/data/repo/Unusedappointmentrepo.dart';
 import 'package:sal_user/models/Unusedappointmentmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'CounsellorProfile2.dart';
+
 class UnusedSession extends StatefulWidget{
   @override
   _UnusedSessionState createState() => _UnusedSessionState();
@@ -96,7 +98,7 @@ print(upcominglist);
      sessionlist.add( Container(
        width: SizeConfig.screenWidth,
        margin: EdgeInsets.symmetric(
-           horizontal: SizeConfig.screenWidth * 0.05,
+           horizontal: SizeConfig.screenWidth * 0.02,
            vertical: SizeConfig.blockSizeVertical),
        child: Column(
          mainAxisAlignment: MainAxisAlignment.start,
@@ -105,88 +107,109 @@ print(upcominglist);
            ListTile(
              shape: RoundedRectangleBorder(
                  borderRadius: BorderRadius.circular(8)),
-             title: Text(
-               counsellorlist['${counsellorid}']['first_name'].toString(),
-               style: TextStyle(
-                 color: Color(backgroundColorBlue),
-                 fontWeight: FontWeight.bold,
-               ),
-             ),
-             subtitle: Text(
-
-               counsellorlist['${counsellorid}']['type']=="1"?"Counsellor":counsellorlist['${counsellorid}']['type']=="2"?"Listener":"Therapist",
-               style: TextStyle(
-                 color: Color(fontColorGray),
-                 fontWeight: FontWeight.bold,
-               ),
-             ),
-             trailing: Column(
-               mainAxisAlignment:
-               MainAxisAlignment.start,
-               crossAxisAlignment:
-               CrossAxisAlignment.start,
+             title: Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+               crossAxisAlignment: CrossAxisAlignment.start,
                children: [
                  Text(
-                   "08:00 AM",
+                   counsellorlist['${counsellorid}']['first_name'].toString(),
                    style: TextStyle(
-                       color: Color(fontColorGray),
-                       fontSize:
-                       SizeConfig.blockSizeVertical *
-                           1.5),
+                     color: Color(backgroundColorBlue),
+                     fontWeight: FontWeight.bold,
+                   ),
                  ),
                  Text(
-                   "",
+
+                   counsellorlist['${counsellorid}']['type']=="1"?"Counsellor":counsellorlist['${counsellorid}']['type']=="2"?"Listener":"Therapist",
+                   style: TextStyle(
+                     color: Color(fontColorGray),
+                     fontWeight: FontWeight.w600,
+                   ),
+                 ),
+               ],
+             ),
+
+             trailing: Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+               crossAxisAlignment: CrossAxisAlignment.start,
+
+               children: [
+                 GestureDetector(
+                   onTap:(){
+                     Navigator.push(context, MaterialPageRoute(builder: (conetxt)=>CounsellorProfile2(
+                                   appointment: upcominglist[i]['appointment_slot_id'],
+                                   name:counsellorlist['${counsellorid}']['first_name'].toString(),
+                                   lname:counsellorlist['${counsellorid}']['last_name'].toString(),
+                                   type: counsellorlist['${counsellorid}']['type'] ,
+
+
+
+                                )));
+                   },
+                   child: Text(
+                     "Schedule",
+                     style: TextStyle(
+                         color: Colors.blue,
+                         fontWeight: FontWeight.w500,
+                         fontSize:
+                         SizeConfig.blockSizeVertical *
+                     1.8),
+                   ),
+                 ),
+                 Text(
+                   "${upcominglist[i]['slots_bought']} Sessions",
                    style: TextStyle(
                        color: Color(fontColorGray),
+                       fontWeight: FontWeight.w800,
                        fontSize:
                        SizeConfig.blockSizeVertical *
-                           1.5),
+                           1.8),
                  ),
                ],
              ),
            ),
-           Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: [
-               MaterialButton(
-                 onPressed: (){
-                   Navigator.pop(context);
-                 },
-                 color: Colors.white,
-                 child: Text("RATE",style: TextStyle(
-                   color: Color(fontColorGray),
-                 ),),
-                 minWidth: SizeConfig.screenWidth * 0.4,
-                 shape: RoundedRectangleBorder(
-                   borderRadius: BorderRadius.circular(8),
-                   side: BorderSide(
-                       color: Color(fontColorGray)
-                   ),
-                 ),
-               ),
-               MaterialButton(
-                 onPressed: (){
-                   print(upcominglist[i]['appointment_slot_id']);
-                   Navigator.push(context, MaterialPageRoute(builder: (conetxt)=>RescheduleAppointmet(
-                     appointment: upcominglist[i]['appointment_slot_id'],
-                     type: counsellorlist['${counsellorid}']['type'] ,
-
-
-
-                  )));
-                 },
-                 color: Color(backgroundColorBlue),
-                 child: Text("BOOK AGAIN",style: TextStyle(
-                     color: Colors.white,
-                     fontWeight: FontWeight.w600
-                 ),),
-                 minWidth: SizeConfig.screenWidth * 0.4,
-                 shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(8)
-                 ),
-               ),
-             ],
-           ),
+           // Row(
+           //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+           //   children: [
+           //     MaterialButton(
+           //       onPressed: (){
+           //         Navigator.pop(context);
+           //       },
+           //       color: Colors.white,
+           //       child: Text("RATE",style: TextStyle(
+           //         color: Color(fontColorGray),
+           //       ),),
+           //       minWidth: SizeConfig.screenWidth * 0.4,
+           //       shape: RoundedRectangleBorder(
+           //         borderRadius: BorderRadius.circular(8),
+           //         side: BorderSide(
+           //             color: Color(fontColorGray)
+           //         ),
+           //       ),
+           //     ),
+           //     MaterialButton(
+           //       onPressed: (){
+           //         print(upcominglist[i]['appointment_slot_id']);
+           //         Navigator.push(context, MaterialPageRoute(builder: (conetxt)=>RescheduleAppointmet(
+           //           appointment: upcominglist[i]['appointment_slot_id'],
+           //           type: counsellorlist['${counsellorid}']['type'] ,
+           //
+           //
+           //
+           //        )));
+           //       },
+           //       color: Color(backgroundColorBlue),
+           //       child: Text("BOOK AGAIN",style: TextStyle(
+           //           color: Colors.white,
+           //           fontWeight: FontWeight.w600
+           //       ),),
+           //       minWidth: SizeConfig.screenWidth * 0.4,
+           //       shape: RoundedRectangleBorder(
+           //           borderRadius: BorderRadius.circular(8)
+           //       ),
+           //     ),
+           //   ],
+           // ),
 
 
          ],

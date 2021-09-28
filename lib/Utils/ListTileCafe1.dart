@@ -39,7 +39,7 @@ Widget listTileCafe1(BuildContext context,
           ),
           GestureDetector(
             onTap: () async {
-              toast("In Progress");
+              //toast("In Progress");
               await _handleCameraAndMic(Permission.camera);
               await _handleCameraAndMic(Permission.microphone);
               // push video page with given channel name
