@@ -18,6 +18,7 @@ class MentalHealth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Initial');
     return MaterialApp(
       title: "Mental Health",
       debugShowCheckedModeBanner: false,
