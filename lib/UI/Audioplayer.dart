@@ -28,6 +28,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _playerController.setCompleteDuration(0);
+    _playerController.setIsRepeat(false);
 
     _playerController.setTotalDuration(100);
     data = widget.data;
@@ -36,7 +37,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
   }
 
   Future<void> playAudio() async {
-    SharedPreferences preferences=await SharedPreferences.getInstance();
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     print('ClientId:${preferences.getString('cleintid')}');
     Duration duration = await audioPlayer.setUrl(
       basePath + data.content,
@@ -50,8 +51,8 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
     audioPlayer.createPositionStream().listen((event) {
       _playerController.setCompleteDuration(event.inSeconds);
 
-      if (event.inSeconds>=duration.inSeconds) {
-        if(_playerController.isRepeat.value){
+      if (event.inSeconds >= duration.inSeconds) {
+        if (_playerController.isRepeat.value) {
           audioPlayer.seek(Duration());
           return;
         }
@@ -196,12 +197,14 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                   // _playerController.setIsPlay(true);
                                   //
                                   // audioPlayer.seek(Duration());
-                                  _playerController.setIsRepeat();
+                                  _playerController
+                                      .setIsRepeat(!controller.isRepeat.value);
                                 },
                                 child: Image(
-                                    image:
-                                        AssetImage('assets/icons/Repeat.png'),
-                                  color: controller.isRepeat.value?Colors.yellow[800]:Colors.white,
+                                  image: AssetImage('assets/icons/Repeat.png'),
+                                  color: controller.isRepeat.value
+                                      ? Colors.yellow[800]
+                                      : Colors.white,
                                 )),
                             InkWell(
                                 onTap: () {
@@ -395,12 +398,12 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
 }
 
 class AudioPlayerController extends GetxController {
-  RxBool _isRepeat=false.obs;
+  RxBool _isRepeat = false.obs;
 
   RxBool get isRepeat => _isRepeat;
 
-  void setIsRepeat() {
-    _isRepeat.toggle();
+  void setIsRepeat(bool value) {
+    _isRepeat = value.obs;
     update();
   }
 
