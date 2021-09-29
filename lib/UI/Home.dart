@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
@@ -149,7 +150,7 @@ getHomedata();
                             BorderRadius.only(topRight: Radius.circular(65)),
                         color: Colors.white),
                     child:isLoading?Center(
-                       child: CircularProgressIndicator(color: Colors.blue,),
+                       child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)),
                     ): Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,6 +258,7 @@ getHomedata();
         //   index: 0,
         // ),
       )),
+
       onRefresh:() =>getHomedata(),
     );
   }

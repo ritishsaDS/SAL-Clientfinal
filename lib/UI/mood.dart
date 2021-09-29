@@ -112,9 +112,9 @@ class _MoodState extends State<Mood> {
                 child: Text("Done"),
                 textColor: Colors.white,
                 onPressed: () {
-                  addmoodrepo.addmood(context: context,moodid: moodid);
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
+                  // addmoodrepo.addmood(context: context,moodid: moodid);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
                 },
               ),
             )

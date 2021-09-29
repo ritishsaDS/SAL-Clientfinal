@@ -39,7 +39,7 @@ dependencies:
   dots_indicator: ^2.0.0
   swipedetector:
   video_player: ^2.1.15
-  audioplayer: ^0.8.1
+  just_audio: ^0.6.15+1
   webview_flutter:
   url_launcher:
   intl: ^0.17.0
@@ -59,7 +59,7 @@ dependencies:
   country_code_picker: ^2.0.2
   agora_rtc_engine: ^3.3.3
   permission_handler: ^5.0.1
-
+  get: ^3.26.0
 
 dev_dependencies:
   flutter_test:

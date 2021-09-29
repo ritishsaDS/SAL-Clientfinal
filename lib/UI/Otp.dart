@@ -23,9 +23,18 @@ class OTPScreen extends StatefulWidget {
   dynamic data;
   dynamic mediaurl;
   String type;
-  var dob;var gender;
+  var dob;
+  var gender;
+
   OTPScreen(
-      {this.phonenumber, this.screen, this.type, this.data,this.gender,this.dob, this.mediaurl});
+      {this.phonenumber,
+      this.screen,
+      this.type,
+      this.data,
+      this.gender,
+      this.dob,
+      this.mediaurl});
+
   @override
   _OTPScreenState createState() => _OTPScreenState();
 }
@@ -36,6 +45,7 @@ class _OTPScreenState extends State<OTPScreen> {
   var sendOtp = SendOtptoPhoneRepo();
   var verifyOtp = VerifyOtpRepo();
   var createUser = CreateTherapistProfileRepo();
+
   // var sendOtp = send.SendOtptoPhone();
   @override
   Widget build(BuildContext context) {
@@ -98,56 +108,55 @@ class _OTPScreenState extends State<OTPScreen> {
                 height: 10,
               ),
               GestureDetector(
-                onTap: (){
-    Dialogs.showLoadingDialog(
-    context, loginLoader);
-    sendOtp
-        .sendOtp(
-    context: context,
-    phone: "+91" + widget.phonenumber,
-    )
-        .then((value) {
-    if (value != null) {
-    if (value.meta.status == "200") {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    Navigator.push(context,
-    MaterialPageRoute(
-    builder: (conext) {
-    return OTPScreen(phonenumber:widget.phonenumber,screen:widget.screen);
-    }));
-    } else {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    value.meta.message,
-    "",
-    );
-    }
-    } else {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    value.meta.message,
-    "",
-    );
-    }
-    }).catchError((error) {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    error.toString(),
-    "",
-    );
-    });
-
+                onTap: () {
+                  Dialogs.showLoadingDialog(context, loginLoader);
+                  sendOtp
+                      .sendOtp(
+                    context: context,
+                    phone: "+91" + widget.phonenumber,
+                  )
+                      .then((value) {
+                    if (value != null) {
+                      if (value.meta.status == "200") {
+                        Navigator.of(loginLoader.currentContext,
+                                rootNavigator: true)
+                            .pop();
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (conext) {
+                          return OTPScreen(
+                              phonenumber: widget.phonenumber,
+                              screen: widget.screen);
+                        }));
+                      } else {
+                        Navigator.of(loginLoader.currentContext,
+                                rootNavigator: true)
+                            .pop();
+                        showAlertDialog(
+                          context,
+                          value.meta.message,
+                          "",
+                        );
+                      }
+                    } else {
+                      Navigator.of(loginLoader.currentContext,
+                              rootNavigator: true)
+                          .pop();
+                      showAlertDialog(
+                        context,
+                        value.meta.message,
+                        "",
+                      );
+                    }
+                  }).catchError((error) {
+                    Navigator.of(loginLoader.currentContext,
+                            rootNavigator: true)
+                        .pop();
+                    showAlertDialog(
+                      context,
+                      error.toString(),
+                      "",
+                    );
+                  });
                 },
                 child: Text(
                   "RESEND OTP",
@@ -172,8 +181,9 @@ class _OTPScreenState extends State<OTPScreen> {
             if (digit.isNotEmpty) {
               Dialogs.showLoadingDialog(context, loginLoader);
               verifyOtp
-                  .verifyOtp(phone: "91"+widget.phonenumber, otp: digit)
+                  .verifyOtp(phone: "91" + widget.phonenumber, otp: digit)
                   .then((value) async {
+
                 if (value != null) {
                   print(value.meta.status);
                   if (value.meta.status == "200") {
@@ -209,7 +219,7 @@ class _OTPScreenState extends State<OTPScreen> {
                               experience: experience.text,
                               first_name: firstNameController.text,
                               last_name: lastNameController.text,
-                              phone: "91"+phone.text)
+                              phone: "91" + phone.text)
                           .then((value) async {
                         if (value != null) {
                           print(value.meta.status);
@@ -227,10 +237,10 @@ class _OTPScreenState extends State<OTPScreen> {
 
                             prefs.setString("cleintid", value.clientId);
                             prefs.setString("email", email.text);
-                            prefs.setString("phone",  "91"+phone.text);
-                            prefs.setString("name",  firstNameController.text);
+                            prefs.setString("phone", "91" + phone.text);
+                            prefs.setString("name", firstNameController.text);
 
-                            ;
+
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -286,7 +296,8 @@ class _OTPScreenState extends State<OTPScreen> {
                       "",
                     );
                   }
-                } else {
+                }
+                else {
                   Navigator.of(loginLoader.currentContext, rootNavigator: true)
                       .pop();
                   showAlertDialog(
@@ -296,6 +307,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   );
                 }
               }).catchError((error) {
+                print('error MSG:$error');
                 Navigator.of(loginLoader.currentContext, rootNavigator: true)
                     .pop();
                 showAlertDialog(

@@ -1,50 +1,283 @@
 import 'dart:ui';
 
-
-import 'package:audioplayer/audioplayer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sal_user/Utils/Colors.dart';
+import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:sal_user/models/Exploreallmodle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerPage extends StatefulWidget {
-  String url;
-  PlayerPage({this.url});
+  final Training data;
+
+  const PlayerPage({Key key, this.data}) : super(key: key);
+
   @override
   _PlayerPageState createState() => _PlayerPageState();
 }
 
-AnimationController _animationIconController1;
-AudioPlayer audioPlayer;
-Duration _duration = new Duration();
-Duration _position = new Duration();
-Duration _slider = new Duration(seconds: 0);
-double durationvalue;
-bool issongplaying = false;
-
 class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
-  // void seekToSecond(int second) {
-  //   Duration newDuration = Duration(seconds: second);
-  //
-  //   audioPlayer.seek(newDuration);
-  // }
+  Training data;
+  String basePath = 'https://sal-prod.s3.ap-south-1.amazonaws.com/';
+  Size size;
+
+  final audioPlayer = AudioPlayer();
+
+  AudioPlayerController _playerController = Get.put(AudioPlayerController());
 
   void initState() {
     super.initState();
-    _position = _slider;
-    print(widget.url);
-    _animationIconController1 = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 750),
-      reverseDuration: Duration(milliseconds: 750),
-    );
-    audioPlayer = new AudioPlayer();
+    _playerController.setCompleteDuration(0);
+
+    _playerController.setTotalDuration(100);
+    data = widget.data;
+
+    playAudio();
   }
-@override
+
+  Future<void> playAudio() async {
+    SharedPreferences preferences=await SharedPreferences.getInstance();
+    print('ClientId:${preferences.getString('cleintid')}');
+    Duration duration = await audioPlayer.setUrl(
+      basePath + data.content,
+    );
+    audioPlayer.play();
+
+    _playerController.setIsPlay(true);
+
+    _playerController.setTotalDuration(duration.inSeconds);
+
+    audioPlayer.createPositionStream().listen((event) {
+      _playerController.setCompleteDuration(event.inSeconds);
+
+      if (event.inSeconds>=duration.inSeconds) {
+        if(_playerController.isRepeat.value){
+          audioPlayer.seek(Duration());
+          return;
+        }
+        _playerController.setIsPlay(false);
+      }
+    });
+  }
+
+  @override
   void dispose() {
-    // TODO: implement dispose
+    audioPlayer?.stop();
+    audioPlayer?.dispose();
 
     super.dispose();
   }
+
+  Duration convertIntToDuration(int value) {
+    int second = (value % 60).floor();
+    int minute = (value / 60).floor();
+    int hour = (minute / 60).floor();
+    return Duration(hours: hour, minutes: minute, seconds: second);
+  }
+
+  String convertDurationString(int value) {
+    int second = (value % 60).floor();
+    int minute = (value / 60).floor();
+    int hours = (minute / 60).floor();
+    if (hours == 0) {
+      return set0Value(minute) + ':' + set0Value(second);
+    } else {
+      return set0Value(hours) +
+          ':' +
+          set0Value(minute) +
+          ':' +
+          set0Value(second);
+    }
+  }
+
+  String set0Value(int value) {
+    if (value < 10) {
+      return '0$value';
+    } else {
+      return value.toString();
+    }
+  }
+
   @override
+  Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    return Material(
+      child: SizedBox(
+        height: size.height,
+        width: size.width,
+        child: Stack(
+          children: [
+            Image(
+              image: NetworkImage(basePath + data.photo),
+              fit: BoxFit.cover,
+              height: size.height,
+              width: size.width,
+            ),
+            Positioned(
+              bottom: 0,
+              child: Container(
+                width: size.width,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            data?.title ?? '',
+                            style: TextStyle(color: Colors.white, fontSize: 28),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        GetBuilder<AudioPlayerController>(
+                          builder: (controller) {
+                            return IconButton(
+                              onPressed: () {
+                                _playerController.setIsLikeStatus();
+                              },
+                              icon: Icon(
+                                controller.isLikeStatus.value
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: controller.isLikeStatus.value
+                                    ? Colors.red
+                                    : Colors.white,
+                              ),
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    GetBuilder<AudioPlayerController>(
+                      builder: (controller) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Slider(
+                              activeColor: Colors.white,
+                              inactiveColor: Colors.grey,
+                              value:
+                                  controller.completeDuration.value.toDouble(),
+                              min: 0,
+                              max: controller.totalDuration.value.toDouble(),
+                              onChanged: (value) {
+                                audioPlayer
+                                    .seek(convertIntToDuration(value.floor()));
+                              },
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                    '${convertDurationString(controller.completeDuration.value)}'),
+                                Text(
+                                    '${convertDurationString(controller.totalDuration.value)}'),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: GetBuilder<AudioPlayerController>(
+                          builder: (controller) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            InkWell(
+                                onTap: () {
+                                  // _playerController.setIsPlay(true);
+                                  //
+                                  // audioPlayer.seek(Duration());
+                                  _playerController.setIsRepeat();
+                                },
+                                child: Image(
+                                    image:
+                                        AssetImage('assets/icons/Repeat.png'),
+                                  color: controller.isRepeat.value?Colors.yellow[800]:Colors.white,
+                                )),
+                            InkWell(
+                                onTap: () {
+                                  int duration =
+                                      controller.completeDuration.value;
+                                  int updateDue = duration - 10;
+                                  if (updateDue < 0) {
+                                    audioPlayer.seek(Duration());
+                                    return;
+                                  }
+                                  audioPlayer
+                                      .seek(convertIntToDuration(updateDue));
+                                },
+                                child: Image(
+                                    image: AssetImage(
+                                        'assets/icons/backword.png'))),
+                            InkWell(
+                                onTap: () {
+                                  if (controller.isPlay.value) {
+                                    audioPlayer.pause();
+                                  } else {
+                                    if (controller.completeDuration.value >=
+                                        controller.totalDuration.value) {
+                                      audioPlayer.seek(Duration());
+                                      _playerController.setIsPlay(true);
+                                      return;
+                                    }
+                                    audioPlayer.play();
+                                  }
+                                  _playerController
+                                      .setIsPlay(!controller.isPlay.value);
+                                },
+                                child: Image(
+                                    image: AssetImage(
+                                        'assets/icons/${controller.isPlay.value ? "Pause.png" : "Play.png"}'))),
+                            InkWell(
+                                onTap: () {
+                                  int duration =
+                                      controller.completeDuration.value;
+                                  int updateDue = duration + 10;
+                                  if (updateDue >
+                                      controller.totalDuration.value) {
+                                    audioPlayer.seek(convertIntToDuration(
+                                        controller.totalDuration.value));
+                                    _playerController.setIsPlay(false);
+                                    return;
+                                  }
+
+                                  audioPlayer
+                                      .seek(convertIntToDuration(updateDue));
+                                },
+                                child: Image(
+                                    image: AssetImage(
+                                        'assets/icons/forword.png'))),
+                            Opacity(
+                              opacity: 0.6,
+                              child: InkWell(
+                                  onTap: () {},
+                                  child: Image(
+                                      image: AssetImage(
+                                          'assets/icons/Shuffle.png'))),
+                            ),
+                          ],
+                        );
+                      }),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+/*@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:  AppBar(
@@ -93,13 +326,14 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                     Slider(
                       activeColor: Colors.white,
                       inactiveColor: Colors.grey,
-                      value: _position.inSeconds.toDouble(),
-                      max: _duration.inSeconds.toDouble() + 2,
+                      value: _position.inMilliseconds.toDouble(),
+                      max: _duration.inMilliseconds.toDouble() + 2,
                       onChanged: (double value) {
-                        setState(() {
-                         // seekToSecond(value.toInt());
-                          value = value;
-                        });
+                        print('value:$value');
+
+
+
+
                       },
                     ),
                     Row(
@@ -108,7 +342,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                         Icon(
                           Icons.navigate_before,
                           size: 55,
-                          color: Colors.white,
+                          color: Colors.red,
                         ),
                         GestureDetector(
                           onTap: () {
@@ -116,7 +350,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                   () {
                                 if (!issongplaying) {
 
-                                 audioPlayer.play(widget.url);
+                                 audioPlayer.play('https://sal-prod.s3.ap-south-1.amazonaws.com/${widget.data.content}');
                                 } else {
                                   audioPlayer.pause();
                                 }
@@ -136,7 +370,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                   icon: AnimatedIcons.play_pause,
                                   size: 55,
                                   progress: _animationIconController1,
-                                  color: Colors.white,
+                                  color: Colors.grey,
                                 ),
                               ),
                             ),
@@ -145,7 +379,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                         Icon(
                           Icons.navigate_next,
                           size: 55,
-                          color: Colors.white,
+                          color: Colors.red,
                         ),
                       ],
                     ),
@@ -157,5 +391,51 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }*/
+}
+
+class AudioPlayerController extends GetxController {
+  RxBool _isRepeat=false.obs;
+
+  RxBool get isRepeat => _isRepeat;
+
+  void setIsRepeat() {
+    _isRepeat.toggle();
+    update();
+  }
+
+  RxBool _isLikeStatus = false.obs;
+
+  RxBool get isLikeStatus => _isLikeStatus;
+
+  void setIsLikeStatus() {
+    _isLikeStatus.toggle();
+    update();
+  }
+
+  RxBool _isPlay = false.obs;
+
+  RxBool get isPlay => _isPlay;
+
+  void setIsPlay(bool value) {
+    _isPlay = value.obs;
+    update();
+  }
+
+  RxInt _totalDuration = 100.obs;
+  RxInt _completeDuration = 0.obs;
+
+  RxInt get totalDuration => _totalDuration;
+
+  void setTotalDuration(int value) {
+    _totalDuration = value.obs;
+    update();
+  }
+
+  RxInt get completeDuration => _completeDuration;
+
+  void setCompleteDuration(int value) {
+    _completeDuration = value.obs;
+    update();
   }
 }

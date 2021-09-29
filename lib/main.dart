@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sal_user/UI/OnBoardScreens.dart';
@@ -19,7 +20,7 @@ class MentalHealth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('Initial');
-    return MaterialApp(
+    return GetMaterialApp(
       title: "Mental Health",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

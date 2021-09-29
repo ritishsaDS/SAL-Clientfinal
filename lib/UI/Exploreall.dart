@@ -1,5 +1,4 @@
 
-import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
@@ -24,7 +23,6 @@ class ExploreAll extends StatefulWidget {
 }
 
 class _ExploreAllState extends State<ExploreAll> {
-  AudioPlayer audioPlugin = AudioPlayer();
 
   List<String> categories = ['All','Liked','Anxiety','Sleep','Anger'];
 
@@ -341,9 +339,10 @@ class _ExploreAllState extends State<ExploreAll> {
     for (int i = 0; i < video.length; i++) {
       productList.add(GestureDetector(onTap: () {
 
-        var url="https://sal-prod.s3.ap-south-1.amazonaws.com/"+"${video[i].content}";
-        print(url);
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>PlayerPage(url:url)));
+        // var url="https://sal-prod.s3.ap-south-1.amazonaws.com/"+"${video[i].content}";
+        // print(url);
+        print('type:${video[i]}');
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>PlayerPage(data: video[i],)));
 
         //   name:dishfromserver[i]['name'],
         //   chefname: dishfromserver[i]["chef_name"]['full_name'].toString(),

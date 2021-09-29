@@ -171,7 +171,7 @@ class _MyProfileState extends State<MyProfile> {
                                   ),
                                   Center(
                                     child:isloding==true?Center(
-                                      child: CircularProgressIndicator(color: Colors.blue,),
+                                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)),
                                     ): Text(
                                       profile['first_name'] == null
                                           ? ""

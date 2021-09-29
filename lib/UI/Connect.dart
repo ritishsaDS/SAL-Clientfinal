@@ -966,9 +966,16 @@ return councilorlist;
 }
 
 List <Widget> slotarray(id,therapistid){
-print("jnwejoen"+id.length.toString());
+  print('SLOT:..$slots');
+print("jnwejoen$id}");
 
-if(id.length==0){
+if(id==null){
+  List<Widget>slotlist=new List();{
+    slotlist.add(Text("No Slot Available for today"));
+  }
+  return slotlist;
+}
+else if(id.isEmpty){
   List<Widget>slotlist=new List();{
     slotlist.add(Text("No Slot Available for today"));
   }
