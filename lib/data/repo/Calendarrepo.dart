@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/base/BaseRepository.dart';
 import 'package:sal_user/models/Calendarmodel.dart';
+import 'package:sal_user/models/forYouResponseModel.dart';
 import 'package:sal_user/models/bookedappointment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Calendarrepo extends BaseRepository {
-  Future<Calendarmodel> upcomingAppointmentRepo(
-      BuildContext context,
-      ) async {
-    SharedPreferences prefs= await SharedPreferences.getInstance();
-    print( prefs.getString("cleintid"));
-    final uri = 'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/mood/history?client_id=no684mlumq3kw&dates=2021-07-31%2C2021-10-31';
+  Future<Calendarmodel> upcomingAppointmentRepo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print('Client Id :${prefs.getString("cleintid")}');
+    String clientId = prefs.getString("cleintid") ?? 'demo';
+    DateTime now = DateTime.now();
+
+    String monthStartDate =
+        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
+
+    String monthEndDate =
+        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month + 1, 0));
+
+    final uri =
+        'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/mood/history?client_id=$clientId&dates=$monthStartDate%2C$monthEndDate';
     var response = await Dio().get(uri,
         options: Options(
           headers: {
@@ -21,15 +31,45 @@ class Calendarrepo extends BaseRepository {
           },
         ));
     try {
-      print("hweinnowen");
-      print(response.data);
-      if (response.data != null) {
+      print('Get Mood History Response :${response.data}');
+      if (response.statusCode == 200) {
         final passEntity = Calendarmodel.fromJson(response.data);
+
         return passEntity;
       } else {
-        return Calendarmodel(meta: response.data);
+        return null;
       }
-    } catch (error, stacktrace) {}
+    } catch (error) {
+      print('ERROR :$error');
+      return null;
+    }
+  }
+
+  Future<ForYouResponse> forYouRepo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print('Client Id :${prefs.getString("cleintid")}');
+    String clientId = prefs.getString("cleintid") ?? 'demo';
+
+    final uri =
+        'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/content?client_id=$clientId&category_id=3';
+    var response = await Dio().get(uri,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ));
+    try {
+      print('Get FOR YOU Response :${response.data}');
+      if (response.statusCode == 200) {
+        final passEntity = ForYouResponse.fromJson(response.data);
+
+        return passEntity;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print('get for you ERROR :$error');
+      return null;
+    }
   }
 }
-

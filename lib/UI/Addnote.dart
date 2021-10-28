@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/MoodDoneScreen.dart';
 import 'package:sal_user/Utils/Colors.dart';
+import 'package:sal_user/data/repo/Addmoodrepo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Addnote extends StatefulWidget {
+  final String moodId;
+
+  const Addnote({Key key, this.moodId}) : super(key: key);
+
   @override
   _AddnoteState createState() => _AddnoteState();
 }
 
 class _AddnoteState extends State<Addnote> {
+  Addmoodrepo addmoodrepo = Addmoodrepo();
+  TextEditingController editingController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    editingController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -39,16 +57,21 @@ class _AddnoteState extends State<Addnote> {
             SizedBox(
               height: 30,
             ),
-            Text(
-              "Do You Want to Write About It",
-              style: TextStyle(
-                  color: Color(midnightBlue),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                "Would you like to write a bit about your mood? Be rest assured, it stays between us",
+                style: GoogleFonts.openSans(
+                    color: Color(midnightBlue),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
-            Container(
+             Container(
               margin: EdgeInsets.all(15),
               child: TextFormField(
+                controller: editingController,
+                style:GoogleFonts.openSans(fontSize: 15),
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
@@ -61,7 +84,7 @@ class _AddnoteState extends State<Addnote> {
                   hintText: "Add Notes",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 42, vertical: 10),
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Color(midnightBlue)),
@@ -81,9 +104,7 @@ class _AddnoteState extends State<Addnote> {
               ),
             ),
             Expanded(
-              child: SizedBox(
-
-              ),
+              child: SizedBox(),
             ),
             Container(
               margin: EdgeInsets.all(10),
@@ -92,17 +113,44 @@ class _AddnoteState extends State<Addnote> {
               child: RaisedButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                color: Colors.blue,
+                color: Color(0xff0066B3),
                 child: Text("Done"),
                 textColor: Colors.white,
-                onPressed: () {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  if (prefs.getString("cleintid") == null) {
+                    Get.showSnackbar(GetBar(
+                      message: 'Please First Login',
+                      duration: Duration(seconds: 2),
+                    ));
+                    return;
+                  }
+                  if (editingController.text.isEmpty) {
+                    Get.showSnackbar(GetBar(
+                      message: 'Please Add Notes',
+                      duration: Duration(seconds: 2),
+                    ));
+                    return;
+                  }
+                  final response = await addmoodrepo.addmood(
+                      context: context,
+                      moodid: widget.moodId,
+                      notes: editingController.text);
+                  if (response == null) {
+                    Get.showSnackbar(GetBar(
+                      message: 'Today Mode already set',
+                      duration: Duration(seconds: 2),
+                    ));
+                    return;
+                  }
+                  Get.to(MoodDoneScreen());
                 },
               ),
+            ),
+            SizedBox(
+              height: 20,
             )
-            ,
-            SizedBox(height: 20,)
           ],
         ),
       ),

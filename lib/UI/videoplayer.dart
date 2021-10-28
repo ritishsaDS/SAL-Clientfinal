@@ -1,43 +1,49 @@
+import 'package:better_player/better_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sal_user/Utils/Colors.dart';
-import 'package:video_player/video_player.dart';
+import 'package:sal_user/data/repo/ExploreLikeUnlikeRepo.dart';
+import 'package:sal_user/models/get_contents_response_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Audioplayer.dart';
+
 class ButterFlyAssetVideo extends StatefulWidget {
-  String url;
-  ButterFlyAssetVideo({this.url});
+  final ContentsArticle data;
+
+  const ButterFlyAssetVideo({Key key, this.data}) : super(key: key);
+
   @override
   _ButterFlyAssetVideoState createState() => _ButterFlyAssetVideoState();
 }
 
 class _ButterFlyAssetVideoState extends State<ButterFlyAssetVideo> {
-   VideoPlayerController _controller;
+  ContentsArticle data;
+
+  String basePath = "https://sal-prod.s3.ap-south-1.amazonaws.com/";
+  AudioPlayerController _playerController = Get.put(AudioPlayerController());
+
 
   @override
   void initState() {
+    data = widget.data;
     super.initState();
-    _controller = VideoPlayerController.network(widget.url);
-
-    _controller.addListener(() {
-      setState(() {});
-    });
-    _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
-        backgroundColor: Color(0XFFD8DFE9),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: InkWell(
-          onTap:(){
+          onTap: () {
             Navigator.pop(context);
           },
           child: Icon(
@@ -46,155 +52,97 @@ class _ButterFlyAssetVideoState extends State<ButterFlyAssetVideo> {
           ),
         ),
         centerTitle: true,
-        title: Text("Videos",
+        title: Text(
+          "Videos",
           style: TextStyle(
-              color: Color(midnightBlue),
-              fontWeight: FontWeight.w600
-          ),),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Wrap the play or pause in a call to `setState`. This ensures the
-          // correct icon is shown.
-          setState(() {
-            // If the video is playing, pause it.
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              // If the video is paused, play it.
-              _controller.play();
-            }
-          });
-        },
-        // Display the correct icon depending on the state of the player.
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+              color: Color(midnightBlue), fontWeight: FontWeight.w600),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.only(top: 20.0),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 20,
             ),
-             Text('With assets mp4'),
-            GestureDetector(
-// onTap: (){
-//   setState(() {
-//     if(_controller.play()==true){
-//      setState(() {
-//        _controller.pause();
-//      });
-//     }
-//     else{
-//      setState(() {
-//        _controller.play();
-//      });
-//     }
-//   });
-// },
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: <Widget>[
-                      VideoPlayer(_controller),
-                      //_ControlsOverlay(controller: _controller),
-                      VideoProgressIndicator(_controller, allowScrubbing: true),
-                      Positioned(
-                        top:0,
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: GestureDetector(
-                          onTap: (){
-                            setState(() {
-                              // If the video is playing, pause it.
-                              if (_controller.value.isPlaying) {
-                                _controller.pause();
-                              } else {
-                                // If the video is paused, play it.
-                                _controller.play();
-                              }
-                            });
-                          },
-                          child: Icon(
-                          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                      ),
-                        ),)
-                    ],
-                  ),
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: BetterPlayer.network(
+                basePath + data.content,
+                betterPlayerConfiguration: BetterPlayerConfiguration(
+                  aspectRatio: 16 / 9,
+                  autoPlay: true,
                 ),
               ),
             ),
+            SizedBox(
+              height: 40,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    '${data.title?? ''}',
+                    style: TextStyle(fontSize: 22, color: Color(0xff77849C)),
+                  ),
+                ),
+                GetBuilder<AudioPlayerController>(
+                  builder: (controller) {
+                    return IconButton(
+                      onPressed: () async {
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        print('CLIENT ID:${prefs.getString("cleintid")}');
+                        if(prefs.getString("cleintid")==null){
+                          Get.showSnackbar(GetBar(
+                            message: 'Please First Login',
+                            duration: Duration(seconds: 2),
+                          ));
+                          return;
+                        }
+                        String response;
+                        print(
+                            'Status:${controller.isLikeStatus.value}');
+                        if (controller.isLikeStatus.value) {
+                          response =
+                          await ExploreLikeUnlikeRepo.exploreUnLike(
+                              data.id);
+                        } else {
+                          response =
+                          await ExploreLikeUnlikeRepo.exploreLike(
+                              data.id);
+                        }
+                        if (response != null) {
+                          Get.showSnackbar(GetBar(
+                            message: response,
+                            duration: Duration(seconds: 2),
+                          ));
+                        } else {
+                          _playerController.setIsLikeStatus();
+                        }
+                      },
+                      icon: Icon(
+                        controller.isLikeStatus.value
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Colors.red
+                            ,
+                      ),
+                    );
+                  },
+                )
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              '${data.description ?? ''}',
+              style: TextStyle(fontSize: 16, color: Color(0xff77849C)),
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _BumbleBeeRemoteVideo extends StatefulWidget {
-  @override
-  _BumbleBeeRemoteVideoState createState() => _BumbleBeeRemoteVideoState();
-}
-
-class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
-   VideoPlayerController _controller;
-
-  Future<ClosedCaptionFile> _loadCaptions() async {
-    final String fileContents = await DefaultAssetBundle.of(context)
-        .loadString('assets/bumble_bee_captions.srt');
-    return SubRipCaptionFile(fileContents);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-      closedCaptionFile: _loadCaptions(),
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
-
-    _controller.addListener(() {
-      setState(() {});
-    });
-    _controller.setLooping(true);
-    _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          Container(padding: const EdgeInsets.only(top: 20.0)),
-           Text('With remote mp4'),
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  VideoPlayer(_controller),
-                  ClosedCaption(text: _controller.value.caption.text),
-                 // _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

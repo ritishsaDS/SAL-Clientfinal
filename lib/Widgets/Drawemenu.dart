@@ -30,10 +30,11 @@ class DrawerMenu extends StatefulWidget {
 
 class _DrawerMenuState extends State<DrawerMenu> {
   var upcomintAppointments = UpcomingAppointmentRepo();
-  bool  isloading = true;
+  bool isloading = true;
   List<Appointment> appointments = new List();
-  var name="";
+  var name = "";
   var photo;
+
   void initState() {
     super.initState();
     getname();
@@ -89,15 +90,17 @@ class _DrawerMenuState extends State<DrawerMenu> {
       );
     });
   }
+
   Future<void> getname() async {
-    SharedPreferences prefs=await SharedPreferences.getInstance();
-    
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     print(prefs.getString("name"));
     setState(() {
-      name=prefs.getString("name");
-      photo=  prefs.getString("photo");
+      name = prefs.getString("name");
+      photo = prefs.getString("photo");
     });
   }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -113,25 +116,20 @@ class _DrawerMenuState extends State<DrawerMenu> {
               color: Color(backgroundColorBlue),
               child: Column(
                 children: [
-                  Container(
-                    width: SizeConfig.screenWidth,
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(
-                      top: SizeConfig.blockSizeVertical * 3,
-                    ),
-                    child: CircleAvatar(
-                      radius: SizeConfig.blockSizeVertical * 5,
-                      backgroundImage:photo!=null?Image.network(photo).image: Image.network(  'https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png').image,
-                    ),
-                    ),
-
+                  SizedBox(height: 20,),
+                  CircleAvatar(
+                    radius: 38,
+                    backgroundImage: photo.toString() == "" || photo == null
+                        ? AssetImage('assets/icons/profileImg.png')
+                        : NetworkImage(photo),
+                  ),
                   Container(
                     width: SizeConfig.screenWidth,
                     alignment: Alignment.center,
                     margin:
                         EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
                     child: Text(
-                      name==null?"":name,
+                      name == null ? "" : name,
                       style: GoogleFonts.openSans(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -182,14 +180,20 @@ class _DrawerMenuState extends State<DrawerMenu> {
               },
             ),
             ListTile(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>MySessions()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MySessions()));
               },
               title: Text("My Sessions"),
               leading:
                   ImageIcon(Image.asset('assets/icons/availability.png').image),
-              trailing: Container(child: CircleAvatar(radius:15,child: Text(appointments.length.toString()),),),
+              trailing: Container(
+                child: CircleAvatar(
+                  radius: 15,
+                  child: Text(appointments.length.toString()),
+                ),
+              ),
             ),
             // ListTile(
             //   title: Text("Bookings"),
@@ -226,31 +230,36 @@ class _DrawerMenuState extends State<DrawerMenu> {
               leading: ImageIcon(Image.asset('assets/icons/payment.png').image),
               onTap: () {
                 Navigator.pop(context);
-               Navigator.push(context, MaterialPageRoute(builder: (context)=>Mood()));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Mood()));
               },
             ),
             ListTile(
               title: Text("Help"),
               leading: ImageIcon(Image.asset('assets/icons/help.png').image),
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Help()));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Help()));
               },
             ),
             ListTile(
               title: Text("About SAL"),
               leading: ImageIcon(Image.asset('assets/icons/about.png').image),
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AboutSAL()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AboutSAL()));
               },
             ),
             ListTile(
               title: Text("Settings"),
-              leading: ImageIcon(Image.asset('assets/icons/settings.png').image),
-              onTap: (){
+              leading:
+                  ImageIcon(Image.asset('assets/icons/settings.png').image),
+              onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Settings()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Settings()));
               },
             ),
           ],

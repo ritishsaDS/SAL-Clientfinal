@@ -10,7 +10,9 @@ import 'package:sal_user/data/repo/upcomingappointmentrepo.dart';
 import 'package:sal_user/models/bookedappointment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UpcomingAppointment extends StatefulWidget{
+import 'Connect.dart';
+
+class UpcomingAppointment extends StatefulWidget {
   @override
   _UpcomingAppointmentState createState() => _UpcomingAppointmentState();
 }
@@ -21,7 +23,8 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
   bool isloading = false;
   bool isError = false;
   List<Appointment> appointments = new List();
-  Map<String, Counsellor> counsellor ;
+  Map<String, Counsellor> counsellor;
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +43,7 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
             isloading = false;
           });
           print("jnjnjonaeno");
-         // appointments.addAll(value.appointments);
+          // appointments.addAll(value.appointments);
 
           //toast(value.meta.message);
           /*  SharedPreferencesTest().checkIsLogin("0");
@@ -76,6 +79,7 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
       );
     });
   }
+
   var moodstatic = [
     "0:30",
     "1:00",
@@ -126,57 +130,86 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
     "23:30"
         "24:00"
   ];
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-      width: SizeConfig.screenWidth,
-      margin: EdgeInsets.symmetric(
-          horizontal: SizeConfig.screenWidth * 0.02,
-          vertical: SizeConfig.blockSizeVertical),
-      child:GestureDetector(onTap: (){
-        // print(appointments.elementAt(index).time.toString());
-      },
-        child: Container(
-          height:SizeConfig.blockSizeVertical * 80 ,
-          child: appointvalue != null && appointvalue.length > 0  ?  ListView(
-            children: appointwidget(),
-          )
-
-            : Container(
-              child: Center(child: Text("No Upcoming Appointments", style:  TextStyle(color: Colors.black),)),
-
-
-        ),
-      )
-    ));
+        width: SizeConfig.screenWidth,
+        margin: EdgeInsets.symmetric(
+            horizontal: SizeConfig.screenWidth * 0.02,
+            vertical: SizeConfig.blockSizeVertical),
+        child: GestureDetector(
+            onTap: () {
+              // print(appointments.elementAt(index).time.toString());
+            },
+            child: Container(
+              height: SizeConfig.blockSizeVertical * 80,
+              child: appointvalue != null && appointvalue.length > 0
+                  ? ListView(
+                      children: appointwidget(),
+                    )
+                  : Center(
+                      child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "You have no upcoming sessions scheduled. ",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        MaterialButton(
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return Connect();
+                            }));
+                          },
+                          child: Text(
+                            "BOOK APPOINTMENT",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: Color(backgroundColorBlue),
+                          minWidth: SizeConfig.screenWidth - 100,
+                          height: SizeConfig.blockSizeVertical * 6,
+                        ),
+                      ],
+                    )),
+            )));
   }
 
-dynamic appointvalue=new List();
-dynamic counsellors=new List();
+  dynamic appointvalue = new List();
+  dynamic counsellors = new List();
+
   void getAppointment() async {
     setState(() {
-      isloading=true;
+      isloading = true;
     });
-    SharedPreferences prefs= await SharedPreferences.getInstance();
-    print( prefs.getString("cleintid"));
-    final uri = 'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/upcoming?client_id=${prefs.getString("cleintid")}';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(' CLient ID ${prefs.getString("cleintid")}');
+    final uri =
+        'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/upcoming?client_id=${prefs.getString("cleintid")}';
 
     try {
       final response = await get(Uri.parse(uri));
-     // print("bjkb" + response.body.toString());
+      // print("bjkb" + response.body.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
-       print(responseJson);
-       appointvalue=responseJson['appointments'];
-        counsellors=responseJson;
+        print(responseJson);
+        appointvalue = responseJson['appointments'];
+        counsellors = responseJson;
         setState(() {
           isError = false;
           isloading = false;
           print('setstate');
         });
-
-
       } else {
         print("bjkb" + response.statusCode.toString());
         // showToast("Mismatch Credentials");
@@ -198,14 +231,20 @@ dynamic counsellors=new List();
       );
     }
   }
-List <Widget>appointwidget(){
-    List<Widget>appointmentlist=new List();
-    for(int i=0; i<appointvalue.length;i++){
+
+  List<Widget> appointwidget() {
+    List<Widget> appointmentlist = new List();
+    for (int i = 0; i < appointvalue.length; i++) {
       print(appointvalue[i]['counsellor_id']);
       var counsellorid;
-      counsellorid=counsellors[appointvalue[i]['counsellor_id']];
-      appointmentlist.add(listTileCafe1(context,counsellors["counsellors"][appointvalue[i]['counsellor_id']]["first_name"],moodstatic[int.parse(appointvalue[i]['time'])],appointvalue[i]['date'].toString()));
+      counsellorid = counsellors[appointvalue[i]['counsellor_id']];
+      appointmentlist.add(listTileCafe1(
+          context,
+          counsellors["counsellors"][appointvalue[i]['counsellor_id']]
+              ["first_name"],
+          moodstatic[int.parse(appointvalue[i]['time'])],
+          appointvalue[i]['date'].toString()));
     }
     return appointmentlist;
-}
+  }
 }

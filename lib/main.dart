@@ -10,8 +10,7 @@ import 'UI/login.dart';
 import 'UI/mood.dart';
 
 void main() {
-
-   runApp(MentalHealth());
+  runApp(MentalHealth());
 }
 
 class MentalHealth extends StatelessWidget {
@@ -27,9 +26,20 @@ class MentalHealth extends StatelessWidget {
         fontFamily: 'OpenSans',
       ),
       home: Splash(),
+      // home: Demo(),
       routes: {
         '/Login': (context) => LoginScreen(),
       },
+    );
+  }
+}
+
+class Demo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Text('hllo'),
     );
   }
 }

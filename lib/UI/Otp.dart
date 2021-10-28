@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/Signup.dart';
@@ -45,6 +46,7 @@ class _OTPScreenState extends State<OTPScreen> {
   var sendOtp = SendOtptoPhoneRepo();
   var verifyOtp = VerifyOtpRepo();
   var createUser = CreateTherapistProfileRepo();
+  bool selected=false;
 
   // var sendOtp = send.SendOtptoPhone();
   @override
@@ -61,6 +63,7 @@ class _OTPScreenState extends State<OTPScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               SizedBox(
                 height: 50,
               ),
@@ -183,23 +186,30 @@ class _OTPScreenState extends State<OTPScreen> {
               verifyOtp
                   .verifyOtp(phone: "91" + widget.phonenumber, otp: digit)
                   .then((value) async {
-
                 if (value != null) {
-                  print(value.meta.status);
+                  print('STATUS:${value.meta.status}');
                   if (value.meta.status == "200") {
                     Navigator.of(loginLoader.currentContext,
                             rootNavigator: true)
                         .pop();
 
                     // toast(value.meta.message);
-                    print(value.meta.message);
-                    if (widget.screen == "Home") {
-                      setState(() {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProfessionalInfo1()));
-                      });
+                    print('Client ID:${ value.client.clientId}');
+                    if (widget.screen == "Home" || widget.screen == null) {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+
+                      prefs.setString("cleintid", value.client.clientId);
+                      prefs.setString("email", value.client.email);
+                      prefs.setString("phone", value.client.phone);
+                      prefs.setString("name", value.client.firstName);
+                      Get.offAll(ProfessionalInfo1());
+                      // setState(() {
+                      //   Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) => ProfessionalInfo1()));
+                      // });
                     } else {
                       Dialogs.showLoadingDialog(context, loginLoader);
                       /* Future.delayed(Duration(seconds: 2)).then((value) {
@@ -240,7 +250,6 @@ class _OTPScreenState extends State<OTPScreen> {
                             prefs.setString("phone", "91" + phone.text);
                             prefs.setString("name", firstNameController.text);
 
-
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -267,23 +276,6 @@ class _OTPScreenState extends State<OTPScreen> {
                         );
                       });
                     }
-
-                    if (value.therapist != null) {
-                      // SharedPreferences prefs=await SharedPreferences.getInstance();
-                      //  prefs.setString("therapistid",value.therapist.therapistId );
-                      //  prefs.remove("firstname");
-                      //  prefFs.remove("lastname");
-                      //  prefs.setString("firstname",value.therapist.firstName );
-                      //  prefs.setString("lastname",value.therapist.lastName );
-                      //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));
-
-                    } else {
-                      // // Navigator.push(context, MaterialPageRoute(builder: (conext){
-                      // //   return Price1(getOtp:  firstController.text
-                      // //   );
-                      // }));
-
-                    }
                   } else {
                     // firstController.clear();
                     //
@@ -296,8 +288,7 @@ class _OTPScreenState extends State<OTPScreen> {
                       "",
                     );
                   }
-                }
-                else {
+                } else {
                   Navigator.of(loginLoader.currentContext, rootNavigator: true)
                       .pop();
                   showAlertDialog(
@@ -308,11 +299,11 @@ class _OTPScreenState extends State<OTPScreen> {
                 }
               }).catchError((error) {
                 print('error MSG:$error');
-                Navigator.of(loginLoader.currentContext, rootNavigator: true)
-                    .pop();
+                // Navigator.of(loginLoader.currentContext, rootNavigator: true)
+                //     .pop();
                 showAlertDialog(
                   context,
-                  error.toString(),
+                  'OTP not verified',
                   "",
                 );
               });

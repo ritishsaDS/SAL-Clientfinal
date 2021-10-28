@@ -1,15 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/calander/calander_screen.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/Calendarrepo.dart';
 import 'package:sal_user/models/Calendarmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipedetector/swipedetector.dart';
-
 import 'custom_calendar.dart';
 
 enum CalendarViews { dates, months, year }
@@ -54,15 +55,15 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
   ];
   final TextStyle _textStyle = TextStyle(color: Colors.blue);
   var token;
-  bool isLoading = false;
   var notesdate;
   var usernotes;
   var listOfDates;
   var value;
   dynamic notes = new List();
   var upcomintAppointments = Calendarrepo();
-  bool  isloading = true;
-  List<Calendarmodel> calendarmodel = new List();
+  bool isLoading = true;
+  Calendarmodel calendarmodel;
+
   @override
   void initState() {
     final date = DateTime.now();
@@ -72,42 +73,16 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
       setState(() => _getCalendar());
     });
     super.initState();
-    isloading = true;
-    upcomintAppointments
-        .upcomingAppointmentRepo(
-      context,
-    )
-        .then((value) {
-      print("value");
-      print(value);
+
+    isLoading = true;
+    upcomintAppointments.upcomingAppointmentRepo().then((value) {
+      print('Response:$value');
       if (value != null) {
         if (value.meta.status == "200") {
           setState(() {
-            isloading = false;
+            isLoading = false;
           });
-          print("jnjnjonaeno");
-
-          DateTime.parse(value.moodResults.elementAt(0).date.toString()).isAtSameMomentAs(DateTime.now());
-          print( DateTime.parse(value.moodResults.elementAt(0).date.toString()).isAtSameMomentAs(DateTime.parse(date.day.toString())));
-         // print(_sequentialDates.where((element) => element.date.weekday==DateTime.parse(value.moodResults.elementAt(0).date.toString())));
-         // _sequentialDates.toString().contains(value.moodResults.elementAt(0).date.toString());
-         // print( _sequentialDates.toString().substring(0,10).contains(value.moodResults.elementAt(0).date.toString()));
-        //  appointments.addAll(value.appointments);
-          print("appointments.length");
-         /// print(appointments.length);
-
-          //toast(value.meta.message);
-          /*  SharedPreferencesTest().checkIsLogin("0");
-                                          SharedPreferencesTest()
-                                              .saveToken("set", value: value.token);*/
-
-          /*  Navigator.push(context,
-              MaterialPageRoute(
-                  builder: (conext) {
-                    return OTPScreen(
-                      phoneNumber: mobileController.text,
-                    );
-                  }));*/
+          calendarmodel = value;
         } else {
           showAlertDialog(
             context,
@@ -148,6 +123,28 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
   //   return DateFormat.Md('ja').format(DateTime(lunar[2], lunar[1], lunar[0]));
   // }
 
+  String getMoodIcon(String key) {
+    print('KEY:$key');
+    String icon;
+    if (key == '1') {
+      icon = "Group 7041.png";
+    } else if (key == '2') {
+      icon = "Group 7042.png";
+    } else if (key == '3') {
+      icon = "anxious.png";
+    } else if (key == '4') {
+      icon = "concerned.png";
+    } else if (key == '5') {
+      icon = "Group 7044.png";
+    } else if (key == '6') {
+      icon = "Group 7043.png";
+    } else {
+      icon = "Group 7041.png";
+    }
+
+    return 'assets/icons/' + icon;
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -155,36 +152,189 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
+    int selectedMonthDays =
+        DateTime(_currentDateTime.year, _currentDateTime.month + 1, 0).day;
     return SafeArea(
         child: Scaffold(
             body: Column(children: [
       SizedBox(
         height: 20,
       ),
-      Center(
-        child: Container(
-          margin: EdgeInsets.all(16),
-          height: getProportionateScreenHeight(460),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12.withOpacity(0.1),
-                blurRadius: 12.0,
-                spreadRadius: 3.0,
-                offset: Offset(0, 15),
-              )
-            ],
-          ),
-          child: (_currentView == CalendarViews.dates)
-              ? _datesView()
-              : (_currentView == CalendarViews.months)
-                  ? _showMonthsList()
-                  : _yearsView(midYear ?? _currentDateTime.year),
-        ),
-      ),
-
+      isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Expanded(
+              child: GetBuilder<MoodController>(
+                builder: (controller) {
+                  if (!controller.isDay.value) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          _datesHeaderView(),
+                          Expanded(
+                            child: ListView(
+                              children:
+                                  List.generate(selectedMonthDays, (index) {
+                                String noteTxt = calendarmodel.moodResults
+                                    .firstWhere(
+                                        (element) =>
+                                            element.date ==
+                                            DateTime(
+                                                _currentDateTime.year,
+                                                _currentDateTime.month,
+                                                index + 1),
+                                        orElse: () => null)
+                                    ?.notes;
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            flex: 1,
+                                            child: Text(
+                                              '${index + 1} ${DateFormat('EEEE').format(DateTime(_currentDateTime.year, _currentDateTime.month, index + 1)).replaceFirst('day', '').toUpperCase()}',
+                                              style: TextStyle(
+                                                  color: Color(0xff77849C),
+                                                  fontSize: 12),
+                                            ),
+                                          ),
+                                          Expanded(
+                                              flex: 4,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10),
+                                                child: Text(
+                                                  '${noteTxt == null || noteTxt == '' ? '' : noteTxt}',
+                                                  style: TextStyle(
+                                                      color: Color(0xff445066),
+                                                      fontSize: 14),
+                                                ),
+                                              )),
+                                          Container(
+                                            height: 25,
+                                            width: 25,
+                                            decoration: calendarmodel
+                                                    .moodResults.isNotEmpty
+                                                ? calendarmodel.moodResults
+                                                            .indexWhere((element) =>
+                                                                element.date ==
+                                                                DateTime(
+                                                                    _currentDateTime
+                                                                        .year,
+                                                                    _currentDateTime
+                                                                        .month,
+                                                                    index +
+                                                                        1)) >
+                                                        -1
+                                                    ? BoxDecoration(
+                                                        image: DecorationImage(
+                                                          scale: 2,
+                                                          image: AssetImage(
+                                                            "assets/icons/Rectangle 412.png",
+                                                          ),
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      )
+                                                    : BoxDecoration(
+                                                        color:
+                                                            Color(0xffE0EDF6),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4),
+                                                      )
+                                                : BoxDecoration(
+                                                    color: Color(0xffE0EDF6),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4),
+                                                  ),
+                                            child: calendarmodel
+                                                    .moodResults.isNotEmpty
+                                                ? calendarmodel.moodResults
+                                                            .indexWhere((element) =>
+                                                                element.date ==
+                                                                DateTime(
+                                                                    _currentDateTime
+                                                                        .year,
+                                                                    _currentDateTime
+                                                                        .month,
+                                                                    index +
+                                                                        1)) >
+                                                        -1
+                                                    ? Padding(
+                                                        padding: EdgeInsets.all(calendarmodel
+                                                                    .moodResults
+                                                                    .firstWhere((element) =>
+                                                                        element
+                                                                            .date ==
+                                                                        DateTime(
+                                                                            _currentDateTime
+                                                                                .year,
+                                                                            _currentDateTime
+                                                                                .month,
+                                                                            index +
+                                                                                1))
+                                                                    .moodId ==
+                                                                '4'
+                                                            ? 0
+                                                            : 7),
+                                                        child: Image.asset(
+                                                          getMoodIcon(calendarmodel
+                                                              .moodResults
+                                                              .firstWhere((element) =>
+                                                                  element
+                                                                      .date ==
+                                                                  DateTime(
+                                                                      _currentDateTime
+                                                                          .year,
+                                                                      _currentDateTime
+                                                                          .month,
+                                                                      index +
+                                                                          1))
+                                                              .moodId),
+                                                          fit: BoxFit.contain,
+                                                        ),
+                                                      )
+                                                    : SizedBox()
+                                                : SizedBox(),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Divider(
+                                      color: Color(0xff445066),
+                                    )
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.all(16),
+                      height: getProportionateScreenHeight(460),
+                      child: (_currentView == CalendarViews.dates)
+                          ? _datesView()
+                          : (_currentView == CalendarViews.months)
+                              ? _showMonthsList()
+                              : _yearsView(midYear ?? _currentDateTime.year),
+                    );
+                  }
+                },
+              ),
+            ),
     ])));
   }
 
@@ -233,37 +383,29 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // header
-          Container(
-            height: getProportionateScreenHeight(50),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                // prev month button
-                _toggleBtn(false, Colors.white),
-                // month and year
-                InkWell(
-                  onTap: () =>
-                      setState(() => _currentView = CalendarViews.months),
-                  child: Center(
-                    child: Text(
-                      '${_monthNames[_currentDateTime.month - 1]} ${_currentDateTime.year}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              // prev month button
+              _toggleBtn(false, Colors.black),
+              // month and year
+              InkWell(
+                onTap: () =>
+                    setState(() => _currentView = CalendarViews.months),
+                child: Center(
+                  child: Text(
+                    '${_monthNames[_currentDateTime.month - 1]} ${_currentDateTime.year}',
+                    style: TextStyle(
+                      // color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-                // next month button
-                _toggleBtn(true, Colors.white),
-              ],
-            ),
+              ),
+              // next month button
+              _toggleBtn(true, Colors.black),
+            ],
           ),
 
           SizedBox(
@@ -271,11 +413,42 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
           ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 10),
-           height: getProportionateScreenHeight(390),
-           // padding: EdgeInsets.only(left:16,right: 16),
+            height: getProportionateScreenHeight(390),
+            // padding: EdgeInsets.only(left:16,right: 16),
             child: _calendarBody(),
           ),
+        ],
+      ),
+    );
+  }
 
+  Widget _datesHeaderView() {
+    return Container(
+      height: 50,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          // header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              // prev month button
+              _toggleBtn(false, Colors.black),
+              // month and year
+              Center(
+                child: Text(
+                  '${_monthNames[_currentDateTime.month - 1]} ${_currentDateTime.year}',
+                  style: TextStyle(
+                    // color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              // next month button
+              _toggleBtn(true, Colors.black),
+            ],
+          ),
         ],
       ),
     );
@@ -323,18 +496,15 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
         });
       },
       child: GridView.builder(
-
-       // shrinkWrap: true,
+        // shrinkWrap: true,
         padding: EdgeInsets.zero,
 
         itemCount: _sequentialDates.length + 7,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          mainAxisSpacing: 5,
-
-          crossAxisCount: 7,
-          crossAxisSpacing: 14,
-          childAspectRatio: 7/9
-        ),
+            mainAxisSpacing: 5,
+            crossAxisCount: 7,
+            crossAxisSpacing: 14,
+            childAspectRatio: 7 / 9),
         itemBuilder: (context, index) {
           if (index < 7) return _weekDayTitle(index);
 
@@ -372,7 +542,7 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
   // calendar header
   Widget _weekDayTitle(int index) {
     return Container(
-      margin: EdgeInsets.only(top:20),
+      margin: EdgeInsets.only(top: 20),
       child: Center(
         child: Text(
           _weekDays[index],
@@ -385,6 +555,8 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
 
   // calendar element
   Widget _calendarDates(Calendar calendarDate) {
+    // print('response:${calendarmodel.moodResults}');
+    // print('DAte:${calendarDate.date}');
     return InkWell(
         onTap: () async {
           if (_selectedDateTime != calendarDate.date) {
@@ -398,63 +570,87 @@ class _CalanderScreenWidgetState extends State<CalanderScreenWidget> {
             print(_selectedDateTime);
           }
         },
-        child:  Container(
-
-          margin: EdgeInsets.only(left: 7,right: 7),
+        child: Container(
+          margin: EdgeInsets.only(left: 7, right: 7),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                children: [
-                  Container(
-                    child:Opacity(
-                      opacity: 1.0,
-                      child: Container(
-
-                       height: 25,
-                        width: 60,
-
-                        decoration: BoxDecoration(
-
-                          image: DecorationImage(
-scale: 2,
-                            image: AssetImage(
-                              "assets/icons/Rectangle 412.png",
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      height: 25,
+                      width: 60,
+                      decoration: calendarmodel.moodResults.isNotEmpty
+                          ? calendarmodel.moodResults.indexWhere((element) =>
+                                      element.date == calendarDate.date) >
+                                  -1
+                              ? BoxDecoration(
+                                  image: DecorationImage(
+                                    scale: 2,
+                                    image: AssetImage(
+                                      "assets/icons/Rectangle 412.png",
+                                    ),
+                                    fit: BoxFit.fill,
+                                  ),
+                                )
+                              : BoxDecoration(
+                                  color: Color(0xffE0EDF6),
+                                  borderRadius: BorderRadius.circular(4),
+                                )
+                          : BoxDecoration(
+                              color: Color(0xffE0EDF6),
+                              borderRadius: BorderRadius.circular(4),
                             ),
-
-                            fit: BoxFit.fill,
-
-                          ),
-                        ),
-                        // color: Colors.blue,
-                        child: Image.asset(
-                          "assets/icons/Group 7042.png",width: 20,height: 20, fit: BoxFit.contain,
-                        ),
-                      ),
+                      child: calendarmodel.moodResults.isNotEmpty
+                          ? calendarmodel.moodResults.indexWhere((element) =>
+                                      element.date == calendarDate.date) >
+                                  -1
+                              ? Padding(
+                                  padding: EdgeInsets.all(calendarmodel
+                                              .moodResults
+                                              .firstWhere((element) =>
+                                                  element.date ==
+                                                  calendarDate.date)
+                                              .moodId ==
+                                          '4'
+                                      ? 0
+                                      : 7),
+                                  child: Image.asset(
+                                    getMoodIcon(calendarmodel.moodResults
+                                        .firstWhere((element) =>
+                                            element.date == calendarDate.date)
+                                        .moodId),
+                                    fit: BoxFit.contain,
+                                  ),
+                                )
+                              : SizedBox()
+                          : SizedBox(),
                     ),
-                  ),
-                  Text('${calendarDate.date.day}',style: TextStyle(
-          fontSize: 10,))
-                ],
-              ),
-              // Text(
-              //   '${calendarDate.date.day}',
-              //   style: TextStyle(
-              //     fontSize: 10,
-              //     color: (calendarDate.thisMonth)
-              //         ? (calendarDate.date.weekday == DateTime.sunday)
-              //             ? Colors.black
-              //             : Colors.black
-              //         : (calendarDate.date.weekday == DateTime.sunday)
-              //             ? Colors.black.withOpacity(0.5)
-              //             : Colors.black.withOpacity(0.5),
-              //   ),
-              // ),
-
-
-
-    ]),
-        )); }
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text('${calendarDate.date.day}',
+                        style: TextStyle(
+                          fontSize: 10,
+                        ))
+                  ],
+                ),
+                // Text(
+                //   '${calendarDate.date.day}',
+                //   style: TextStyle(
+                //     fontSize: 10,
+                //     color: (calendarDate.thisMonth)
+                //         ? (calendarDate.date.weekday == DateTime.sunday)
+                //             ? Colors.black
+                //             : Colors.black
+                //         : (calendarDate.date.weekday == DateTime.sunday)
+                //             ? Colors.black.withOpacity(0.5)
+                //             : Colors.black.withOpacity(0.5),
+                //   ),
+                // ),
+              ]),
+        ));
+  }
 
   // date selector
   Widget _selector(Calendar calendarDate) {
@@ -501,8 +697,6 @@ scale: 2,
     );
   }
 
-
-
   // get next month calendar
   void _getNextMonth() {
     if (_currentDateTime.month == 12) {
@@ -539,7 +733,7 @@ scale: 2,
         InkWell(
           onTap: () => setState(() => _currentView = CalendarViews.year),
           child: Padding(
-            padding:  EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
               '${_currentDateTime.year}',
               style: TextStyle(
@@ -652,8 +846,4 @@ scale: 2,
 
     //print(next.toString().substring(8));
   }
-
-
-                         
-                        }
-
+}

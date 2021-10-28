@@ -8,7 +8,7 @@ import 'package:sal_user/data/repo/pastAppointmentrepo.dart';
 import 'package:sal_user/data/repo/upcomingappointmentrepo.dart';
 import 'package:sal_user/models/bookedappointment.dart';
 
-class PastAppointment extends StatefulWidget{
+class PastAppointment extends StatefulWidget {
   @override
   _UpcomingAppointmentState createState() => _UpcomingAppointmentState();
 }
@@ -18,7 +18,8 @@ class _UpcomingAppointmentState extends State<PastAppointment> {
   var upcomintAppointments = PastAppointmentRepo();
   bool isloading = false;
   List<Appointment> appointments = new List();
-  Map<String, Counsellor> counsellor ;
+  Map<String, Counsellor> counsellor;
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +73,7 @@ class _UpcomingAppointmentState extends State<PastAppointment> {
       );
     });
   }
+
   var moodstatic = [
     "0:30",
     "1:00",
@@ -122,6 +124,7 @@ class _UpcomingAppointmentState extends State<PastAppointment> {
     "23:30"
         "24:00"
   ];
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -130,22 +133,40 @@ class _UpcomingAppointmentState extends State<PastAppointment> {
         margin: EdgeInsets.symmetric(
             horizontal: SizeConfig.screenWidth * 0.02,
             vertical: SizeConfig.blockSizeVertical),
-        child:GestureDetector(onTap: (){
-          // print(appointments.elementAt(index).time.toString());
-        },
+        child: GestureDetector(
+          onTap: () {
+            // print(appointments.elementAt(index).time.toString());
+          },
           child: Container(
-            height:SizeConfig.blockSizeVertical * 80 ,
-            child: appointments != null && appointments.length > 0  ?  ListView.builder(itemBuilder: (context, index){
-              return appointments != null && appointments.length > 0 ?  pastappointmentwidget(context,"Counsellor",moodstatic[int.parse(appointments.elementAt(index).time)],appointments.elementAt(index).date.toString()
-
-              ): Container(
-                child: Center(child: Text("No  Appointments", style:  TextStyle(color: Colors.black),)),
-              );
-            }, itemCount: appointments.length,): Container(
-              child: Center(child: Text("No  Appointments", style:  TextStyle(color: Colors.black),)),
-            ),
+            height: SizeConfig.blockSizeVertical * 80,
+            child: appointments != null && appointments.length > 0
+                ? ListView.builder(
+                    itemBuilder: (context, index) {
+                      return appointments != null && appointments.length > 0
+                          ? pastappointmentwidget(
+                              context,
+                              "Counsellor",
+                              moodstatic[int.parse(
+                                  appointments.elementAt(index).time)],
+                              appointments.elementAt(index).date.toString())
+                          : Container(
+                              child: Center(
+                                  child: Text(
+                                "You have not attended any sessions yet.",
+                                style: TextStyle(color: Colors.black),
+                              )),
+                            );
+                    },
+                    itemCount: appointments.length,
+                  )
+                : Container(
+                    child: Center(
+                        child: Text(
+                      "You have not attended any sessions yet.",
+                      style: TextStyle(color: Colors.black),
+                    )),
+                  ),
           ),
-        )
-    );
+        ));
   }
 }

@@ -11,8 +11,10 @@ class Explorerepo extends BaseRepository {
     BuildContext context,
   }) async {
       print(therapistId);
+
     final uri =
         'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/therapist/training?therapist_id="${therapistId}"';
+    print('URL:$uri');
     var response = await Dio().get(uri,
         options: Options(
           headers: {

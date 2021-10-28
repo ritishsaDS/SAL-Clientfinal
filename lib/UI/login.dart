@@ -216,6 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     phone: countryCode + mobileController.text,
                                   )
                                       .then((value) {
+                                        print('SEND OTP :${value.meta.status}${value.meta.message}');
                                     if (value != null) {
                                       if (value.meta.status == "200") {
                                         Navigator.of(loginLoader.currentContext,

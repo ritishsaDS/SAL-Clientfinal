@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/models/get_topics_response_model.dart';
 import 'Home.dart';
+import 'package:http/http.dart' as http;
 
-bool anxiety = false;
-bool relationship = false;
-bool depression = false;
-bool grief = false;
-bool lifeCoaching = false;
-bool anger = false;
-bool parenting = false;
-bool stress = false;
-bool motivation = false;
-bool others = false;
-bool selected = false;
-var list=[];
+import 'Myprofile.dart';
+
+enum Status { LOADING, ERROR, COMPLETE }
+
 class ProfessionalInfo1 extends StatefulWidget {
   const ProfessionalInfo1({Key key}) : super(key: key);
 
@@ -25,6 +20,48 @@ class ProfessionalInfo1 extends StatefulWidget {
 }
 
 class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
+  GetTopicsResponseModel result;
+  Status status = Status.LOADING;
+  List<String> selectedList = [];
+
+  Future<void> getTopics() async {
+    String url =
+        'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/topic';
+    try {
+      http.Response response = await http.get(url);
+      if (response.statusCode == 200) {
+        GetTopicsResponseModel data =
+            getTopicsResponseModelFromJson(response.body);
+        print('Response :${response.body}');
+        print('Response Meta:${data.meta?.status}');
+        if (data.meta.status == '200') {
+          result = data;
+          status = Status.COMPLETE;
+          selectedList=selectedInterestList;
+          setState(() {});
+          return;
+        }
+        result = null;
+        status = Status.ERROR;
+      } else {
+        result = null;
+        status = Status.ERROR;
+      }
+    } catch (e) {
+      print('get topic error :$e');
+      result = null;
+      status = Status.ERROR;
+    }
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getTopics();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -32,19 +69,24 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
         child: Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: Icon(
-          Icons.arrow_back_ios,
-          color: Colors.black,
+        leading: InkWell(
+          onTap: (){
+            Get.back();
+          },
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
         ),
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: SizeConfig.screenHeight * 0.15,
+              height: SizeConfig.screenHeight * 0.1,
             ),
             Container(
               margin: EdgeInsets.only(
@@ -59,467 +101,81 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                     color: Color(fontColorSteelGrey)),
               ),
             ),
-            Container(
-              margin: EdgeInsets.only(
-                left: SizeConfig.screenWidth * 0.05,
-                right: SizeConfig.screenWidth * 0.05,
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
                 "Choose topics to focus On",
                 style: TextStyle(color: Color(fontColorGray)),
               ),
             ),
-            Container(
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.blockSizeVertical * 6,
-              margin: EdgeInsets.only(
-                top: SizeConfig.blockSizeVertical,
-                left: SizeConfig.screenWidth * 0.05,
-                right: SizeConfig.screenWidth * 0.05,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        // anxiety = true;
-                        selected = true;
-                        if(anxiety==true&&selected==true){
-                          setState(() {
-                            anxiety=false;
-                            list.remove("Anxiety Management");
-                          });}
-                        else{
-                          anxiety=true;
-                          list.add("Anxiety Management");
-                        }
-
-                      });
-                    },
-                    child: Container(
-                      child: Text("Anxiety Management",style: GoogleFonts.openSans(
-                          color: anxiety == true && selected == true ? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: anxiety == true && selected == true ? Colors.blue : Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                              color: anxiety == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
+            status == Status.ERROR
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: Center(
+                      child: Text('Server Error'),
                     ),
-                  ),
-                  SizedBox(
-                    width: SizeConfig.blockSizeHorizontal * 5,
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        selected == true;
-                        if(relationship==true&&selected==true){
-                          setState(() {
-                            relationship=false;
-                            list.remove("Relationship");
-                          });}
-                        else{
-                          relationship=true;
-                          list.add("Relationship");
-                        }
-
-                      });
-                    },
-                    child: Container(
-                      child: Text("Relationship",style: GoogleFonts.openSans(
-                          color: relationship == true  ? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: relationship == true  ? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color:relationship == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.blockSizeVertical * 6,
-              margin: EdgeInsets.only(
-                top: SizeConfig.blockSizeVertical,
-                left: SizeConfig.screenWidth * 0.05,
-                right: SizeConfig.screenWidth * 0.05,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: (){
-                      selected = true;
-                      setState(() {
-                        selected = true;
-                        if(depression==true&&selected==true){
-                          setState(() {
-                            depression=false;
-                            list.remove("Depression");
-                          });}
-                        else{
-                          depression=true;
-                          list.add("Depression");
-                        }
-
-                      });
-                    },
-                    child: Container(
-                      child: Text("Depression",style: GoogleFonts.openSans(
-                          color: depression == true && selected == true? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: depression == true && selected == true? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color: depression == true && selected == true? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: SizeConfig.blockSizeHorizontal * 5,
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        selected = true;
-                        if(grief==true&&selected==true){
-                          setState(() {
-                            grief=false;
-                            list.remove("Grief");
-                          });}
-                        else{
-                          grief=true;
-                          list.add("Grief");
-                        }
-                      });
-                    },
-                    child: Container(
-                      child: Text("Grief",style: GoogleFonts.openSans(
-                          color: grief==true && selected == true?Colors.white:Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: grief == true && selected == true?Colors.blue:Colors.white,
-                          border: Border.all(
-                              color: grief == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: SizeConfig.blockSizeHorizontal * 5,
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        selected = true;
-                        if(lifeCoaching==true&&selected==true){
-                          setState(() {
-                            lifeCoaching=false;
-                            list.remove("Life Coaching");
-                          });}
-                        else{
-                          lifeCoaching=true;
-                          list.add("Life Coaching");
-                        }                      });
-                    },
-                    child: Container(
-                      child: Text("Life Coaching",style: GoogleFonts.openSans(
-                          color: lifeCoaching==true && selected == true? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: lifeCoaching == true && selected == true? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color: lifeCoaching == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.blockSizeVertical * 6,
-              margin: EdgeInsets.only(
-                top: SizeConfig.blockSizeVertical,
-                left: SizeConfig.screenWidth * 0.05,
-                right: SizeConfig.screenWidth * 0.05,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        selected = true;
-                        if(anger==true&&selected==true){
-                          setState(() {
-                            anger=false;
-                            list.remove("Anger Management");
-                          });}
-                        else{
-                          anger=true;
-                          list.add("Anger Management");
-                        }
-                      });
-                    },
-                    child: Container(
-                      child: Text("Anger Management",style: GoogleFonts.openSans(
-                          color: anger == true && selected == true ? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: anger == true && selected == true ? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color: anger == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: SizeConfig.blockSizeHorizontal * 5,
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        selected = true;
-                        if(parenting==true&&selected==true){
-                          setState(() {
-                            parenting=false;
-                            list.remove("Parenting");
-
-                          });}
-                        else{
-                          list.add("Parenting");
-                          parenting=true;
-                        }
-                      });
-                    },
-                    child: Container(
-                      child: Text("Parenting",style: GoogleFonts.openSans(
-                          color: parenting == true && selected == true ? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: parenting == true && selected == true ? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color: parenting == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            ),
-            Container(
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.blockSizeVertical * 6,
-              margin: EdgeInsets.only(
-                top: SizeConfig.blockSizeVertical,
-                left: SizeConfig.screenWidth * 0.05,
-                right: SizeConfig.screenWidth * 0.05,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        selected = true;
-                        if(stress==true&&selected==true){
-                          setState(() {
-                            stress=false;
-                            list.remove("Stress");
-
-                          });}
-                        else{
-                          stress=true;
-                          selected=true;
-                        list.add("Stress");
-
-                        }
-                      });
-                    },
-                    child: Container(
-                      child: Text("Stress",style: GoogleFonts.openSans(
-                          color: stress == true && selected == true ? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: stress == true && selected == true ? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color: stress == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: SizeConfig.blockSizeHorizontal * 5,
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        selected = true;
-                        if(motivation==true&&selected==true){
-                          setState(() {
-
-                            motivation=false;
-                            list.remove("Self Motivation");
-
-                          });}
-                        else{
-                          motivation=true;
-                          list.add("Self Motivation");
-
-                        }
-                      });
-                    },
-                    child: Container(
-                      child: Text("Self Motivation",style: GoogleFonts.openSans(
-                          color:motivation == true && selected == true ? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: motivation == true && selected == true ? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color: motivation == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: SizeConfig.blockSizeHorizontal * 5,
-                  ),
-                  InkWell(
-                    onTap: (){
-                      selected=true;
-                      setState(() {
-                        if(others==true&&selected ==true){
-                          setState(() {
-                            selected = true;
-                            others=false;
-                            list.remove("Others");
-
-                            // selected=false;
-                          });}
-                        else{
-                          others=true;
-                          list.add("Others");
-
-                          // selected=true;
-                        }
-                      });
-                    },
-                    child: Container(
-                      child: Text("Others",style: GoogleFonts.openSans(
-                          color: others == true && selected == true ? Colors.white : Color(fontColorGray),
-                          fontSize: SizeConfig.blockSizeVertical * 2
-                      ),),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: others == true && selected == true ? Colors.blue : Colors.white,
-                          border: Border.all(
-                              color: others == true && selected == true ? Colors.blue : Color(fontColorGray),
-                              width: 1.0
-                          )
-                      ),
-                      height: SizeConfig.blockSizeVertical * 5,
-                      padding: EdgeInsets.only(
-                        left: SizeConfig.blockSizeHorizontal * 3,
-                        right: SizeConfig.blockSizeHorizontal * 3,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                  )
+                : status == Status.LOADING
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 50),
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Wrap(
+                          runSpacing: 20,
+                          spacing: 10,
+                          children: result.topics
+                              .map((e) => GestureDetector(
+                                    onTap: () {
+                                      if (selectedList.contains(e.topic)) {
+                                        selectedList.remove(e.topic);
+                                      } else {
+                                        selectedList.add(e.topic);
+                                      }
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.fromLTRB(10, 5, 10, 0),
+                                      child: Text(
+                                        e.topic ?? 'N/A',
+                                        style: GoogleFonts.openSans(
+                                            color: selectedList.isEmpty
+                                                ? Color(fontColorGray)
+                                                : selectedList.contains(e.topic)
+                                                    ? Colors.white
+                                                    : Color(fontColorGray),
+                                            fontSize:
+                                                SizeConfig.blockSizeVertical *
+                                                    2),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      // alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          color: selectedList.isEmpty
+                                              ? Colors.white
+                                              : selectedList.contains(e.topic)
+                                                  ? Colors.blue
+                                                  : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                              color: selectedList.isEmpty
+                                                  ? Color(fontColorGray)
+                                                  : selectedList
+                                                          .contains(e.topic)
+                                                      ? Colors.blue
+                                                      : Color(fontColorGray),
+                                              width: 1.0)),
+                                      height: SizeConfig.blockSizeVertical * 5,
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      )
           ],
         ),
       ),
@@ -528,16 +184,16 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
           Icons.arrow_forward_ios,
           color: Colors.white,
         ),
-        backgroundColor: selected == true ? Colors.blue : Colors.grey,
+        backgroundColor: selectedList.isNotEmpty ? Colors.blue : Colors.grey,
         onPressed: () {
-if(selected==true){
-  Navigator.push(
-      context, MaterialPageRoute(builder: (context) => HomeMain()));
-}
-else{
-  toast("Please Select Value first");
-}
-
+          if (selectedList.isNotEmpty) {
+            selectedInterestList = selectedList;
+            Get.offAll(HomeMain());
+            // Navigator.push(
+            //     context, MaterialPageRoute(builder: (context) => HomeMain()));
+          } else {
+            toast("Please Select Value first");
+          }
         },
       ),
     ));

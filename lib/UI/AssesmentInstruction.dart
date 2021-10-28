@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:sal_user/Utils/Colors.dart';
+import 'package:sal_user/models/get_assessments_response_model.dart';
 
 import 'Assesmentcreate.dart';
 import 'Assesmentdetail.dart';
+import 'package:sal_user/UI/assessment_info.dart';
 
-class AssesmantInstruction extends StatefulWidget {
-  var id;
-  var title;
-  var subtitle;
-  AssesmantInstruction({this.id,this.title,this.subtitle});
+class AssessmentInstruction extends StatefulWidget {
+  final Assessment data;
+
+  const AssessmentInstruction({Key key, this.data}) : super(key: key);
+
   @override
   _AssesmantState createState() => _AssesmantState();
 }
 
-class _AssesmantState extends State<AssesmantInstruction> {
+class _AssesmantState extends State<AssessmentInstruction> {
   double size = 18;
+  Assessment data;
   final List<String> _listViewData = [
     "1",
     "2",
@@ -31,6 +36,12 @@ class _AssesmantState extends State<AssesmantInstruction> {
 
   _onSelected(int index) {
     setState(() => _selectedIndex = index);
+  }
+
+  @override
+  void initState() {
+    data = widget.data;
+    super.initState();
   }
 
   @override
@@ -66,7 +77,7 @@ class _AssesmantState extends State<AssesmantInstruction> {
             children: [
               Container(
                 child: Text(
-                  "AIS Workplace Stress Survey",
+                  data.title ?? 'N/A',
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -78,7 +89,7 @@ class _AssesmantState extends State<AssesmantInstruction> {
               ),
               Container(
                 child: Text(
-                  "The AIS workplace stress was developed in 1198 by the American Institute of Stress Sutvery as a simple screening measure to determine the need of testt",
+                  data.subtitle ?? 'N/A',
                   style: TextStyle(color: Color(fontColorGray), fontSize: 14),
                 ),
               ),
@@ -99,7 +110,7 @@ class _AssesmantState extends State<AssesmantInstruction> {
               ),
               Container(
                 child: Text(
-                  "Enter a number from the sliding scale below.\nwhich describes you",
+                  data.instruction ?? 'N/A',
                   style: TextStyle(color: Color(fontColorGray), fontSize: 14),
                 ),
               ),
@@ -107,45 +118,27 @@ class _AssesmantState extends State<AssesmantInstruction> {
                 height: 20,
               ),
               Container(
-                height: 70,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _listViewData.length,
-                  itemBuilder: (context, index) => Container(
-                    child: GestureDetector(
-                      onTap: () => _onSelected(index),
-                      child: Container(
-                        margin: EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: _selectedIndex != null &&
-                                  _selectedIndex == index
-                                  ? 20
-                                  : size,
-                              width: _selectedIndex != null &&
-                                  _selectedIndex == index
-                                  ? 20
-                                  : size,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: _selectedIndex != null &&
-                                          _selectedIndex == index
-                                          ? Colors.blue
-                                          : Colors.grey)),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(_listViewData[index]),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                  height: 70,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                        10,
+                        (index) => Column(
+                              children: [
+                                Container(
+                                  height: 20,
+                                  width: 20,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.grey)),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(_listViewData[index]),
+                              ],
+                            )),
+                  )),
               Container(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,38 +146,56 @@ class _AssesmantState extends State<AssesmantInstruction> {
                     Text(
                       "STRONGLY\nDISAGREE",
                       style:
-                      TextStyle(color: Color(fontColorGray), fontSize: 12),
+                          TextStyle(color: Color(fontColorGray), fontSize: 12),
                     ),
                     Text(
                       "SOMEWHAT\nDISAGREE",
                       style:
-                      TextStyle(color: Color(fontColorGray), fontSize: 12),
+                          TextStyle(color: Color(fontColorGray), fontSize: 12),
                     ),
                     Text(
                       "STRONGLY\nDISAGREE",
                       style:
-                      TextStyle(color: Color(fontColorGray), fontSize: 12),
+                          TextStyle(color: Color(fontColorGray), fontSize: 12),
                     ),
                   ],
                 ),
               ),
               Expanded(child: SizedBox()),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                child: RaisedButton(
-                  child: Text("Start"),
-                  textColor: Colors.white,
-                  color: Colors.blue,
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AssesmantDetail(
-//title:appointments.elementAt(index).title,
-                        id:widget.id,
-                        title:widget.title,
-                        subtitle:widget.subtitle
-                    )));
-                  },
+              MaterialButton(
+                color: Color(0xff0066B3),
+                height: 48,
+                minWidth: Get.width,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                onPressed: () {
+                  Get.to(AssessmentInfo(
+                    data: data,
+                  ));
+                },
+                child: Text(
+                  'START',
+                  style: TextStyle(color: Colors.white, letterSpacing: 0.5),
                 ),
-              )
+              ),
+//               Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 child: RaisedButton(
+//                   child: Text("Start"),
+//                   textColor: Colors.white,
+//                   color: Colors.blue,
+//                   onPressed: () {
+// //                     Navigator.push(
+// //                         context,
+// //                         MaterialPageRoute(
+// //                             builder: (context) => AssesmantDetail(
+// // //title:appointments.elementAt(index).title,
+// //                                 id: widget.id,
+// //                                 title: widget.title,
+// //                                 subtitle: widget.subtitle)));
+//                   },
+//                 ),
+//               )
             ],
           ),
         ),

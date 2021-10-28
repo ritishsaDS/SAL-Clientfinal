@@ -55,7 +55,7 @@ showAlertDialog(BuildContext context, String message, String type,
 
 
                   }else{
-                    FocusScope.of(context).unfocus();
+                    // FocusScope.of(context).unfocus();
                     Navigator.of(context).pop();
                   }
                 },
@@ -139,7 +139,7 @@ showAlertDialog(BuildContext context, String message, String type,
   // show the dialog
   showDialog(
     context: context,
-    barrierDismissible: false,
+    // barrierDismissible: false,
     builder: (BuildContext context) {
       return WillPopScope(onWillPop: () async => false, child: alert);
     },

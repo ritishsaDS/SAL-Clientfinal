@@ -152,7 +152,7 @@ SizedBox(height: 5,),
     }
  else{
       return    Container(
-        height: SizeConfig.screenHeight*0.25,
+        height: 200,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

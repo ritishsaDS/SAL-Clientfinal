@@ -21,10 +21,19 @@ String timezone,
     String first_name,
     String gender,
     String last_name,
-
     String phone,
   }) async {
-    print(age);
+    print('BODY:${{
+      "age": age,
+      "device_id": device_id,
+      "email": email,
+      "first_name": first_name,
+      "gender": gender,
+      "last_name": last_name,
+      "location": location,
+      "phone": phone,
+      "timezone": "string"
+    }}');
     ApiResponse apiResponse = await apiHitter
         .getPostApiResponse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client",
         context: context, headers: {
@@ -44,7 +53,9 @@ String timezone,
         });
     {
       try {
+        print('SUCCESS:${apiResponse.status}');
         if (apiResponse.status) {
+          print('RESPONSE:${apiResponse.response.data}');
           final passEntity = CreateTherapistProfileModal.fromJson(apiResponse.response.data);
           return passEntity;
         } else {

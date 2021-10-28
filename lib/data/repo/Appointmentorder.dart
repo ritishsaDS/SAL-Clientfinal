@@ -36,14 +36,17 @@ class Appointmentorder {
     }
     dynamic loginwithserver=new List();
 
-    print(adddishmodel.toJson());
+    // print(adddishmodel.toJson());
+    print('REQUEST BODY :${json.encode(model)}');
     try {
       final response = await http.post(Uri.parse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/$types/order"),
 
 
           body:json.encode(model));
-      print("bjkb" + response.request.toString());
-      print("bjkb" + model.toJson().toString());
+      print('RESPONSE Status Code:${response.statusCode}');
+      print('RESPONSE :${response.body}');
+      // print("bjkb" + response.request.toString());
+      // print("bjkb" + model.toJson().toString());
      // showToast("Dish Added Successfully");
 
       if (response.statusCode == 200)
@@ -60,7 +63,7 @@ class Appointmentorder {
         else{
             Navigator.push(context,MaterialPageRoute(builder: (context)=>payment(mediaUrl: mediaurl,getData:data,
                   date:adddishmodel.date,slot:adddishmodel.time    ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],type:type,bill:loginwithserver)));
-    ;
+
             //
             // Navigator.push(context,MaterialPageRoute(builder: (context)=>SummaryPayment(mediaUrl: mediaurl,getData:data,
             //     date:adddishmodel.date,slot:adddishmodel.time    ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],type:type,bill:loginwithserver)));

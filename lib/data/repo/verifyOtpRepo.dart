@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:sal_user/base/BaseRepository.dart';
@@ -54,7 +56,7 @@ class VerifyOtpRepo extends BaseRepository {
           followRedirects: false,
         ));
     try {
-      print('response:${response.data}');
+      print('response:${jsonEncode(response.data)}');
       if (response.data != null) {
         final passEntity = VerifyOtpModal.fromJson(response.data);
         print("jnwernjn");
@@ -62,6 +64,8 @@ class VerifyOtpRepo extends BaseRepository {
       } else {
         return VerifyOtpModal(meta: response.data);
       }
-    } catch (error, stacktrace) {}
+    } catch (error) {
+      return null;
+    }
   }
 }

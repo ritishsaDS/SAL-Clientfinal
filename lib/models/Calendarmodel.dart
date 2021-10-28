@@ -56,14 +56,17 @@ class MoodResult {
   MoodResult({
     this.date,
     this.moodId,
+    this.notes
   });
 
   DateTime date;
   String moodId;
+  String notes;
 
   factory MoodResult.fromJson(Map<String, dynamic> json) => MoodResult(
     date: DateTime.parse(json["date"]),
     moodId: json["mood_id"],
+    notes: json["notes"],
   );
 
   Map<String, dynamic> toJson() => {

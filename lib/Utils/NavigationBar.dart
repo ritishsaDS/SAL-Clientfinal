@@ -9,7 +9,8 @@ import 'Colors.dart';
 
 class NavigationBar extends StatefulWidget {
   int index;
-  NavigationBar({Key key,this.index}) : super(key: key);
+
+  NavigationBar({Key key, this.index}) : super(key: key);
 
   @override
   _NavigationBarState createState() => _NavigationBarState();
@@ -27,84 +28,94 @@ class _NavigationBarState extends State<NavigationBar> {
       selectedLabelStyle: GoogleFonts.openSans(
         color: Color(backgroundColorBlue),
       ),
-      unselectedLabelStyle: GoogleFonts.openSans(
-          color: Color(fontColorGray)
-      ),
+      unselectedLabelStyle: GoogleFonts.openSans(color: Color(fontColorGray)),
       type: BottomNavigationBarType.fixed,
-      onTap: (int index){
+      onTap: (int index) {
         setState(() {
           widget.index = index;
         });
+        print('INDEX :$index');
+        if (index == 0) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomeMain()));
+        } else if (index == 1) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return Connect();
+          }));
+        } else if (index == 2) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return ExploreAll();
+          }));
+        } else {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CafeEvents()));
+        }
       },
       items: [
-        BottomNavigationBarItem(icon: InkWell(
-          onTap: (){
-           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));
-          },
-          child: Container(child:
-          Image.asset('assets/icons/nav home.png',
-            color: widget.index == 0 ?Colors.white:Color(fontColorGray),
-            scale: SizeConfig.blockSizeVertical * 0.4,),
-            decoration: BoxDecoration(
-                color: widget.index == 0?Color(backgroundColorBlue): Colors.white,
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(5)
+        BottomNavigationBarItem(
+            icon: Container(
+              child: Image.asset(
+                'assets/icons/nav home.png',
+                color: widget.index == 0 ? Colors.white : Color(fontColorGray),
+                scale: SizeConfig.blockSizeVertical * 0.4,
+              ),
+              decoration: BoxDecoration(
+                  color: widget.index == 0
+                      ? Color(backgroundColorBlue)
+                      : Colors.white,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5)),
+              padding: EdgeInsets.all(SizeConfig.blockSizeVertical),
             ),
-            padding: EdgeInsets.all(SizeConfig.blockSizeVertical),),
-        ),
             label: "Home"),
-        BottomNavigationBarItem(icon: InkWell(
-          onTap: (){
-           Navigator.push(context, MaterialPageRoute(builder: (context){
-              return Connect();}));
-          },
-          child: Container(child:
-          Image.asset('assets/icons/nav booking.png',
-            color: widget.index == 1 ?Colors.white:Color(fontColorGray),
-            scale: SizeConfig.blockSizeVertical * 0.4,),
-            decoration: BoxDecoration(
-                color: widget.index == 1 ?Color(backgroundColorBlue): Colors.white,
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(5)
+        BottomNavigationBarItem(
+            icon: Container(
+              child: Image.asset(
+                'assets/icons/nav booking.png',
+                color: widget.index == 1 ? Colors.white : Color(fontColorGray),
+                scale: SizeConfig.blockSizeVertical * 0.4,
+              ),
+              decoration: BoxDecoration(
+                  color: widget.index == 1
+                      ? Color(backgroundColorBlue)
+                      : Colors.white,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5)),
+              padding: EdgeInsets.all(SizeConfig.blockSizeVertical),
             ),
-            padding: EdgeInsets.all(SizeConfig.blockSizeVertical),),
-        ),
             label: "Connect"),
-        BottomNavigationBarItem(icon: InkWell(
-          onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context){
-              return ExploreAll();}));
-          },
-          child: Container(child:
-          Image.asset('assets/icons/nav explore.png',
-            scale: SizeConfig.blockSizeVertical * 0.4,
-            color: widget.index == 2 ?Colors.white:Color(fontColorGray),
-          ),
-            decoration: BoxDecoration(
-                color: widget.index == 2?Color(backgroundColorBlue): Colors.white,
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(5)
+        BottomNavigationBarItem(
+          icon: Container(
+            child: Image.asset(
+              'assets/icons/nav explore.png',
+              scale: SizeConfig.blockSizeVertical * 0.4,
+              color: widget.index == 2 ? Colors.white : Color(fontColorGray),
             ),
-            padding: EdgeInsets.all(SizeConfig.blockSizeVertical),),
-        ),
-            label: "Explore",
-        ),
-        BottomNavigationBarItem(icon: InkWell(
-          onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>CafeEvents()));
-          },
-          child: Container(child:
-          Image.asset('assets/icons/nav cafe.png',
-            scale: SizeConfig.blockSizeVertical * 0.4,
-            color: widget.index == 3 ?Colors.white:Color(fontColorGray),
-          ),
             decoration: BoxDecoration(
-                color: widget.index == 3?Color(backgroundColorBlue): Colors.white,
+                color: widget.index == 2
+                    ? Color(backgroundColorBlue)
+                    : Colors.white,
                 shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(5)
-            ),
-            padding: EdgeInsets.all(SizeConfig.blockSizeVertical),),
+                borderRadius: BorderRadius.circular(5)),
+            padding: EdgeInsets.all(SizeConfig.blockSizeVertical),
+          ),
+          label: "Explore",
         ),
+        BottomNavigationBarItem(
+            icon: Container(
+              child: Image.asset(
+                'assets/icons/nav cafe.png',
+                scale: SizeConfig.blockSizeVertical * 0.4,
+                color: widget.index == 3 ? Colors.white : Color(fontColorGray),
+              ),
+              decoration: BoxDecoration(
+                  color: widget.index == 3
+                      ? Color(backgroundColorBlue)
+                      : Colors.white,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(5)),
+              padding: EdgeInsets.all(SizeConfig.blockSizeVertical),
+            ),
             label: "Cafe"),
       ],
     );

@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
-import 'package:sal_user/UI/OnBoardScreens.dart';
+import 'package:sal_user/UI/MoodDoneScreen.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Widgets/Moodwidget.dart';
 import 'package:sal_user/data/repo/Addmoodrepo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Addnote.dart';
 import 'Splash1.dart';
 
@@ -20,14 +23,15 @@ class _MoodState extends State<Mood> {
   bool isLoading = false;
   var moodid;
   int _selectedIndex;
-  Addmoodrepo addmoodrepo=Addmoodrepo();
-  var image=[
+  Addmoodrepo addmoodrepo = Addmoodrepo();
+  var image = [
     "assets/icons/Group 7041.png",
     "assets/icons/Group 7042.png",
-      "assets/icons/anxious.png",
-      "assets/icons/Group 7044.png",
-      "assets/icons/Group 7044.png",
-      "assets/icons/Group 7043.png"];
+    "assets/icons/anxious.png",
+    "assets/icons/concerned.png",
+    "assets/icons/Group 7044.png",
+    "assets/icons/Group 7043.png"
+  ];
 
   @override
   void initState() {
@@ -35,10 +39,12 @@ class _MoodState extends State<Mood> {
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -68,35 +74,56 @@ class _MoodState extends State<Mood> {
             SizedBox(
               height: 20,
             ),
-            Text(
-              "How are you feeling today ?",
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                  fontSize: 18),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(
+                "How are you feeling today ?",
+                style:  GoogleFonts.openSans(
+
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff445066),
+                    fontSize: 18),
+              ),
             ),
             SizedBox(
               height: 20,
             ),
             Container(
               height: 300,
-              child: GridView.count(
-                crossAxisCount: 3,
-                children: moodswidget()
-
-              ),
+              child: GridView.count(crossAxisCount: 3, children: moodswidget()),
             ),
             Expanded(
               child: SizedBox(),
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Addnote()));
+                if (moodid == null) {
+                  Get.showSnackbar(GetBar(
+                    message: 'Please select any one mood',
+                    duration: Duration(seconds: 2),
+                  ));
+                  return;
+                }
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Addnote(
+                              moodId: moodid,
+                            )));
               },
-              child: Text(
-                "Add a Note to Express Yourself",
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 7),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.asset('assets/icons/editIcon.png',),
+                    SizedBox(width: 10,),
+                    Text(
+                      "Add a Note to express yourself",
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -108,13 +135,38 @@ class _MoodState extends State<Mood> {
               child: RaisedButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                color: Colors.blue,
-                child: Text("Done"),
+                color: Color(0xff0066B3),
+                child: Text("DONE",style: GoogleFonts.openSans(
+                  fontSize: 16,
+                ),),
                 textColor: Colors.white,
-                onPressed: () {
-                  // addmoodrepo.addmood(context: context,moodid: moodid);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DTWalkThoughScreen()));
+                onPressed: () async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  print('CLIENT ID:${prefs.getString("cleintid")}');
+                  if(prefs.getString("cleintid")==null){
+                    Get.showSnackbar(GetBar(
+                      message: 'Please First Login',
+                      duration: Duration(seconds: 2),
+                    ));
+                    return;
+                  }
+                  if (moodid == null) {
+                    Get.showSnackbar(GetBar(
+                      message: 'Please select any one mood',
+                      duration: Duration(seconds: 2),
+                    ));
+                    return;
+                  }
+                  final response = await addmoodrepo.addmood(
+                      context: context, moodid: moodid);
+                  if (response == null) {
+                    Get.showSnackbar(GetBar(
+                      message: 'Hey, your mood is already set for today!',
+                      duration: Duration(seconds: 2),
+                    ));
+                    return;
+                  }
+                  Get.to(MoodDoneScreen());
                 },
               ),
             )
@@ -123,26 +175,27 @@ class _MoodState extends State<Mood> {
       ),
     );
   }
-  dynamic moods= new List();
+
+  dynamic moods = new List();
+
   void getmoodsfromserver() async {
     setState(() {
-      isLoading=true;
+      isLoading = true;
     });
 
     try {
-      final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/mood'));
+      final response = await get(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/mood'));
       print("bjkb" + response.body.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
-        moods=responseJson['moods'];
-print(moods);
+        moods = responseJson['moods'];
+        print(moods);
         setState(() {
           isError = false;
           isLoading = false;
           print('setstate');
         });
-
-
       } else {
         print("bjkb" + response.statusCode.toString());
         // showToast("Mismatch Credentials");
@@ -164,34 +217,33 @@ print(moods);
       );
     }
   }
+
   _onSelected(int index) {
     setState(() => _selectedIndex = index);
   }
 
-List<Widget>moodswidget(){
-  var opacuit=1.0;
-    List <Widget>moodlist=new List();
-    for(int i =0; i<moods.length;i++){
+  List<Widget> moodswidget() {
+    var opacuit = 1.0;
+    List<Widget> moodlist = new List();
+    for (int i = 0; i < moods.length; i++) {
       moodlist.add(GestureDetector(
-        onTap: (){
+        onTap: () {
           _onSelected(i);
           print(moods[i]['id']);
-          moodid=moods[i]['id'];
+          moodid = moods[i]['id'];
+          print('mood Id :$moodid');
         },
         child: Container(
           child: Column(
             children: [
               Opacity(
-                opacity: _selectedIndex != null && _selectedIndex == i
-          ?0.7
-              :  1.0,
+                opacity:
+                    _selectedIndex != null && _selectedIndex == i ? 0.5 : 1.0,
                 child: Container(
-
                   height: 80,
 
                   width: 100,
                   decoration: BoxDecoration(
-
                     image: DecorationImage(
                       image: AssetImage(
                         "assets/icons/Rectangle 412.png",
@@ -200,9 +252,7 @@ List<Widget>moodswidget(){
                     ),
                   ),
                   // color: Colors.blue,
-                  child: Image.asset(
-                      image[i]
-                  ),
+                  child: Image.asset(image[i]),
                 ),
               ),
               Text(moods[i]['title']),
@@ -211,6 +261,6 @@ List<Widget>moodswidget(){
         ),
       ));
     }
-return moodlist;
-}
+    return moodlist;
+  }
 }

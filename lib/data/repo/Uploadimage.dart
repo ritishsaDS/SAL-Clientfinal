@@ -5,13 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sal_user/base/BaseRepository.dart';
 import 'package:sal_user/models/Uplaodmodel.dart';
 
-
 class UploadImagesRepo extends BaseRepository {
-  Future<UploadImagesModal> uploadImage(BuildContext context,
-      {File image}) async {
-    FormData formData = new FormData.fromMap({
-      "type":"user"
-    });
+   Future<UploadImagesModal> uploadImage({File image}) async {
+    FormData formData = new FormData.fromMap({"type": "user"});
 
     if (image != null && image != "") {
       var filename = image.path.split('/').last;
@@ -24,27 +20,27 @@ class UploadImagesRepo extends BaseRepository {
 
     try {
       final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty)
-      {
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         try {
-          final response = await dio.post("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/upload",
+          final response = await dio.post(
+              "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/upload",
               data: formData,
               options: Options(
-                headers: {'content-type': 'multipart/form-data',"accept": "application/json"},
-              )
-          );
+                headers: {
+                  'content-type': 'multipart/form-data',
+                  "accept": "application/json"
+                },
+              ));
           print(response.statusCode);
           //print(response.request);
           final passEntity = UploadImagesModal.fromJson(response.data);
           return passEntity;
-        } catch (error, stacktrace)
-        {
-          print(error);
-          return UploadImagesModal( );
+        } catch (e) {
+          print('Upload Image ERROR :$e');
+          return null;
         }
       }
-    } on SocketException catch (_)
-    {
+    } on SocketException catch (_) {
       Fluttertoast.showToast(
           msg: "No Internet Connection",
           toastLength: Toast.LENGTH_LONG,

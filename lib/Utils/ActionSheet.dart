@@ -1,60 +1,50 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/Utils/Colors.dart';
 
 var getBusinessValue;
 
 class ActionSheet {
-  Widget actionSheet(
-      BuildContext context, {
-        Function onCamera,
-        Function onGallery,
-        Function onDocument,
-        String type,
-        String text
-      }) {
+  static Widget actionSheet({Function onCameraTap,Function onGalleryTap}) {
     return CupertinoActionSheet(
       title: Text(
-        text,
+        'Select Profile Pic',
         style: secondaryTextStyle(),
       ),
       actions: [
         CupertinoActionSheetAction(
-          onPressed: () {
-            onCamera();
-            finish(context);
-          },
+          onPressed: onCameraTap,
           child: Text('Camera', style: primaryTextStyle(size: 18)),
           isDefaultAction: true,
         ),
         CupertinoActionSheetAction(
-          onPressed: () {
-            onGallery();
-            finish(context);
-          },
+          onPressed: onGalleryTap,
           child: Text('Gallery', style: primaryTextStyle(size: 18)),
           isDefaultAction: true,
         ),
-        type != "profile" ?  CupertinoActionSheetAction(
-          onPressed: () {
-            onDocument();
-            finish(context);
-          },
-          child: Text('Documents', style: primaryTextStyle(size: 18)),
-          isDefaultAction: true,
-        ):SizedBox(),
+        // type != "profile"
+        //     ? CupertinoActionSheetAction(
+        //         onPressed: () {
+        //           onDocument();
+        //           finish(context);
+        //         },
+        //         child: Text('Documents', style: primaryTextStyle(size: 18)),
+        //         isDefaultAction: true,
+        //       )
+        //     : SizedBox(),
       ],
       cancelButton: CupertinoActionSheetAction(
           onPressed: () {
-            finish(context);
+            Get.back();
           },
           child: Text(
             'Cancel',
-            style: primaryTextStyle(color: Color(backgroundColorBlue), size: 18),
+            style:
+                primaryTextStyle(color: Color(backgroundColorBlue), size: 18),
           )),
     );
   }
 }
-
