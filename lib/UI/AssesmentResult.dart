@@ -62,7 +62,7 @@ class _AssesmentResultState extends State<AssesmentResult> {
             Container(
               width: MediaQuery.of(context).size.width,
               child: RaisedButton(
-                child: Text("Try Again"),
+                child: Text("Done"),
                 textColor: Colors.white,
                 color: Colors.blue,
                 onPressed: () {

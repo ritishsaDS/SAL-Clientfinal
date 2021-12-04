@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -37,15 +38,81 @@ class _SearchResultState extends State<SearchResult> {
     {"id": "3", "language": "tamil"},
     {"id": "4", "language": "telugu"}
   ];
+  int _selectedIndexs = 0;
+  var therapist;
+  var filters=[];
+  var moodstatic = [
+    "0:30",
+    "1:00",
+    "1:30",
+    "2:00",
+    "2:30",
+    "3:00",
+    "3:30",
+    "4:00",
+    "4:30",
+    "5:00",
+    "5:30",
+    "6:00",
+    "6:30",
+    "7:00",
+    "7:30",
+    "8:00",
+    "8:30",
+    "9:00",
+    "9:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+    "17:00",
+    "17:30",
+    "18:00",
+    "18:30",
+    "19:00",
+    "19:30",
+    '20:00',
+    '20:30',
+    "21:00",
+    "21:30",
+    "22:00",
+    "22:30",
+    "23:00",
+    "23:30",
+    "24:00"
+  ];
+  _onSelectedslot(int index, therapistid) {
+    setState(() {
+      _selectedIndexs = index;
+      therapist = therapistid;
+    });
+  }
   bool isLoading = true;
   var getHomeContentModal = GetCounsellor();
   var getprofilecontent = GetTherapistDetailRepo();
   bool isError = true;
+  var url;
   @override
   void initState() {
+
     print(widget.type);
+    setState(() {
+      filters=widget.list;
+      url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}${widget.price==null?"":"&price=""${widget.price},2500"}";
+    });
     // gettherapist();
     getCouncilorfromserver();
+
     // TODO: implement initState
     super.initState();
   }
@@ -185,7 +252,7 @@ class _SearchResultState extends State<SearchResult> {
                           isDense: true,
                           contentPadding: EdgeInsets.all(12),
                         ),
-                        items: <String>['Price 1', 'Price 2', 'Price 3']
+                        items: <String>['High to Low', 'Low to High']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -213,6 +280,12 @@ class _SearchResultState extends State<SearchResult> {
                         onChanged: (value) {
                           setState(() {
                             price = value;
+                            print(price);
+
+                            url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?type=${widget.type}&topic=${widget.topic.toString().split(",")[0]}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}&sort_by=1&order_by${price=='High to Low'?"=1":"=2"}';
+                            getCouncilorfromserver();
+                            Navigator.pop(context);
+                            print(url);
                           });
                         },
                       ),
@@ -263,7 +336,7 @@ class _SearchResultState extends State<SearchResult> {
                           isDense: true,
                           contentPadding: EdgeInsets.all(12),
                         ),
-                        items: <String>['5', '4', '3', '2', '1']
+                        items: <String>['Sort By Rating High to Low',]
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -291,6 +364,12 @@ class _SearchResultState extends State<SearchResult> {
                         onChanged: (value) {
                           setState(() {
                             rating = value;
+
+
+                            url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}&sort_by=2&order_by=1';
+                            getCouncilorfromserver();
+                            Navigator.pop(context);
+                            print(url);
                           });
                         },
                       ),
@@ -341,7 +420,7 @@ class _SearchResultState extends State<SearchResult> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            filters.length==0?SizedBox():Container(
               width: SizeConfig.screenWidth,
               margin: EdgeInsets.only(
                   left: SizeConfig.screenWidth * 0.05,
@@ -359,15 +438,33 @@ class _SearchResultState extends State<SearchResult> {
                     child: Row(
                       children: [
                         Text(
-                          widget.list[index],
+                          filters[index],
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.w600),
                         ),
-                        Icon(
+                        IconButton(icon: Icon(
                           Icons.clear,
                           color: Colors.white,
                           size: SizeConfig.blockSizeVertical * 2,
-                        ),
+                        ),onPressed: (){
+                          print(filters[index]);
+                          setState(() {
+                            filters.remove(filters[index]);
+                            print(filters);
+                            if(filters.length==0){
+                              setState(() {
+
+                                url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search";
+                              });
+                            }
+                            else{
+                              setState(() {
+
+                                url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}";
+                              });
+                            }
+                          });
+                        },)
                       ],
                     ),
                     margin: EdgeInsets.symmetric(
@@ -379,7 +476,7 @@ class _SearchResultState extends State<SearchResult> {
                 },
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
-                itemCount: widget.list.length,
+                itemCount: filters.length,
                 physics: BouncingScrollPhysics(),
                 primary: false,
               ),
@@ -390,7 +487,7 @@ class _SearchResultState extends State<SearchResult> {
                 margin: EdgeInsets.symmetric(
                     vertical: SizeConfig.blockSizeVertical,
                     horizontal: SizeConfig.screenWidth * 0.05),
-                child: Therapist.length == 0
+                child: Therapist.length == 0||Therapist==null
                     ? Column(
                         children: [Text("No Record Found")],
                       )
@@ -455,6 +552,7 @@ class _SearchResultState extends State<SearchResult> {
   // }
   dynamic Therapist = new List();
   dynamic mediaurl = new List();
+  dynamic slots=new List();
   void getCouncilorfromserver() async {
 print("jndi");
     // setState(() {
@@ -463,15 +561,18 @@ print("jndi");
 
     try {
       final response = await get(Uri.parse(
-          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?type=${widget.type}'));
+         url));
       print("bjkb" + response.request.toString());
       print("bjkb" + response.body.toString());
 
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
-        mediaurl = responseJson['media_url'];
-        Therapist = responseJson['counsellors'];
-        print(Therapist.length);
+       setState(() {
+         mediaurl = responseJson['media_url'];
+         Therapist = responseJson['counsellors'];
+         slots = responseJson['slots'];
+         print(Therapist.length);
+       });
         setState(() {
           isError = false;
           isLoading = false;
@@ -611,7 +712,7 @@ print("jndi");
             Container(
               width: SizeConfig.screenWidth,
               margin:
-                  EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical),
+              EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical),
               child: Text(
                 "Next available Today",
                 style: TextStyle(
@@ -623,41 +724,37 @@ print("jndi");
                 margin: EdgeInsets.symmetric(
                     vertical: SizeConfig.blockSizeVertical),
                 height: SizeConfig.blockSizeVertical * 6,
-                child: ListView.builder(
-                  itemBuilder: (context, int index) {
-                    return Container(
-                      width: SizeConfig.screenWidth * 0.2,
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.blockSizeHorizontal),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Color(fontColorGray),
-                        ),
-                      ),
-                      child: Text("9:00"),
-                      alignment: Alignment.center,
-                    );
-                  },
-                  primary: false,
-                  itemCount: 4,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                child: ListView(
                   scrollDirection: Axis.horizontal,
+                  children:
+                  slotarray(slots[Therapist[i]['id']], Therapist[i]['id']),
                 )),
             Container(
               margin: EdgeInsets.symmetric(
                   vertical: SizeConfig.blockSizeVertical * 2),
               child: MaterialButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CounsellorProfile(
-                                getData: Therapist[i],
-                                mediaUrl: mediaurl,
-                              )));
+                  print('SLOT :${slots[Therapist[i]['id']]}');
+                  print('SLOT DATA :${Therapist[i]['id']}');
+
+                  if(slots[Therapist[i]['id']].isEmpty==true){
+                    Get.showSnackbar(GetBar(
+                      message: 'No Slot Avialable',
+                      duration: Duration(seconds: 2),
+                    ));}
+                  else{
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CounsellorProfile(
+                                    getData: Therapist[i],
+                                    mediaUrl: mediaurl,
+                                    slot: slots[Therapist[i]['id']].isEmpty
+                                        ? {}
+                                        : slots[Therapist[i]['id']][0],
+                                    type: Therapist[i]['type'])));
+                  }
                 },
                 child: Text(
                   "BOOK APPOINTMENT",
@@ -677,5 +774,66 @@ print("jndi");
       );
     }
     return councilorlist;
+  }
+  List<Widget> slotarray(id, therapistid) {
+    print('SLOT:..$slots');
+    print('SLOT:..TyPE ${slots.runtimeType}');
+    print("jnwejoen$id}");
+
+    if (id == null) {
+      List<Widget> slotlist = new List();
+      {
+        slotlist.add(Text("No Slot Available for today"));
+      }
+      return slotlist;
+    } else if (id.isEmpty) {
+      List<Widget> slotlist = new List();
+      {
+        slotlist.add(Text("No Slot Available for today"));
+      }
+      return slotlist;
+    } else {
+      var value = [];
+      print(id);
+      id[0].keys.forEach((key) {
+        value.add(key);
+      });
+      print(value.length);
+      List<Widget> slotlist = new List();
+      for (int i = 0; i < value.length; i++) {
+        print('INdex:${(i / 2) == 0}');
+        print("knejknp" + value[i].length.toString());
+        if (i.isEven) {
+          slotlist.add(
+            value[i].length < 3
+                ? GestureDetector(
+              onTap: () {
+                _onSelectedslot(i, therapistid);
+              },
+              child: Container(
+                width: SizeConfig.screenWidth * 0.2,
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.blockSizeHorizontal),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: _selectedIndexs != null &&
+                        _selectedIndexs == i &&
+                        therapist == (therapistid)
+                        ? Colors.blue
+                        : Colors.grey,
+                  ),
+                ),
+                child: Text(moodstatic[int.parse(value[i])].toString()),
+                alignment: Alignment.center,
+              ),
+            )
+                : Container(),
+          );
+        }
+      }
+      return slotlist;
+    }
   }
 }

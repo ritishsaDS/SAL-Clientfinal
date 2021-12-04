@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/Signup.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Articledetail.dart';
 import 'ClientDetailsNotLogged.dart';
 import 'Schedulescreen.dart';
 import 'Sessions.dart';
@@ -29,7 +35,10 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
   void initState() {
     print("mkermpfvvpr" + widget.getData.toString());
     print("SLOT :${widget.slot}");
+    getCounsellordetail();
   }
+  bool isError = false;
+  bool isLoading = false;
 
   List<Color> colors = [
     Color.fromRGBO(42, 138, 163, 0.75),
@@ -385,7 +394,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                                             ),
                                                           ),
                                                           Text(
-                                                            "12+ years",
+                                                            "${overview['experience']}",
                                                             style: TextStyle(
                                                               fontWeight:
                                                                   FontWeight
@@ -453,7 +462,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                                             ),
                                                           ),
                                                           Text(
-                                                            "Parenting, Stress",
+                                                          "${overview['education']}",
                                                             style: TextStyle(
                                                               fontWeight:
                                                                   FontWeight
@@ -554,7 +563,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                               margin: EdgeInsets.symmetric(
                                                   vertical: SizeConfig
                                                       .blockSizeVertical),
-                                              child: Row(
+                                              child:reviews.length==0?Text("No review "): Row(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
@@ -680,7 +689,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                             );
                                           },
                                           primary: false,
-                                          itemCount: 10,
+                                          itemCount: reviews.length,
                                           shrinkWrap: true,
                                         ),
                                       ),
@@ -705,75 +714,87 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                             /* if(colors.length < getHomeContentModal.articles.length){
                                     colors.addAll(colors);
                                   }*/
-                                            return Container(
-                                              width:
-                                                  SizeConfig.screenWidth * 0.4,
-                                              alignment: Alignment.bottomCenter,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                image: DecorationImage(
-                                                  image: AssetImage(
-                                                    "assets/bg/gridCard1.png",
+                                            return GestureDetector(
+                                              onTap: (){
+                                                Get.to(ArticleDetail(
+                                                    description: content[index]['description'],
+                                                    image: content[index]['photo'],
+                                                    title: content[index]['title'],
+                                                    id: content[index]['id'],
+                                                    bg:content[index]['background_photo']
+                                                ));
+                                              },
+                                              child: Container(
+                                                width:
+                                                    SizeConfig.screenWidth * 0.4,
+                                                alignment: Alignment.bottomCenter,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(
+                                                      "https://sal-prod.s3.ap-south-1.amazonaws.com/"+content[index]['background_photo'],
+                                                    ),
+                                                    fit: BoxFit.fitWidth
                                                   ),
                                                 ),
-                                              ),
-                                              child: Container(
-                                                width: SizeConfig.screenWidth,
-                                                padding: EdgeInsets.only(
-                                                    left:
-                                                        SizeConfig.screenWidth *
-                                                            0.02,
-                                                    right:
-                                                        SizeConfig.screenWidth *
-                                                            0.02),
-                                                height: SizeConfig
-                                                        .blockSizeVertical *
-                                                    8,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                    color: colors[index],
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                            bottomLeft: Radius
-                                                                .circular(20),
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                                    20))),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Container(
-                                                      width: SizeConfig
-                                                              .screenWidth *
-                                                          0.3,
-                                                      child: Text(
-                                                        "This is the content name",
+                                                child: Container(
+                                                  width: SizeConfig.screenWidth,
+                                                  padding: EdgeInsets.only(
+                                                      left:
+                                                          SizeConfig.screenWidth *
+                                                              0.02,
+                                                      right:
+                                                          SizeConfig.screenWidth *
+                                                              0.02),
+                                                  height: SizeConfig
+                                                          .blockSizeVertical *
+                                                      8,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      color: colors[index],
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              bottomLeft: Radius
+                                                                  .circular(20),
+                                                              bottomRight:
+                                                                  Radius.circular(
+                                                                      20))),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                        width: SizeConfig
+                                                                .screenWidth *
+                                                            0.3,
+                                                        child: Text(
+                                                          content[index]['title'],
+                                                          style: GoogleFonts.openSans(
+                                                              color: Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight.w600,
+                                                              fontSize: SizeConfig
+                                                                      .blockSizeVertical *
+                                                                  2),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        "3m",
                                                         style: GoogleFonts.openSans(
                                                             color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.w600,
                                                             fontSize: SizeConfig
                                                                     .blockSizeVertical *
-                                                                2),
+                                                                1.75),
                                                       ),
-                                                    ),
-                                                    Text(
-                                                      "3m",
-                                                      style: GoogleFonts.openSans(
-                                                          color: Colors.white,
-                                                          fontSize: SizeConfig
-                                                                  .blockSizeVertical *
-                                                              1.75),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             );
                                           },
-                                          itemCount: 10,
+                                          itemCount: content.length,
                                         ),
                                       )
                                     ]))
@@ -787,5 +808,51 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
         ),
       ),
     ));
+  }
+dynamic overview =new List();
+dynamic reviews =new List();
+dynamic content =new List();
+
+  void getCounsellordetail() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await get(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/therapist?therapist_id=${widget.getData['id']}'));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+
+        setState(() {
+          content = responseJson['contents'];
+          reviews = responseJson['reviews'];
+          overview = responseJson['therapist'];
+          isError = false;
+          isLoading = false;
+          print('setstate'+reviews.length.toString());
+        });
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
   }
 }

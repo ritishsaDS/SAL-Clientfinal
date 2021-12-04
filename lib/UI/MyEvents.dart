@@ -28,6 +28,7 @@ class _MyeventsState extends State<Myevents> {
     'Mental Health Workshop',
     'Parenting Workshop'];
   var moodstatic = [
+    '',
     "0:30",
     "1:00",
     "1:30",
@@ -75,7 +76,7 @@ class _MyeventsState extends State<Myevents> {
     "22:30",
     "23:00",
     "23:30"
-        "24:00"
+    "24:00"
   ];
   List<Color> colors = [Color.fromRGBO(42, 138, 163, 0.75),
     Color.fromRGBO(48, 37, 33, 0.75),

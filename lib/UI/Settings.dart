@@ -55,6 +55,7 @@ class _SettingsState extends State<Settings> {
                 child: Text("Notifications",
                   style: TextStyle(
                       color: Color(backgroundColorBlue),
+                      fontSize: 20,
                       fontWeight: FontWeight.w600
                   ),),
               ),
@@ -67,7 +68,7 @@ class _SettingsState extends State<Settings> {
                 child: SwitchListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
-                  title: Text("Type"),
+                  title: Text("Allow"),
                   value: type1,
                   onChanged: (value){
                     setState(() {
@@ -80,28 +81,28 @@ class _SettingsState extends State<Settings> {
                   inactiveThumbColor: Color(fontColorGray),
                 )
               ),
-              Container(
-                  width: SizeConfig.screenWidth,
-                  margin: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.screenWidth * 0.02
-                  ),
-                  alignment: Alignment.center,
-                  child: SwitchListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Type"),
-                    value: type2,
-                    onChanged: (value){
-                      setState(() {
-                        type2 = value;
-                      });
-                    },
-                    activeTrackColor: Color(0XFFDBE6F5),
-                    activeColor: Color(backgroundColorBlue),
-                    inactiveTrackColor: Color(0XFFD8DFE9),
-                    inactiveThumbColor: Color(fontColorGray),
-                  )
-              ),
+              // Container(
+              //     width: SizeConfig.screenWidth,
+              //     margin: EdgeInsets.symmetric(
+              //         horizontal: SizeConfig.screenWidth * 0.02
+              //     ),
+              //     alignment: Alignment.center,
+              //     child: SwitchListTile(
+              //       dense: true,
+              //       contentPadding: EdgeInsets.zero,
+              //       title: Text("Type"),
+              //       value: type2,
+              //       onChanged: (value){
+              //         setState(() {
+              //           type2 = value;
+              //         });
+              //       },
+              //       activeTrackColor: Color(0XFFDBE6F5),
+              //       activeColor: Color(backgroundColorBlue),
+              //       inactiveTrackColor: Color(0XFFD8DFE9),
+              //       inactiveThumbColor: Color(fontColorGray),
+              //     )
+              // ),
               GestureDetector(
                 onTap: () async {
                   SharedPreferences prefs = await SharedPreferences.getInstance();

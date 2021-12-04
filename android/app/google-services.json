@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "148945366290",
-    "project_id": "sal-user-app",
-    "storage_bucket": "sal-user-app.appspot.com"
+    "project_number": "646467194209",
+    "project_id": "sal-client",
+    "storage_bucket": "sal-client.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:148945366290:android:3d85a146d5a5c730d217cb",
+        "mobilesdk_app_id": "1:646467194209:android:13820ea41886c5c8ce8920",
         "android_client_info": {
-          "package_name": "com.example.sal_user"
+          "package_name": "com.digitlers.sal_user"
         }
       },
       "oauth_client": [
         {
-          "client_id": "148945366290-bupjdc6alovflen3g3kbb1t69u73erqr.apps.googleusercontent.com",
+          "client_id": "646467194209-2s62oet1b7sr54ucsmklfvesb2rb983r.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.sal_user",
+            "package_name": "com.digitlers.sal_user",
             "certificate_hash": "bbb6439b4c3b8095212534612f4a2202ad2a9414"
           }
         },
         {
-          "client_id": "148945366290-4k4n086jcvuturct4itv83723ck0oi7g.apps.googleusercontent.com",
+          "client_id": "646467194209-5a5ierkird1suji3o0sp7oe59rad1229.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAYBJCAWpFYMi3ljq_zTedwqNfbjJSA9QY"
+          "current_key": "AIzaSyBYWdDfSsei2jxeWo2HdzHKMtNzIf27ncY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "148945366290-4k4n086jcvuturct4itv83723ck0oi7g.apps.googleusercontent.com",
+              "client_id": "646467194209-5a5ierkird1suji3o0sp7oe59rad1229.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

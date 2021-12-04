@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/UI/login.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
@@ -54,7 +55,13 @@ showAlertDialog(BuildContext context, String message, String type,
 
 
 
-                  }else{
+                  }
+                  else if(type=="Login First"){
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SignUp()));
+
+                  }
+                  else{
                     // FocusScope.of(context).unfocus();
                     Navigator.of(context).pop();
                   }
@@ -95,6 +102,10 @@ showAlertDialog(BuildContext context, String message, String type,
                           } else if (type == "Change Password") {
 
                           }
+                          else if(type=="Login First"){
+
+                            onTap();
+                            }
                         }
                       },
                       child: Container(

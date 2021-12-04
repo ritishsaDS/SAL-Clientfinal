@@ -379,7 +379,7 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
               children: [
                 Row(
                   children: [
-                    Text("₹ ${counsellordetail['price']}",
+                    Text("₹ ${eventdetail['price']}",
                       style: TextStyle(
                         color: Color(backgroundColorBlue),
                         fontWeight: FontWeight.w600,
@@ -419,8 +419,8 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
     });
 print(widget.id);
     try {
-      final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/event?order_id=${widget.id}'));
-      print("bjkb" + response.body.toString());
+      final response = await get(Uri.parse('https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/event?order_id=${widget.id.toString()}'));
+      print("bjkb" + response.request.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
 

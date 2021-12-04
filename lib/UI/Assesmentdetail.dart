@@ -305,7 +305,7 @@ class _AssesmantState extends State<AssesmantDetail> {
                             width: 15,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
+                                border: Border.all(color: Colors.grey),
                                     color: selectedQueOption.isEmpty
                                         ? Colors.grey
                                         : selectedQueOption.containsKey(result
@@ -317,7 +317,7 @@ class _AssesmantState extends State<AssesmantDetail> {
                                                     e.option
                                                 ? Colors.blue
                                                 : Colors.grey
-                                            : Colors.grey)),
+                                            : Colors.grey) ,
                           ),
                         ),
                         SizedBox(
@@ -405,19 +405,21 @@ class _AssesmantState extends State<AssesmantDetail> {
                                       : 15,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: selectedQueOption.isEmpty
-                                          ? Colors.grey
+                                  color: (
+                                       selectedQueOption.isEmpty
+                                      ? Colors.grey
                                           : selectedQueOption.containsKey(result
-                                                  .questions[index]
-                                                  .assessmentQuestionId)
-                                              ? selectedQueOption[result
-                                                          .questions[index]
-                                                          .assessmentQuestionId] ==
-                                                      (subIndex + 1).toString()
-                                                  ? Colors.blue
-                                                  : Colors.grey
-                                              : Colors.grey)),
+                                          .questions[index]
+                                          .assessmentQuestionId)
+                                      ? selectedQueOption[result
+                                      .questions[index]
+                                      .assessmentQuestionId] ==
+                                      (subIndex + 1).toString()
+                                      ? Colors.blue
+                                      : Colors.grey
+                                      : Colors.grey),
+                                  border: Border.all(
+                                      color: Colors.grey)),
                             ),
                           ),
                           SizedBox(
@@ -513,19 +515,21 @@ class _AssesmantState extends State<AssesmantDetail> {
                                       : 15,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: selectedQueOption.isEmpty
+                                  color: (
+                                      selectedQueOption.isEmpty
                                           ? Colors.grey
                                           : selectedQueOption.containsKey(result
-                                                  .questions[index]
-                                                  .assessmentQuestionId)
-                                              ? selectedQueOption[result
-                                                          .questions[index]
-                                                          .assessmentQuestionId] ==
-                                                      (subIndex + 1).toString()
-                                                  ? Colors.blue
-                                                  : Colors.grey
-                                              : Colors.grey)),
+                                          .questions[index]
+                                          .assessmentQuestionId)
+                                          ? selectedQueOption[result
+                                          .questions[index]
+                                          .assessmentQuestionId] ==
+                                          (subIndex + 1).toString()
+                                          ? Colors.blue
+                                          : Colors.grey
+                                          : Colors.grey),
+                                  border: Border.all(
+                                      color: Colors.grey)),
                             ),
                           ),
                           SizedBox(

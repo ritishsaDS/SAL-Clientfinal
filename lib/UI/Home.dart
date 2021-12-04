@@ -11,8 +11,9 @@ import 'package:sal_user/Utils/NavigationBar.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Widgets/Drawemenu.dart';
+import 'package:sal_user/Widgets/Homepagecontent.dart';
+import 'package:sal_user/data/repo/ExploreLikeUnlikeRepo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shimmer/shimmer.dart';
 
 import 'Articledetail.dart';
 import 'Notification.dart';
@@ -55,7 +56,7 @@ class _HomeMainState extends State<HomeMain> {
     "Worlds of the\nwaterfall"
   ];
   var name = "";
-
+  RxBool isLike = false.obs;
   @override
   void initState() {
     getname();
@@ -78,247 +79,227 @@ class _HomeMainState extends State<HomeMain> {
     return RefreshIndicator(
       child: SafeArea(
           child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          // physics: BouncingScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
+            backgroundColor: Colors.white,
+            body: SingleChildScrollView(
+              // physics: BouncingScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: SizeConfig.screenWidth,
-                    height: SizeConfig.screenHeight * 0.4,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        image: AssetImage('assets/bg/Frame.png'),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppBar(
-                          backgroundColor: Colors.transparent,
-                          elevation: 0.0,
-                          actions: [
-                            Container(
-                              margin: EdgeInsets.only(
-                                  right: SizeConfig.blockSizeHorizontal * 5),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              NotificationsScreen()));
-                                },
-                                child: Icon(
-                                  Icons.notifications_none_sharp,
-                                  color: Colors.white,
+                  Stack(
+                    children: [
+                      Container(
+                        width: SizeConfig.screenWidth,
+                        height: SizeConfig.screenHeight * 0.4,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.fitWidth,
+                            image: AssetImage('assets/bg/Frame.png'),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppBar(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0.0,
+                              actions: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      right: SizeConfig.blockSizeHorizontal * 5),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  NotificationsScreen()));
+                                    },
+                                    child: Icon(
+                                      Icons.notifications_none_sharp,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            Container(
+                              width: SizeConfig.screenWidth,
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.screenWidth * 0.05,
+                                  vertical: SizeConfig.blockSizeVertical),
+                              child: Text("Hello,",
+                                  style: GoogleFonts.openSans(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: SizeConfig.blockSizeVertical * 3)),
+                            ),
+                            Container(
+                              width: SizeConfig.screenWidth,
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.screenWidth * 0.05,
+                                  vertical: SizeConfig.blockSizeVertical),
+                              child: Text(name == null ? "" : name,
+                                  style: GoogleFonts.openSans(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize:
+                                      SizeConfig.blockSizeVertical * 3.5)),
                             ),
                           ],
                         ),
-                        Container(
-                          width: SizeConfig.screenWidth,
-                          alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.screenWidth * 0.05,
-                              vertical: SizeConfig.blockSizeVertical),
-                          child: Text("Hello,",
-                              style: GoogleFonts.openSans(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: SizeConfig.blockSizeVertical * 3)),
-                        ),
-                        Container(
-                          width: SizeConfig.screenWidth,
-                          alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.screenWidth * 0.05,
-                              vertical: SizeConfig.blockSizeVertical),
-                          child: Text(name == null ? "" : name,
-                              style: GoogleFonts.openSans(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize:
-                                      SizeConfig.blockSizeVertical * 3.5)),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: SizeConfig.screenWidth,
-                    margin:
+                      ),
+                      Container(
+                        width: SizeConfig.screenWidth,
+                        margin:
                         EdgeInsets.only(top: SizeConfig.screenHeight * 0.25),
-                    decoration: BoxDecoration(
-                        borderRadius:
+                        decoration: BoxDecoration(
+                            borderRadius:
                             BorderRadius.only(topRight: Radius.circular(65)),
-                        color: Colors.white),
-                    child: isLoading
-                        ? /*Center(
-                            child: CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.blue)),
-                          )*/
-                        LoadingShimmer()
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 15),
-                                  height: 250,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(65),
-                                        bottomLeft: Radius.circular(15),
-                                        bottomRight: Radius.circular(15),
-                                        topLeft: Radius.circular(15)),
-                                    color: Colors.white,
-                                    image: DecorationImage(
-                                      image:
-                                          Image.asset('assets/bg/gridCard4.png')
-                                              .image,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    // image: DecorationImage(
-                                    //   image: Image.network(mediaurl +
-                                    //           rommended[1]['background_photo'])
-                                    //       .image,
-                                    //   fit: BoxFit.fill,
-                                    // ),
+                            color: Colors.white),
+                        child: isLoading
+                            ? Center(
+                          child: CircularProgressIndicator(
+                              valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.blue)),
+                        )
+                            : Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: SizeConfig.blockSizeVertical * 3.5,
+                            ),
+                            Container(
+                                margin: EdgeInsets.all(15),
+                                height: 250,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(65)),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                    image:
+                                    Image.asset('assets/bg/Quotes_BG.jpg')
+                                        .image,
+                                    fit: BoxFit.fill,
                                   ),
-                                  child: Stack(
+                                  // image: DecorationImage(
+                                  //   image: Image.network(mediaurl +
+                                  //           rommended[1]['background_photo'])
+                                  //       .image,
+                                  //   fit: BoxFit.fill,
+                                  // ),
+                                ),
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(
+                                      "$homequote",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                )),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Mood()));
+                              },
+                              child: Container(
+                                margin: EdgeInsets.all(10),
+                                height: SizeConfig.screenHeight * 0.20,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                    image: Image.asset('assets/bg/Frame.png')
+                                        .image,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(65),
-                                            bottomLeft: Radius.circular(15),
-                                            bottomRight: Radius.circular(15),
-                                            topLeft: Radius.circular(15)),
-                                        child: Container(
-                                          color: Colors.blue[900].withOpacity(0.4),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        "How are you \nfeeling today?",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Expanded(
+                                        child: SizedBox(),
+                                      ),
+                                      CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        child: Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          color: Colors.blue,
                                         ),
                                       ),
-                                      Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text(
-                                            "$homequote",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ),
+                                      SizedBox(
+                                        width: 15,
                                       ),
-                                    ],
-                                  )),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Mood()));
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  height: SizeConfig.screenHeight * 0.20,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      image: DecorationImage(
-                                        image:
-                                            Image.asset('assets/bg/Frame.png')
-                                                .image,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                          width: 15,
-                                        ),
-                                        Text(
-                                          "How Are You \nFeeling Today",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                        Expanded(
-                                          child: SizedBox(),
-                                        ),
-                                        CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          child: Icon(
-                                            Icons.arrow_forward_ios_rounded,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 15,
-                                        ),
-                                      ]),
-                                ),
+                                    ]),
                               ),
-                              Container(
-                                width: SizeConfig.screenWidth,
-                                alignment: Alignment.centerLeft,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 15,
-                                    vertical: SizeConfig.blockSizeVertical * 2),
-                                child: Text(
-                                  "Recommended For You",
-                                  style: GoogleFonts.openSans(
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(fontColorGray)),
-                                ),
+                            ),
+                            Container(
+                              width: SizeConfig.screenWidth,
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.screenWidth * 0.05,
+                                  vertical: SizeConfig.blockSizeVertical * 2),
+                              child: Text(
+                                "Recommended For You",
+                                style: GoogleFonts.openSans(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(fontColorGray)),
                               ),
-                              Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 15,
-                                    vertical: SizeConfig.blockSizeVertical),
-                                child: GridView(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  primary: false,
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          crossAxisSpacing: 8,
-                                          mainAxisSpacing: 8),
-                                  children: homewidget(),
-                                ),
-                              )
-                            ],
-                          ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.screenWidth * 0.02,
+                                  vertical: SizeConfig.blockSizeVertical),
+                              child: GridView(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                primary: false,
+                                gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8),
+                                children: homewidget(),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
-        drawer: DrawerMenu(),
-        bottomNavigationBar: NavigationBar(
-          index: 0,
-        ),
-        // bottomNavigationBar: NavigationBar(
-        //   index: 0,
-        // ),
-      )),
+            ),
+            drawer: DrawerMenu(),
+            bottomNavigationBar: NavigationBar(
+              index: 0,
+            ),
+            // bottomNavigationBar: NavigationBar(
+            //   index: 0,
+            // ),
+          )),
       onRefresh: () => getHomedata(),
     );
   }
@@ -380,157 +361,115 @@ class _HomeMainState extends State<HomeMain> {
   List<Widget> homewidget() {
     List<Widget> homitemlist = new List();
     for (int i = 0; i < homelist.length; i++) {
-      homitemlist.add(GestureDetector(
-        onTap: () {
-          print('TYPE:${homelist[i].runtimeType}');
-          Get.to(ArticleDetail(
-            description: homelist[i]['description'],
-            image: homelist[i]['photo'],
-            title: homelist[i]['title'],
-            id: homelist[i]['id'],
-          ));
-        },
-        child: Container(
-          width: SizeConfig.screenWidth * 0.4,
-          alignment: Alignment.bottomCenter,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            image: DecorationImage(
-                image: Image.network(mediaurl + homelist[i]['photo']).image,
-                fit: BoxFit.cover),
-          ),
-          child: Container(
-            width: SizeConfig.screenWidth,
-            padding: EdgeInsets.only(
-                left: SizeConfig.screenWidth * 0.02,
-                right: SizeConfig.screenWidth * 0.02),
-            height: SizeConfig.blockSizeVertical * 8,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: colors[0],
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(20))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    homelist[i]['title'],
-                    style: GoogleFonts.openSans(
-                        color: Colors.white, fontWeight: FontWeight.w600),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  "3m",
-                  style: GoogleFonts.openSans(
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ));
+      // homitemlist.add(GestureDetector(
+      //   onTap: () {
+      //     print('TYPE:${homelist[i].runtimeType}');
+      //     Get.to(ArticleDetail(
+      //       description: homelist[i]['description'],
+      //       image: homelist[i]['photo'],
+      //       title: homelist[i]['title'],
+      //       id: homelist[i]['id'],
+      //       bg:homelist[i]['background_photo']
+      //     ));
+      //   },
+      //   child: Stack(
+      //     fit: StackFit.expand,
+      //     children: [
+      //       Container(
+      //         width: SizeConfig.screenWidth * 0.4,
+      //         alignment: Alignment.bottomCenter,
+      //         decoration: BoxDecoration(
+      //           borderRadius: BorderRadius.circular(20),
+      //           image: DecorationImage(
+      //               image: Image.network(mediaurl + homelist[i]['photo']).image,
+      //               fit: BoxFit.cover),
+      //         ),
+      //         child: Container(
+      //           width: SizeConfig.screenWidth,
+      //           padding: EdgeInsets.only(
+      //               left: SizeConfig.screenWidth * 0.02,
+      //               right: SizeConfig.screenWidth * 0.02),
+      //           height: SizeConfig.blockSizeVertical * 8,
+      //           alignment: Alignment.center,
+      //           decoration: BoxDecoration(
+      //               color: colors[0],
+      //               borderRadius: BorderRadius.only(
+      //                   bottomRight: Radius.circular(20),
+      //                   bottomLeft: Radius.circular(20))),
+      //           child: Row(
+      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //             children: [
+      //               Text(
+      //                 homelist[i]['title'],
+      //                 style: GoogleFonts.openSans(
+      //                     color: Colors.white, fontWeight: FontWeight.w600),
+      //               ),
+      //               Text(
+      //                 "3m",
+      //                 style: GoogleFonts.openSans(
+      //                   color: Colors.white,
+      //                 ),
+      //               ),
+      //
+      //             ],
+      //           ),
+      //         ),
+      //       ),
+      //       Positioned(
+      //         top:0,
+      //         right: 5,
+      //         child:  Obx(() => IconButton(
+      //           onPressed: () async {
+      //             SharedPreferences prefs =
+      //             await SharedPreferences.getInstance();
+      //             if (prefs.getString("cleintid") == null) {
+      //               Get.showSnackbar(GetBar(
+      //                 message: 'Please First Login',
+      //                 duration: Duration(seconds: 2),
+      //               ));
+      //               return;
+      //             }
+      //             String response;
+      //
+      //             if (isLike.value) {
+      //               response =
+      //               await ExploreLikeUnlikeRepo.exploreUnLike(
+      //                   homelist[i]['id']);
+      //             } else {
+      //               response =
+      //               await ExploreLikeUnlikeRepo.exploreLike(
+      //                   homelist[i]['id']);
+      //             }
+      //             if (response != null) {
+      //               Get.showSnackbar(GetBar(
+      //                 message: response,
+      //                 duration: Duration(seconds: 2),
+      //               ));
+      //             } else {
+      //               isLike.toggle();
+      //             }
+      //           },
+      //           icon: Icon(
+      //             isLike.value
+      //                 ? Icons.favorite
+      //                 : Icons.favorite_border,
+      //             color: isLike.value ? Colors.red : Colors.white,
+      //           ),
+      //         )),
+      //       )
+      //     ],
+      //   ),
+      // ));
+      homitemlist.add(Homecontentwidget(
+          description: homelist[i]['description'],
+          created_by:homelist[i]['created_by'],
+          content:homelist[i]['content'],
+          image: homelist[i]['photo'],
+          title: homelist[i]['title'],
+          id: homelist[i]['content_id'],
+          bg:homelist[i]['background_photo'],
+          url:mediaurl));
     }
     return homitemlist;
-  }
-}
-
-class LoadingShimmer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: SizeConfig.blockSizeVertical * 3.5,
-        ),
-        Shimmer.fromColors(
-          baseColor: Colors.grey[400],
-          highlightColor: Colors.grey[200],
-          child: Container(
-              margin: EdgeInsets.all(15),
-              height: 250,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topRight: Radius.circular(65)),
-                color: Colors.grey[300],
-              ),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-              )),
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Mood()));
-          },
-          child: Container(
-            margin: EdgeInsets.all(10),
-            height: SizeConfig.screenHeight * 0.20,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              image: DecorationImage(
-                image: Image.asset('assets/bg/Frame.png').image,
-                fit: BoxFit.fill,
-              ),
-            ),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Text(
-                    "How Are You \nFeeling Today",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  Expanded(
-                    child: SizedBox(),
-                  ),
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                ]),
-          ),
-        ),
-        Container(
-          width: SizeConfig.screenWidth,
-          alignment: Alignment.centerLeft,
-          margin: EdgeInsets.symmetric(
-              horizontal: SizeConfig.screenWidth * 0.05,
-              vertical: SizeConfig.blockSizeVertical * 2),
-          child: Text(
-            "",
-            style: GoogleFonts.openSans(
-                fontWeight: FontWeight.w600, color: Color(fontColorGray)),
-          ),
-        ),
-      ],
-    );
   }
 }

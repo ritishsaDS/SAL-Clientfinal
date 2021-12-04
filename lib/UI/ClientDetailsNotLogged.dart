@@ -528,7 +528,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 // print(mobileController.text);
                                 createUser
                                     .createCounsellor(
-                                    age: "20",context: context,timezone: "4:50",device_id: "frst5533",location: "45.333",email: email.text
+                                    age: "20",context: context,timezone: "UTC+5:30",device_id: "frst5533",location: "45.333",email: email.text
                                     ,experience: "2",first_name: name.text,last_name: "nncde",phone: phn.text  )
                                     .then((value) async {
                                   if (value != null) {

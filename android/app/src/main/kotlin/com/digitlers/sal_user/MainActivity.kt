@@ -1,4 +1,4 @@
-package com.example.sal_user
+package com.digitlers.sal_user
 
 import io.flutter.embedding.android.FlutterActivity
 

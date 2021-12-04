@@ -1,17 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
+import 'package:sal_user/UI/RescheduleAppointment.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
 
 import 'AppointmentCancel.dart';
+import 'Articledetail.dart';
 import 'Cancelreason.dart';
+import 'Schedulescreen.dart';
 
 class CounsellorProfile2 extends StatefulWidget {
   var type;
+  var id;
   var appointment;
   var lname;
   var name;
-  CounsellorProfile2({this.appointment,this.type,this.name,this.lname});
+  var time;
+  var date;
+  CounsellorProfile2({this.id,this.appointment,this.type,this.name,this.lname,this.time,this.date});
   //const CounsellorProfile2({Key key}) : super(key: key);
 
   @override
@@ -19,6 +30,92 @@ class CounsellorProfile2 extends StatefulWidget {
 }
 
 class _CounsellorProfile2State extends State<CounsellorProfile2> {
+  bool isError = false;
+  bool isLoading = false;
+  var moodstatic = [
+    "0:30 AM",
+    "1:00 AM",
+    "1:30 AM",
+    "2:00 AM",
+    "2:30 AM",
+    "3:00 AM",
+    "3:30 AM",
+    "4:00 AM",
+    "4:30 AM",
+    "5:00 AM",
+    "5:30 AM",
+    "6:00 AM",
+    "6:30 AM",
+    "7:00 AM",
+    "7:30 AM",
+    "8:00 AM",
+    "8:30 AM",
+    "9:00 AM",
+    "9:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "12:00 PM",
+    "12:30 PM",
+    "1:00 PM",
+    "1:30 PM",
+    "2:00 PM",
+    "2:30 PM",
+    "3:00 PM",
+    "3:30 PM",
+    "4:00 PM",
+    "4:30 PM",
+    "5:00 PM",
+    "5:30 PM",
+    "6:00 PM",
+    "6:30 PM",
+    "7:00 PM",
+    "7:30 PM",
+    '8:00 PM',
+    '8:30 PM',
+    "9:00 PM",
+    "9:30 PM",
+    "10:00 PM",
+    "10:30 PM",
+    "11:00 PM",
+    "11:30 PM"
+        "12:00 PM"
+  ];
+  List months =
+  ['jan', 'feb', 'mar', 'apr', 'may','jun','jul','aug','sep','oct','nov','dec'];
+  List<Color> colors = [
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(48, 37, 33, 0.75),
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(48, 37, 33, 0.75),
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(48, 37, 33, 0.75),
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(48, 37, 33, 0.75),
+    Color.fromRGBO(42, 138, 163, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+    Color.fromRGBO(0, 90, 100, 0.75),
+  ];
+  @override
+  void initState() {
+    getCounsellordetail();
+    getappointmentdetail();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -46,7 +143,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
           children: [
             MaterialButton(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>Cancelreason()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Cancelreason(id:widget.appointment)));
               },
               color: Colors.white,
               child: Text("CANCEL",style: TextStyle(
@@ -62,12 +159,14 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
             ),
             MaterialButton(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (conetxt)=>CounsellorProfile2(
+                Navigator.push(context, MaterialPageRoute(builder: (conetxt)=>RescheduleAppointment(
                   appointment: widget.appointment,
-                  name:widget.name.toString(),
+
+                 data:overview,
+                 // name:widget.name.toString(),
                   type: widget.type,
 
-
+id:widget.id,
 
                 )));
                // Navigator.of(context).pushNamed('/ClientDetails');
@@ -153,7 +252,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                         margin: EdgeInsets.only(top: 8),
                         width: SizeConfig.screenWidth,
                         alignment: Alignment.center,
-                        child: Text("Dr ${widget.name} ${widget.lname}",
+                        child: Text("Dr ${widget.name}",
                           style: GoogleFonts.openSans(
                               color: Color(backgroundColorBlue),
                               fontSize: SizeConfig.blockSizeVertical * 2.5,
@@ -238,10 +337,10 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                                                     color: Color(backgroundColorBlue),
                                                     fontWeight: FontWeight.w600
                                                   ),),
-                                                  Text("24 July 2020 at 11:00 AM",
-                                                    style: TextStyle(
-                                                        color: Color(fontColorGray)
-                                                    ),)
+                                                  // Text("${widget.date.toString().split("-")[0]+" "+months[int.parse(widget.date.toString().split("-")[0])-1]+" "+ widget.date.toString().split("-")[0]+" "+moodstatic[int.parse(widget.time)]}",
+                                                  //   style: TextStyle(
+                                                  //       color: Color(fontColorGray)
+                                                  //   ),)
                                                 ],
                                               ),
                                             ),
@@ -258,7 +357,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                                                         color: Color(backgroundColorBlue),
                                                         fontWeight: FontWeight.w600
                                                     ),),
-                                                  Text("1",
+                                                  Text("${order['slots_bought']}",
                                                     style: TextStyle(
                                                         color: Color(fontColorGray)
                                                     ),)
@@ -278,7 +377,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                                                         color: Color(backgroundColorBlue),
                                                         fontWeight: FontWeight.w600
                                                     ),),
-                                                  Text("₹ 608",
+                                                  Text("${order['actual_amount']}",
                                                     style: TextStyle(
                                                         color: Color(fontColorGray)
                                                     ),)
@@ -298,7 +397,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                                                         color: Color(backgroundColorBlue),
                                                         fontWeight: FontWeight.w600
                                                     ),),
-                                                  Text("21 July, 2020 01:38 Pm",
+                                                  Text("${order['created_at'].toString().split("-")[2].split(" ")[0]+" "+months[int.parse(order['created_at'].toString().split("-")[1])-1]+" "+ order['created_at'].toString().split("-")[0]}",
                                                     style: TextStyle(
                                                         color: Color(fontColorGray)
                                                     ),)
@@ -318,7 +417,7 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                                                         color: Color(backgroundColorBlue),
                                                         fontWeight: FontWeight.w600
                                                     ),),
-                                                  Text("BVDSAIN3262341",
+                                                  Text("${order['invoice_id']}",
                                                     style: TextStyle(
                                                         color: Color(fontColorGray)
                                                     ),)
@@ -355,258 +454,379 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
                                           top: SizeConfig.blockSizeVertical * 3,
                                           right: SizeConfig.screenWidth * 0.025,
                                         ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "About Event",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                color: Color(backgroundColorBlue),
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "About",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Color(
+                                                      backgroundColorBlue),
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              "Sushmita has been a therapist for many years and believes in helping people wholeheartedly. She wants to provide her services to from all over the country and not just her city. She loves to help people when... See more ",
-                                              style: TextStyle(
-                                                color: Color(fontColorGray),
+                                              Text(
+                                                overview['about'],
+                                                style: TextStyle(
+                                                  color: Color(fontColorGray),
+                                                ),
+                                                textAlign: TextAlign.justify,
                                               ),
-                                              textAlign: TextAlign.justify,
-                                            ),
-                                            Container(
-                                              width: SizeConfig.screenWidth,
-                                              height:
-                                              SizeConfig.blockSizeVertical *
-                                                  8,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width:
-                                                    SizeConfig.screenWidth *
-                                                        0.1,
-                                                    height: SizeConfig
-                                                        .blockSizeVertical *
-                                                        3.5,
-                                                    padding: EdgeInsets.all(8),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/bg/minusBg.png'),
-                                                        fit: BoxFit.fill,
+                                              Container(
+                                                width: SizeConfig.screenWidth,
+                                                height: SizeConfig
+                                                    .blockSizeVertical *
+                                                    8,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width: SizeConfig
+                                                          .screenWidth *
+                                                          0.1,
+                                                      height: SizeConfig
+                                                          .blockSizeVertical *
+                                                          3.5,
+                                                      padding:
+                                                      EdgeInsets.all(8),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                              'assets/bg/minusBg.png'),
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/icons/minus.png'),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: SizeConfig
+                                                              .screenWidth *
+                                                              0.05),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          Text(
+                                                            "Experience",
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w600,
+                                                              color: Color(
+                                                                  backgroundColorBlue),
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            "${overview['experience']}",
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w400,
+                                                              color: Color(
+                                                                  fontColorGray),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
-                                                    child: Image.asset(
-                                                        'assets/icons/minus.png'),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: SizeConfig.screenWidth * 0.05
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Experience",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Color(backgroundColorBlue),
-                                                          ),),
-                                                        Text("12+ years",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w400,
-                                                            color: Color(fontColorGray),
-                                                          ),),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            Container(
-                                              width: SizeConfig.screenWidth,
-                                              height:
-                                              SizeConfig.blockSizeVertical *
-                                                  8,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width:
-                                                    SizeConfig.screenWidth *
-                                                        0.1,
-                                                    height: SizeConfig
-                                                        .blockSizeVertical *
-                                                        3.5,
-                                                    padding: EdgeInsets.all(8),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/bg/minusBg.png'),
-                                                        fit: BoxFit.fill,
+                                              Container(
+                                                width: SizeConfig.screenWidth,
+                                                height: SizeConfig
+                                                    .blockSizeVertical *
+                                                    8,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width: SizeConfig
+                                                          .screenWidth *
+                                                          0.1,
+                                                      height: SizeConfig
+                                                          .blockSizeVertical *
+                                                          3.5,
+                                                      padding:
+                                                      EdgeInsets.all(8),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                              'assets/bg/minusBg.png'),
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/icons/minus.png'),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: SizeConfig
+                                                              .screenWidth *
+                                                              0.05),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          Text(
+                                                            "Speciality",
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w600,
+                                                              color: Color(
+                                                                  backgroundColorBlue),
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            "${overview['education']}",
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w400,
+                                                              color: Color(
+                                                                  fontColorGray),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
-                                                    child: Image.asset(
-                                                        'assets/icons/minus.png'),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: SizeConfig.screenWidth * 0.05
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Speciality",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Color(backgroundColorBlue),
-                                                          ),),
-                                                        Text("Parenting, Stress",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w400,
-                                                            color: Color(fontColorGray),
-                                                          ),),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            Container(
-                                              width: SizeConfig.screenWidth,
-                                              height:
-                                              SizeConfig.blockSizeVertical *
-                                                  8,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width:
-                                                    SizeConfig.screenWidth *
-                                                        0.1,
-                                                    height: SizeConfig
-                                                        .blockSizeVertical *
-                                                        3.5,
-                                                    padding: EdgeInsets.all(8),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/bg/minusBg.png'),
-                                                        fit: BoxFit.fill,
+                                              Container(
+                                                width: SizeConfig.screenWidth,
+                                                height: SizeConfig
+                                                    .blockSizeVertical *
+                                                    8,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width: SizeConfig
+                                                          .screenWidth *
+                                                          0.1,
+                                                      height: SizeConfig
+                                                          .blockSizeVertical *
+                                                          3.5,
+                                                      padding:
+                                                      EdgeInsets.all(8),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                              'assets/bg/minusBg.png'),
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/icons/minus.png'),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: SizeConfig
+                                                              .screenWidth *
+                                                              0.05),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          Text(
+                                                            "Languages",
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w600,
+                                                              color: Color(
+                                                                  backgroundColorBlue),
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            "English, Hindi",
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w400,
+                                                              color: Color(
+                                                                  fontColorGray),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
-                                                    child: Image.asset(
-                                                        'assets/icons/minus.png'),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: SizeConfig.screenWidth * 0.05
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Languages",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Color(backgroundColorBlue),
-                                                          ),),
-                                                        Text("English, Hindi",
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w400,
-                                                            color: Color(fontColorGray),
-                                                          ),),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Container(
                                         width: SizeConfig.screenWidth,
                                         margin: EdgeInsets.symmetric(
-                                            horizontal: SizeConfig.screenWidth * 0.05,
-                                            vertical: SizeConfig.blockSizeVertical
-                                        ),
-                                        child: ListView.builder(itemBuilder: (context,int index){
-                                          return Container(
-                                            width: SizeConfig.screenWidth,
-                                            margin: EdgeInsets.symmetric(
-                                                vertical: SizeConfig.blockSizeVertical
-                                            ),
-                                            child: Row(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                CircleAvatar(
-                                                  child: Image.asset('assets/icons/user.png',
-                                                    color: Color(backgroundColorBlue),
-                                                    height: SizeConfig.blockSizeVertical * 3,),
-                                                  backgroundColor: Color(0XFFE0EDF6),
-                                                ),
-                                                Container(
-                                                  width: SizeConfig.screenWidth * 0.7,
-                                                  child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Text("Ankita Rathi",
-                                                            style: TextStyle(
-                                                                color: Color(fontColorSteelGrey),
-                                                                fontWeight: FontWeight.w600
-                                                            ),),
-                                                          Text("19 Feb,20",
-                                                            style: TextStyle(
-                                                                color: Color(fontColorGray),
-                                                                fontSize: SizeConfig.blockSizeVertical * 1.5
-                                                            ),),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,),
-                                                          Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,),
-                                                          Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,),
-                                                          Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,),
-                                                          Icon(Icons.star,color: Color(0XFFF0CA03),size: SizeConfig.blockSizeVertical * 2,),
-
-                                                        ],
-                                                      ),
-                                                      Container(
-                                                        margin: EdgeInsets.symmetric(
-                                                            vertical: SizeConfig.blockSizeVertical * 0.5
-                                                        ),
-                                                        child: Text("“Dr Sushmita is an extremely great counsellor who was highly patient and understanding. I would be definitely be booking a session again.”",
-                                                          style: TextStyle(
-                                                            color: Color(fontColorGray),
-                                                          ),),
-                                                      ),
-                                                    ],
+                                            horizontal:
+                                            SizeConfig.screenWidth * 0.05,
+                                            vertical:
+                                            SizeConfig.blockSizeVertical),
+                                        child: ListView.builder(
+                                          itemBuilder: (context, int index) {
+                                            return Container(
+                                              width: SizeConfig.screenWidth,
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: SizeConfig
+                                                      .blockSizeVertical),
+                                              child:reviews.length==0?Text("No review "): Row(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                children: [
+                                                  CircleAvatar(
+                                                    child: Image.asset(
+                                                      'assets/icons/user.png',
+                                                      color: Color(
+                                                          backgroundColorBlue),
+                                                      height: SizeConfig
+                                                          .blockSizeVertical *
+                                                          3,
+                                                    ),
+                                                    backgroundColor:
+                                                    Color(0XFFE0EDF6),
                                                   ),
-                                                  margin: EdgeInsets.only(
-                                                    left: SizeConfig.blockSizeHorizontal * 2,
-                                                  ),),
-                                              ],
-                                            ),
-                                          );
-                                        },
+                                                  Container(
+                                                    width:
+                                                    SizeConfig.screenWidth *
+                                                        0.7,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .start,
+                                                      crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                          children: [
+                                                            Text(
+                                                              "Ankita Rathi",
+                                                              style: TextStyle(
+                                                                  color: Color(
+                                                                      fontColorSteelGrey),
+                                                                  fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                            ),
+                                                            Text(
+                                                              "19 Feb,20",
+                                                              style: TextStyle(
+                                                                  color: Color(
+                                                                      fontColorGray),
+                                                                  fontSize:
+                                                                  SizeConfig
+                                                                      .blockSizeVertical *
+                                                                      1.5),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons.star,
+                                                              color: Color(
+                                                                  0XFFF0CA03),
+                                                              size: SizeConfig
+                                                                  .blockSizeVertical *
+                                                                  2,
+                                                            ),
+                                                            Icon(
+                                                              Icons.star,
+                                                              color: Color(
+                                                                  0XFFF0CA03),
+                                                              size: SizeConfig
+                                                                  .blockSizeVertical *
+                                                                  2,
+                                                            ),
+                                                            Icon(
+                                                              Icons.star,
+                                                              color: Color(
+                                                                  0XFFF0CA03),
+                                                              size: SizeConfig
+                                                                  .blockSizeVertical *
+                                                                  2,
+                                                            ),
+                                                            Icon(
+                                                              Icons.star,
+                                                              color: Color(
+                                                                  0XFFF0CA03),
+                                                              size: SizeConfig
+                                                                  .blockSizeVertical *
+                                                                  2,
+                                                            ),
+                                                            Icon(
+                                                              Icons.star,
+                                                              color: Color(
+                                                                  0XFFF0CA03),
+                                                              size: SizeConfig
+                                                                  .blockSizeVertical *
+                                                                  2,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Container(
+                                                          margin: EdgeInsets
+                                                              .symmetric(
+                                                              vertical:
+                                                              SizeConfig
+                                                                  .blockSizeVertical *
+                                                                  0.5),
+                                                          child: Text(
+                                                            "“Dr Sushmita is an extremely great counsellor who was highly patient and understanding. I would be definitely be booking a session again.”",
+                                                            style: TextStyle(
+                                                              color: Color(
+                                                                  fontColorGray),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    margin: EdgeInsets.only(
+                                                      left: SizeConfig
+                                                          .blockSizeHorizontal *
+                                                          2,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
                                           primary: false,
-                                          itemCount: 10,
-                                          shrinkWrap: true,),
+                                          itemCount: reviews.length,
+                                          shrinkWrap: true,
+                                        ),
                                       ),
                                     ]))
                               ])),
@@ -619,5 +839,99 @@ class _CounsellorProfile2State extends State<CounsellorProfile2> {
         ),
       ),
     ));
+  }
+  dynamic overview =new List();
+  dynamic reviews =new List();
+  dynamic content =new List();
+  dynamic appointment =new List();
+  dynamic appointment_slots =new List();
+  dynamic order =new List();
+
+  void getappointmentdetail() async {
+    setState(() {
+      isLoading = true;
+    });
+    print(widget.appointment);
+
+    try {
+      final response = await get(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment?appointment_id=${widget.appointment}'));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+
+        setState(() {
+
+          appointment = responseJson['appointment'];
+          appointment_slots = responseJson['appointment_slots'];
+          order = responseJson['order'];
+          isError = false;
+          isLoading = false;
+          print('setstate'+reviews.length.toString());
+        });
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
+  }
+
+  void getCounsellordetail() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await get(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/therapist?therapist_id=xg3zx'));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+
+        setState(() {
+          content = responseJson['contents'];
+          reviews = responseJson['reviews'];
+          overview = responseJson['therapist'];
+          isError = false;
+          isLoading = false;
+          print('setstate'+reviews.length.toString());
+        });
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
   }
 }

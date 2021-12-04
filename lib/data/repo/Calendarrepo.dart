@@ -51,7 +51,7 @@ class Calendarrepo extends BaseRepository {
     String clientId = prefs.getString("cleintid") ?? 'demo';
 
     final uri =
-        'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/content?client_id=$clientId&category_id=3';
+        'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/home?client_id=$clientId';
     var response = await Dio().get(uri,
         options: Options(
           headers: {

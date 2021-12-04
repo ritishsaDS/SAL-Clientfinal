@@ -11,6 +11,8 @@ import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/Appointmentorder.dart';
+import 'package:sal_user/models/Appointmentlistener.dart';
+import 'package:sal_user/models/Appointmenttherapistmodel.dart';
 import 'package:sal_user/models/appointmentmode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,10 +42,11 @@ class _SessionsState extends State<Sessions> {
   bool isLoading = false;
   bool isError = false;
   var appointmentslotid;
+  var coupon3;
   var counsellor_id;
   AppointmentModel appointmentModel = AppointmentModel();
   final List<AppointmentModel> addnotesList = [];
-
+TextEditingController coupon=TextEditingController();
   @override
   void initState() {
     print("widget.bill");
@@ -118,6 +121,7 @@ class _SessionsState extends State<Sessions> {
               Stack(
                 children: [
                   if (sessionRadio == 1)
+
                     Container(
                       width: SizeConfig.screenWidth,
                       margin:
@@ -159,7 +163,52 @@ class _SessionsState extends State<Sessions> {
                               ),
                               child: TextFormField(
                                 textInputAction: TextInputAction.next,
+                                onChanged: (val){
+                                  setState(() {
+                                    coupon3=val;
+                                  });
+                                },
                                 decoration: InputDecoration(
+                                  suffixIcon: GestureDetector(
+
+                                        onTap: () async {
+                                          if (sessionRadio > 0) {
+                                            var numbersession;
+                                            numbersession = sessionRadio == 2
+                                                ? numbersession = 3
+                                                : sessionRadio == 3
+                                                ? numbersession = 5
+                                                : sessionRadio == 1
+                                                ? numbersession = 1
+                                                : numbersession = 1;
+                                            print(sessionRadio);
+                                            var data;
+                                            SharedPreferences prefs =
+                                            await SharedPreferences.getInstance();
+                                            print("prefs.getString()");
+                                            data = AppointmentModel(
+                                                clientId: prefs.getString("cleintid"),
+                                                counsellorId: widget.getData['id'],
+                                                couponCode: coupon.text,
+                                                date: widget.date.toString(),
+                                                noSession: "1",
+                                                time: widget.slot);
+
+                                            diomwthod(
+                                              data,
+                                              context,
+                                              widget.mediaUrl,
+                                              widget.getData,
+                                              numbersession,
+                                              widget.type,
+                                              "Session",
+                                            );
+                                          } else {
+                                            toast("Please select session");
+                                          }
+                                        },
+
+                                      child: Container(width:40,alignment:Alignment.centerRight,child: Text("Apply  ",style: TextStyle(color: Color(0xff0066B3),fontWeight: FontWeight.w800),))),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide:
@@ -219,13 +268,38 @@ class _SessionsState extends State<Sessions> {
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                          "${widget.bill['billing']['actual_amount']}",
+                                          "${widget.bill['prices']['price']}",
                                           style: TextStyle(
                                               color: Color(fontColorGray)),
                                         )
                                 ],
                               ),
                             ),
+                            // Container(
+                            //   width: SizeConfig.screenWidth,
+                            //   margin: EdgeInsets.symmetric(
+                            //     vertical: SizeConfig.blockSizeVertical,
+                            //     horizontal: SizeConfig.screenWidth * 0.05,
+                            //   ),
+                            //   child: Row(
+                            //     mainAxisAlignment:
+                            //         MainAxisAlignment.spaceBetween,
+                            //     children: [
+                            //       Text(
+                            //         "Tax",
+                            //         style:
+                            //             TextStyle(color: Color(fontColorGray)),
+                            //       ),
+                            //       widget.type == "2"
+                            //           ? Text("Free")
+                            //           : Text(
+                            //               widget.bill['billing']['tax'],
+                            //               style: TextStyle(
+                            //                   color: Color(fontColorGray)),
+                            //             )
+                            //     ],
+                            //   ),
+                            // ),
                             Container(
                               width: SizeConfig.screenWidth,
                               margin: EdgeInsets.symmetric(
@@ -234,20 +308,20 @@ class _SessionsState extends State<Sessions> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Tax",
+                                    discount==''?"":"Discount",
                                     style:
-                                        TextStyle(color: Color(fontColorGray)),
+                                    TextStyle(color: Color(fontColorGray)),
                                   ),
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                          widget.bill['billing']['tax'],
-                                          style: TextStyle(
-                                              color: Color(fontColorGray)),
-                                        )
+                                    "${discount}",
+                                    style: TextStyle(
+                                        color: Color(fontColorGray)),
+                                  )
                                 ],
                               ),
                             ),
@@ -263,7 +337,7 @@ class _SessionsState extends State<Sessions> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "Total Payable Amount",
@@ -274,11 +348,11 @@ class _SessionsState extends State<Sessions> {
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                          widget.bill['billing']['paid_amount'],
-                                          style: TextStyle(
-                                              color: Color(backgroundColorBlue),
-                                              fontWeight: FontWeight.w600),
-                                        )
+                                    discount==''?"${int.parse(widget.bill['prices']['price'])}":"${paidamount}",
+                                    style: TextStyle(
+                                        color: Color(backgroundColorBlue),
+                                        fontWeight: FontWeight.w600),
+                                  )
                                 ],
                               ),
                             ),
@@ -317,7 +391,7 @@ class _SessionsState extends State<Sessions> {
                       title: widget.type == "2"
                           ? Text("Free")
                           : Text(
-                              "1 session for Rs.${widget.bill['billing']['actual_amount']}",
+                              "1 session for Rs.${widget.bill['prices']['price']}",
                               style: TextStyle(
                                   color: Color(sessionRadio == 1
                                       ? backgroundColorBlue
@@ -379,8 +453,53 @@ class _SessionsState extends State<Sessions> {
                                 horizontal: SizeConfig.screenWidth * 0.05,
                               ),
                               child: TextFormField(
+                                controller: coupon,
+                                onChanged: (val){
+                                  setState(() {
+                                    coupon3=val;
+                                  });
+                                },
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
+                                  suffixIcon: GestureDetector(
+                                      onTap: () async {
+                                        if (sessionRadio > 0) {
+                                          var numbersession;
+                                          numbersession = sessionRadio == 2
+                                              ? numbersession = 3
+                                              : sessionRadio == 3
+                                              ? numbersession = 5
+                                              : sessionRadio == 1
+                                              ? numbersession = 1
+                                              : numbersession = 1;
+                                          print(sessionRadio);
+                                          var data;
+                                          SharedPreferences prefs =
+                                              await SharedPreferences.getInstance();
+                                          print("prefs.getString()");
+                                          data = AppointmentModel(
+                                              clientId: prefs.getString("cleintid"),
+                                              counsellorId: widget.getData['id'],
+                                              couponCode: coupon.text,
+                                              date: widget.date.toString(),
+                                              noSession: "1",
+                                              time: widget.slot);
+
+                                         diomwthod(
+                                            data,
+                                            context,
+                                            widget.mediaUrl,
+                                            widget.getData,
+                                            numbersession,
+                                            widget.type,
+                                            "Session",
+                                          );
+                                        } else {
+                                          toast("Please select session");
+                                        }
+                                      },
+                                      child: Container( width:40,alignment:Alignment.centerRight,child: Text("Apply  ",style: TextStyle(color: Color(0xff0066B3),fontWeight: FontWeight.w800),))),
+
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide:
@@ -415,13 +534,16 @@ class _SessionsState extends State<Sessions> {
                                   contentPadding: EdgeInsets.all(12),
                                   hintText: "Enter Code",
                                   hintStyle: TextStyle(
-                                      color: Color(fontColorGray),
+                                     color: Color(fontColorGray),
                                       fontWeight: FontWeight.w400,
                                       fontSize:
                                           SizeConfig.blockSizeVertical * 1.75),
                                 ),
                               ),
                             ),
+                           Container(
+                               margin: EdgeInsets.only(left: 20),
+                               child: Text(text,style: TextStyle(color: Colors.green),)),
                             Container(
                               width: SizeConfig.screenWidth,
                               margin: EdgeInsets.symmetric(
@@ -461,14 +583,14 @@ class _SessionsState extends State<Sessions> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Tax(18%)",
+                                    discount==''?"":"Discount",
                                     style:
                                         TextStyle(color: Color(fontColorGray)),
                                   ),
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                          "${(18 / 100) * int.parse(widget.bill['prices']['price_3'])}",
+                                          "${discount}",
                                           style: TextStyle(
                                               color: Color(fontColorGray)),
                                         )
@@ -498,7 +620,7 @@ class _SessionsState extends State<Sessions> {
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                          "${int.parse(widget.bill['prices']['price_3']) + (18 / 100) * int.parse(widget.bill['prices']['price_3'])}",
+                                      discount==''?"${int.parse(widget.bill['prices']['price_3'])}":"${paidamount}",
                                           style: TextStyle(
                                               color: Color(backgroundColorBlue),
                                               fontWeight: FontWeight.w600),
@@ -594,6 +716,43 @@ class _SessionsState extends State<Sessions> {
                               child: TextFormField(
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
+                                  suffixIcon: GestureDetector(onTap: () async {
+                                    if (sessionRadio > 0) {
+                                      var numbersession;
+                                      numbersession = sessionRadio == 2
+                                          ? numbersession = 3
+                                          : sessionRadio == 3
+                                          ? numbersession = 5
+                                          : sessionRadio == 1
+                                          ? numbersession = 1
+                                          : numbersession = 1;
+                                      print(sessionRadio);
+                                      var data;
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
+                                      print("prefs.getString()");
+                                      data = AppointmentModel(
+                                          clientId: prefs.getString("cleintid"),
+                                          counsellorId: widget.getData['id'],
+                                          couponCode: coupon3,
+                                          date: widget.date.toString(),
+                                          noSession: "1",
+                                          time: widget.slot);
+
+                                      diomwthod(
+                                        data,
+                                        context,
+                                        widget.mediaUrl,
+                                        widget.getData,
+                                        numbersession,
+                                        widget.type,
+                                        "Session",
+                                      );
+                                    } else {
+                                      toast("Please select session");
+                                    }
+                                  },child: Container(width:40,alignment:Alignment.centerRight,child: Text("Apply  ",style: TextStyle(color: Color(0xff0066B3),fontWeight: FontWeight.w800),))),
+
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide:
@@ -633,8 +792,16 @@ class _SessionsState extends State<Sessions> {
                                       fontSize:
                                           SizeConfig.blockSizeVertical * 1.75),
                                 ),
+                                onChanged: (val){
+                                  setState(() {
+                                    coupon3=val;
+                                  });
+                                },
                               ),
                             ),
+                            Container(
+                                margin: EdgeInsets.only(left: 20),
+                                child: Text(text,style: TextStyle(color: Colors.green),)),
                             Container(
                               width: SizeConfig.screenWidth,
                               margin: EdgeInsets.symmetric(
@@ -671,20 +838,20 @@ class _SessionsState extends State<Sessions> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Tax(18%)",
+                                    discount==''?"":"Discount",
                                     style:
-                                        TextStyle(color: Color(fontColorGray)),
+                                    TextStyle(color: Color(fontColorGray)),
                                   ),
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                          "${(18 / 100) * int.parse(widget.bill['prices']['price_5'])}",
-                                          style: TextStyle(
-                                              color: Color(fontColorGray)),
-                                        )
+                                    "${discount}",
+                                    style: TextStyle(
+                                        color: Color(fontColorGray)),
+                                  )
                                 ],
                               ),
                             ),
@@ -700,7 +867,7 @@ class _SessionsState extends State<Sessions> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "Total Payable Amount",
@@ -711,11 +878,11 @@ class _SessionsState extends State<Sessions> {
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                          "${int.parse(widget.bill['prices']['price_5']) + (18 / 100) * int.parse(widget.bill['prices']['price_5'])}",
-                                          style: TextStyle(
-                                              color: Color(backgroundColorBlue),
-                                              fontWeight: FontWeight.w600),
-                                        )
+                                    discount==''?"${int.parse(widget.bill['prices']['price_3'])}":"${paidamount}",
+                                    style: TextStyle(
+                                        color: Color(backgroundColorBlue),
+                                        fontWeight: FontWeight.w600),
+                                  )
                                 ],
                               ),
                             ),
@@ -789,17 +956,28 @@ class _SessionsState extends State<Sessions> {
                           date: widget.date.toString(),
                           noSession: "1",
                           time: widget.slot);
+                      if(text!=''){
+                        print("jksdjnsdvko");
+                        Navigator.push(context,MaterialPageRoute(builder: (context)=>payment(mediaUrl: widget.mediaUrl,getData:widget.getData,
+                            date:widget.date,slot:widget.slot    ,sessionNumbers: numbersession.toString(),billing:razorpayamount,order:orderid,type:widget.type,bill:loginwithserver)));
 
-                      Appointmentorder.diomwthod(
-                        data,
-                        context,
-                        widget.mediaUrl,
-                        widget.getData,
-                        numbersession,
-                        widget.type,
-                        "Session",
-                      );
-                    } else {
+                      }
+                      else{
+                        Appointmentorder.diomwthod(
+                          data,
+                          context,
+                          widget.mediaUrl,
+                          widget.getData,
+                          numbersession,
+                          widget.type,
+                          "Session",
+                        );
+                      }
+
+                    }
+
+
+                    else {
                       toast("Please select session");
                     }
                   },
@@ -886,4 +1064,101 @@ class _SessionsState extends State<Sessions> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(prefs.getString("clientid"));
   }
+  var text='';
+  var paidamount='';
+  var discount='';
+  var razorpayamount='';
+  var orderid='';
+  dynamic loginwithserver=new List();
+ void diomwthod(AppointmentModel adddishmodel,context,mediaurl,data,session,type,screen) async {
+
+    var types;
+    var model;
+    if(type=='1'){
+      types="counsellor";
+      model = AppointmentModel(clientId:adddishmodel.clientId,counsellorId: adddishmodel.counsellorId,couponCode: coupon3,date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+    else if(type=="2"){
+      types="listener";
+      model = Appointmentlistener(clientId:adddishmodel.clientId,listenerid: adddishmodel.counsellorId,couponCode: coupon3,date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+    else if(type=='4'){
+      types='therapist';
+      model = AppointmentTherapist(clientId:adddishmodel.clientId,therapistId: adddishmodel.counsellorId,couponCode: coupon3,date:adddishmodel.date.toString().substring(0,10),noSession: session.toString(),time: adddishmodel.time  );
+
+    }
+
+
+    // print(adddishmodel.toJson());
+    print('REQUEST BODY :${json.encode(model)}');
+    try {
+      final response = await post(Uri.parse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/$types/order"),
+
+
+          body:json.encode(model));
+      print('RESPONSE Status Code:${response.statusCode}');
+      print('RESPONSE :${response.body}');
+      // print("bjkb" + response.request.toString());
+      // print("bjkb" + model.toJson().toString());
+      // showToast("Dish Added Successfully");
+
+      if (response.statusCode == 200)
+      {
+        final responseJson = json.decode(response.body);
+
+        loginwithserver = responseJson;
+
+        if(loginwithserver['meta']['message']=="Incorrect coupon code"){
+print("jnkjnkdfb");
+setState(() {
+  text="Incorrect coupon code";
+  discount='';
+
+});
+        }
+        else{
+          text="Coupon Applied Succesfully";
+          paidamount=loginwithserver['billing']["paid_amount"];
+          discount=loginwithserver['billing']['discount'];
+          razorpayamount=loginwithserver['paid_amount_razorpay'];
+          orderid=loginwithserver['order_id'];
+          print(razorpayamount);
+          // showAlertDialog(
+          //   context,
+          //   loginwithserver['meta']['message'],
+          //   "",
+          // );
+        }
+
+        // print(loginwithserver['data']['email']);
+        print(loginwithserver);
+
+        // SharedPreferences preferences = await SharedPreferences.getInstance();
+        //
+        // preferences.setString("token", loginwithserver['token']['original']['access_token']);
+        // preferences.setInt("chefid", loginwithserver['data'][0]['id']);
+        // // preferences.setString("token", loginwithserver['token']['original']['access_token']);
+        // print(preferences.getInt("chefid"));
+        // print( preferences.getString("token"));
+        // showToast("Login Successfully");
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyBottomBarDemo()));
+        // preferences.setString("login", "cook");
+
+
+        // showToast("");
+        //savedata();
+
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        //showToast("Mismatch Credentials");
+
+      }
+    } catch (e) {
+      print(e);
+
+    }
+  }
 }
+

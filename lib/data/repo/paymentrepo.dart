@@ -75,6 +75,7 @@ class Succespaymentrepo extends BaseRepository {
               "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/${types}/paymentcomplete"),
           body: json.encode(model));
       print("bjkb" + response.request.toString());
+      print("bjkb" + slot.toString());
       print("bjkb" + response.statusCode.toString());
       print("bjkb" + response.body.toString());
       // showToast("Dish Added Successfully");

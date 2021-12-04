@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart' as utils;
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/login.dart';
+import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 
@@ -51,11 +52,22 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                     alignment: Alignment.center,
                     margin: EdgeInsets.only(top: SizeConfig.screenWidth * 0.06),
                     child:
-                        Image.asset(
-                          'assets/onBoard1.png',
-                          width: SizeConfig.screenWidth,
-                          height: SizeConfig.screenHeight*0.60 ,
-                          fit: BoxFit.fitHeight,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Image.asset(
+                              'assets/onBoard1.png',
+                              width: SizeConfig.screenWidth,
+                              height: SizeConfig.screenHeight*0.60 ,
+                              fit: BoxFit.fitHeight,
+                            ),
+
+                            Text(
+                              "Elevate Your Mood",
+                              style: TextStyle(color: Color(midnightBlue), fontSize: 22,fontWeight: FontWeight.bold),
+                            ),
+
+                          ],
                         ),
 
                   ),
@@ -67,13 +79,18 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                     alignment: Alignment.topCenter,
                     margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
                     child: Column(
-                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Image.asset(
                           'assets/onBoard2.png',
                           width: SizeConfig.screenWidth,
                           height: SizeConfig.screenHeight*0.55 ,
                           fit: BoxFit.fitHeight,
+                        ),
+
+                        Text(
+                          "Access Your\nEmotional Health",
+                          style: TextStyle(color: Color(midnightBlue), fontSize: 22,fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -82,13 +99,18 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                     alignment: Alignment.topCenter,
                     margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.06),
                     child: Column(
-                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Image.asset(
                           'assets/onBoard3.png',
                           width: SizeConfig.screenWidth,
                           height: SizeConfig.screenHeight*0.55 ,
                           fit: BoxFit.fitHeight,
+                        ),
+                        Text(
+                          "Connect with your\nChancellor",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(midnightBlue), fontSize: 22,fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -101,7 +123,7 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
               ),
             ),
 
-
+SizedBox(height: 5,),
             DotsIndicator(
               dotsCount:3,
               position: currentPage,
@@ -110,6 +132,8 @@ class DTWalkThoughScreenState extends State<DTWalkThoughScreen>
                 activeColor: Colors.blue,
               ),
             ),
+            SizedBox(height: 5,),
+
             Container(
                 margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 6),
               alignment: Alignment.center,

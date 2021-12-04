@@ -174,9 +174,15 @@ class _DrawerMenuState extends State<DrawerMenu> {
               title: Text("My Profile"),
               leading: ImageIcon(Image.asset('assets/icons/user.png').image),
               onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MyProfile()));
+               // Navigator.pop(context);
+               if(name == null){
+                 showAlertDialog(context, "Please Login First", "Login First");
+               }
+               else{
+                 Navigator.push(context,
+                     MaterialPageRoute(builder: (context) => MyProfile()));
+               }
+
               },
             ),
             ListTile(

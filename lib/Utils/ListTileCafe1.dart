@@ -5,21 +5,30 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sal_user/UI/Callpage.dart';
+import 'package:sal_user/UI/CounsellorProfile2.dart';
+import 'package:sal_user/UI/CousellorProfile.dart';
+import 'package:sal_user/UI/RescheduleAppointment.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
-Widget listTileCafe1(BuildContext context,
+Widget listTileCafe1(
+    String slot,
+    String id,
+    String appointmentid,
+    BuildContext context,
     String contactName,
+    String type,
     String time,
-
     String date
     ){
   SizeConfig().init(context);
+  List months =
+  ['jan', 'feb', 'mar', 'apr', 'may','jun','jul','aug','sep','oct','nov','dec'];
   return InkWell(
 
 
     onTap: (){
-     // Navigator.of(context).pushNamed('/Cafe3');
+     Navigator.push(context, MaterialPageRoute(builder: (context)=>CounsellorProfile2(id:id,name: contactName,appointment:appointmentid,time:slot,date:date)));
     },
     child: Container(
       //color: Colors.blue[900],
@@ -34,10 +43,20 @@ Widget listTileCafe1(BuildContext context,
 
           Container(
             width: SizeConfig.screenWidth * 0.45,
-            child: Text(contactName,style: GoogleFonts.openSans(
-              color: Color(fontColorGray),
-              fontWeight: FontWeight.w400
-            ),),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(contactName,style: GoogleFonts.openSans(
+                  color: Color(backgroundColorBlue),
+                  fontWeight: FontWeight.bold
+                ),),
+                Text(type=="4"?"Therapist":type=="2"?"Listener":"Counsellor",style: GoogleFonts.openSans(
+                    color: Color(fontColorGray),
+                    fontWeight: FontWeight.w400
+                ),),
+              ],
+            ),
           ),
           GestureDetector(
             onTap: () async {
@@ -78,8 +97,8 @@ Widget listTileCafe1(BuildContext context,
                 GestureDetector(
                   // onTap: onTap,
                   child: Container(
-                    width: SizeConfig.screenWidth * 0.5,
-                    child: Text(date.substring(0,10),style: GoogleFonts.openSans(
+                    width: SizeConfig.screenWidth * 0.2,
+                    child: Text(time,style: GoogleFonts.openSans(
                         color: Color(fontColorGray),
                         fontWeight: FontWeight.w400
                     ),),
@@ -88,13 +107,15 @@ Widget listTileCafe1(BuildContext context,
                 GestureDetector(
                   // onTap: onTap,
                   child: Container(
-                    width: SizeConfig.screenWidth * 0.1,
-                    child: Text(time,style: GoogleFonts.openSans(
-                        color: Color(fontColorGray),
-                        fontWeight: FontWeight.w400
-                    ),),
+                    width: SizeConfig.screenWidth * 0.5,
+                    child:  Text("${date.toString().split("-")[2]+" "+months[int.parse(date.toString().split("-")[1])-1]}",
+                      style: TextStyle(
+                          color: Color(fontColorGray)
+                      ),)
+
                   ),
                 ),
+
               ],
             ),
           ),

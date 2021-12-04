@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/Home.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
@@ -9,6 +10,22 @@ class Appointmentcancel extends StatefulWidget{
 }
 
 class _AppointmentcancelState extends State<Appointmentcancel> {
+  @override
+  void initState() {
+
+    new Future.delayed(
+        const Duration(seconds: 2),
+            () {
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeMain()),
+          );
+        }
+    );
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Column(

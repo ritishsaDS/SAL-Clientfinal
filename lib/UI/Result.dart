@@ -6,6 +6,8 @@ import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/models/get_assessment_result_response_model.dart';
 import 'package:http/http.dart' as http;
 
+import 'Home.dart';
+
 class Result extends StatefulWidget {
   final String assessmentId;
   final String clientId;
@@ -54,26 +56,26 @@ class _ResultState extends State<Result> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                child: Image.asset(
-                  'assets/icons/download.png',
-                  height: SizeConfig.blockSizeVertical * 3,
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(8),
-                child: Image.asset(
-                  'assets/icons/share.png',
-                  height: SizeConfig.blockSizeVertical * 3,
-                ),
-              ),
-            ],
-          ),
-        ],
+        // actions: [
+        //   Row(
+        //     children: [
+        //       Container(
+        //         padding: EdgeInsets.all(8),
+        //         child: Image.asset(
+        //           'assets/icons/download.png',
+        //           height: SizeConfig.blockSizeVertical * 3,
+        //         ),
+        //       ),
+        //       Container(
+        //         padding: EdgeInsets.all(8),
+        //         child: Image.asset(
+        //           'assets/icons/share.png',
+        //           height: SizeConfig.blockSizeVertical * 3,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ],
         elevation: 0.0,
         leading: InkWell(
           onTap: () {
@@ -95,10 +97,11 @@ class _ResultState extends State<Result> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8)),
           onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeMain()));
             // postAssessment();
           },
           child: Text(
-            'TRY AGAIN',
+            'Done',
             style:
             TextStyle(color: Colors.white, letterSpacing: 0.5),
           ),
@@ -110,30 +113,30 @@ class _ResultState extends State<Result> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-                width: SizeConfig.screenWidth,
-                height: SizeConfig.screenHeight * 0.15,
-                margin: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.screenWidth * 0.05,
-                    vertical: SizeConfig.blockSizeVertical * 2),
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.blockSizeHorizontal * 5,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                      image: AssetImage('assets/bg/result tile.png'),
-                      fit: BoxFit.cover),
-                ),
-                child: Text(
-                  "You can handle stress at work well!",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: SizeConfig.blockSizeVertical * 3),
-                  textAlign: TextAlign.center,
-                )),
+            // Container(
+            //     width: SizeConfig.screenWidth,
+            //     height: SizeConfig.screenHeight * 0.15,
+            //     margin: EdgeInsets.symmetric(
+            //         horizontal: SizeConfig.screenWidth * 0.05,
+            //         vertical: SizeConfig.blockSizeVertical * 2),
+            //     alignment: Alignment.center,
+            //     padding: EdgeInsets.symmetric(
+            //       horizontal: SizeConfig.blockSizeHorizontal * 5,
+            //     ),
+            //     decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(10),
+            //       image: DecorationImage(
+            //           image: AssetImage('assets/bg/result tile.png'),
+            //           fit: BoxFit.cover),
+            //     ),
+            //     child: Text(
+            //       "You can handle stress at work well!",
+            //       style: TextStyle(
+            //           color: Colors.white,
+            //           fontWeight: FontWeight.w600,
+            //           fontSize: SizeConfig.blockSizeVertical * 3),
+            //       textAlign: TextAlign.center,
+            //     )),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -267,30 +270,30 @@ class _ResultState extends State<Result> {
                                                       3),
                                               textAlign: TextAlign.center,
                                             )),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.all(8),
-                                              child: Image.asset(
-                                                'assets/icons/download.png',
-                                                height: SizeConfig
-                                                        .blockSizeVertical *
-                                                    3,
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.all(8),
-                                              child: Image.asset(
-                                                'assets/icons/share.png',
-                                                height: SizeConfig
-                                                        .blockSizeVertical *
-                                                    3,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                        // Row(
+                                        //   mainAxisAlignment:
+                                        //       MainAxisAlignment.end,
+                                        //   children: [
+                                        //     Container(
+                                        //       padding: EdgeInsets.all(8),
+                                        //       child: Image.asset(
+                                        //         'assets/icons/download.png',
+                                        //         height: SizeConfig
+                                        //                 .blockSizeVertical *
+                                        //             3,
+                                        //       ),
+                                        //     ),
+                                        //     Container(
+                                        //       padding: EdgeInsets.all(8),
+                                        //       child: Image.asset(
+                                        //         'assets/icons/share.png',
+                                        //         height: SizeConfig
+                                        //                 .blockSizeVertical *
+                                        //             3,
+                                        //       ),
+                                        //     ),
+                                        //   ],
+                                        // ),
                                       ],
                                     ),
                                   ),

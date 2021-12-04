@@ -42,9 +42,10 @@ class _NavigationBarState extends State<NavigationBar> {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return Connect();
           }));
-        } else if (index == 2) {
+        } else if (index == 3) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return ExploreAll();
+
           }));
         } else {
           Navigator.push(
@@ -85,38 +86,39 @@ class _NavigationBarState extends State<NavigationBar> {
             ),
             label: "Connect"),
         BottomNavigationBarItem(
-          icon: Container(
-            child: Image.asset(
-              'assets/icons/nav explore.png',
-              scale: SizeConfig.blockSizeVertical * 0.4,
-              color: widget.index == 2 ? Colors.white : Color(fontColorGray),
-            ),
-            decoration: BoxDecoration(
-                color: widget.index == 2
-                    ? Color(backgroundColorBlue)
-                    : Colors.white,
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(5)),
-            padding: EdgeInsets.all(SizeConfig.blockSizeVertical),
-          ),
-          label: "Explore",
-        ),
-        BottomNavigationBarItem(
             icon: Container(
               child: Image.asset(
                 'assets/icons/nav cafe.png',
                 scale: SizeConfig.blockSizeVertical * 0.4,
-                color: widget.index == 3 ? Colors.white : Color(fontColorGray),
+                color: widget.index == 2 ? Colors.white : Color(fontColorGray),
               ),
               decoration: BoxDecoration(
-                  color: widget.index == 3
+                  color: widget.index == 2
                       ? Color(backgroundColorBlue)
                       : Colors.white,
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.circular(5)),
               padding: EdgeInsets.all(SizeConfig.blockSizeVertical),
             ),
-            label: "Cafe"),
+            label: "Explore"),
+        BottomNavigationBarItem(
+          icon: Container(
+            child: Image.asset(
+              'assets/icons/nav explore.png',
+              scale: SizeConfig.blockSizeVertical * 0.4,
+              color: widget.index == 3 ? Colors.white : Color(fontColorGray),
+            ),
+            decoration: BoxDecoration(
+                color: widget.index == 3
+                    ? Color(backgroundColorBlue)
+                    : Colors.white,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5)),
+            padding: EdgeInsets.all(SizeConfig.blockSizeVertical),
+          ),
+          label: "Cafe",
+        ),
+
       ],
     );
   }

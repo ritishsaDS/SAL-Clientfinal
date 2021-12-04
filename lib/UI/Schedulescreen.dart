@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:sal_user/UI/Sessions.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/Appointmentorder.dart';
@@ -14,10 +16,11 @@ class DynamicEvent extends StatefulWidget {
   var appointment;
   dynamic mediaurl;
   var type;
+  var id;
   Map<String, dynamic> slot;
 
   DynamicEvent(
-      {this.data, this.mediaurl, this.type, this.appointment, this.slot});
+      {this.data, this.id,this.mediaurl, this.type, this.appointment, this.slot});
 
   @override
   _DynamicEventState createState() => _DynamicEventState();
@@ -30,7 +33,9 @@ class _DynamicEventState extends State<DynamicEvent> {
   TextEditingController _eventController;
   SharedPreferences prefs;
   int _selectedIndex;
-
+  var value = [];
+  bool  isError = false;
+ bool isLoading = false;
   _onSelected(int index) {
     setState(() => _selectedIndex = index);
   }
@@ -39,6 +44,7 @@ class _DynamicEventState extends State<DynamicEvent> {
   var selectdate = DateTime.now();
 
   var moodstaticList = [
+    ' ',
     "0:30",
     "1:00",
     "1:30",
@@ -144,8 +150,10 @@ class _DynamicEventState extends State<DynamicEvent> {
   @override
   void initState() {
     super.initState();
-    print(widget.data);
+    print("jndfvko"+widget.data.toString());
+    getdatafromserver();
     setSlotTime();
+
     _controller = CalendarController();
     _eventController = TextEditingController();
     _events = {};
@@ -278,6 +286,7 @@ class _DynamicEventState extends State<DynamicEvent> {
                         _selectedEvents = events;
                         selectdate = date;
                         print(selectdate);
+                        getdatafromserver();
                       });
                     },
                     builders: CalendarBuilders(
@@ -351,7 +360,7 @@ class _DynamicEventState extends State<DynamicEvent> {
               Container(
                   margin: EdgeInsets.all(10),
                   height: SizeConfig.screenHeight * 0.54,
-                  child: widget.slot.isEmpty
+                  child: value.isEmpty
                       ? Center(child: Text('Slot not available'))
                       : GridView.count(
                           childAspectRatio: 3.5 / 2,
@@ -361,60 +370,54 @@ class _DynamicEventState extends State<DynamicEvent> {
                           mainAxisSpacing: 20,
                           crossAxisSpacing: 15,
                           // Generate 100 widgets that display their index in the List.
-                          children:
-                              List.generate(listAvailableSlot.length, (index) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _onSelected(index);
-
-                                  slotid =
-                                      slot[int.parse(listAvailableSlot[index])];
-                                  print(slotid);
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: _selectedIndex != null &&
-                                            _selectedIndex == index
-                                        ? Color(backgroundColorBlue)
-                                        : Colors.white,
-                                    border: Border.all(
-                                      color: _selectedIndex != null &&
-                                              _selectedIndex == index
-                                          ? Color(backgroundColorBlue)
-                                          : Colors.grey,
-                                    )),
-                                child: Center(
-                                  child: Text(
-                                    moodstaticList[
-                                        int.parse(listAvailableSlot[index])],
-                                    style: TextStyle(
-                                      color: _selectedIndex != null &&
-                                              _selectedIndex == index
-                                          ? Colors.white
-                                          : Colors.grey,
-                                    ),
-                                    // style: Theme.of(context).textTheme.headline5,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
+                          children:slotarray()
+                          //     List.generate(value.length, (index) {
+                          //   return GestureDetector(
+                          //     onTap: () {
+                          //       setState(() {
+                          //         _onSelected(index);
+                          //
+                          //         slotid =
+                          //             slot[int.parse(listAvailableSlot[index])];
+                          //         print(slotid);
+                          //       });
+                          //     },
+                          //     child: Container(
+                          //       padding: EdgeInsets.all(5),
+                          //       decoration: BoxDecoration(
+                          //           borderRadius: BorderRadius.circular(10),
+                          //           color: _selectedIndex != null &&
+                          //                   _selectedIndex == index
+                          //               ? Color(backgroundColorBlue)
+                          //               : Colors.white,
+                          //           border: Border.all(
+                          //             color: _selectedIndex != null &&
+                          //                     _selectedIndex == index
+                          //                 ? Color(backgroundColorBlue)
+                          //                 : Colors.grey,
+                          //           )),
+                          //       child: Center(
+                          //         child: Text(
+                          //           moodstaticList[
+                          //               int.parse(value[index])],
+                          //           style: TextStyle(
+                          //             color: _selectedIndex != null &&
+                          //                     _selectedIndex == index
+                          //                 ? Colors.white
+                          //                 : Colors.grey,
+                          //           ),
+                          //           // style: Theme.of(context).textTheme.headline5,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   );
+                          // }),
                         )),
               Container(
                 margin: EdgeInsets.all(10),
                 child: MaterialButton(
                   onPressed: () async {
-                    if (widget.slot.isEmpty) {
-                      Get.showSnackbar(GetBar(
-                        message: 'Slot not available',
-                        duration: Duration(seconds: 2),
-                      ));
-                      return;
-                    }
+
                     if (slotid==null) {
                       Get.showSnackbar(GetBar(
                         message: 'Please any one slot',
@@ -440,7 +443,8 @@ class _DynamicEventState extends State<DynamicEvent> {
                           time: slotid);
                       Appointmentorder.diomwthod(data, context, widget.mediaurl,
                           widget.data, "1", widget.type, "Schedule");
-                    } else {
+                    }
+                    else {
                       AppointmentModel data;
                       SharedPreferences prefs =
                           await SharedPreferences.getInstance();
@@ -452,6 +456,7 @@ class _DynamicEventState extends State<DynamicEvent> {
                           date: selectdate.toString(),
                           noSession: "1",
                           time: slotid);
+                      print(data);
                       Appointmentorder.diomwthod(data, context, widget.mediaurl,
                           widget.data, "1", widget.type, "Schedule");
                     }
@@ -514,5 +519,122 @@ class _DynamicEventState extends State<DynamicEvent> {
                 )
               ],
             ));
+  }
+  dynamic myslots=new List();
+
+  void getdatafromserver() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await get(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor/slots?counsellor_id=${widget.data['id']}'));
+      print("bjkb" + response.body.toString());
+      print("bjkb" + response.request.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+        setState(() {
+          isError = false;
+          isLoading = false;
+          print('setstate');
+        });
+        value=[];
+        for(int i =0; i<responseJson['slots'].length;i++){
+          if(responseJson['slots'][i]['date']==selectdate.toString().substring(0,10)){
+            print("jfvjnfvjnl");
+            print(responseJson['slots'][i]);
+            setState(() {
+              myslots=responseJson['slots'][i];
+
+            });
+
+            setState(() {
+              myslots.keys.forEach((key) {
+                value.add(key);
+                print(value);
+
+              });
+            });
+          }
+          else{
+            setState(() {
+
+            });
+          }
+        }
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }}
+  List<Widget> slotarray() {
+
+    print(value.length);
+    List<Widget> slotlist = new List();
+    for (int i = 0; i < value.length; i++) {
+      print('INdex:${(i / 2) == 0}');
+      print("knejknp" + value[i].length.toString());
+      if (i.isEven) {
+        slotlist.add(
+          value[i].length < 3
+              ? GestureDetector(
+            onTap: () {
+            setState(() {
+                    _onSelected(i);
+
+                    slotid =
+                        slot[int.parse(value[i])];
+                    print(slotid);
+                  });
+            },
+            child: Container(
+              width: SizeConfig.screenWidth * 0.2,
+              padding: EdgeInsets.all(8),
+              margin: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.blockSizeHorizontal),
+
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: _selectedIndex != null &&
+                      _selectedIndex == i
+                      ? Color(backgroundColorBlue)
+                      : Colors.white,
+                  border: Border.all(
+                    color: _selectedIndex != null &&
+                        _selectedIndex == i
+                        ? Color(backgroundColorBlue)
+                        : Colors.grey,
+                  )),
+              child: Text(moodstaticList[int.parse(value[i])].toString(), style: TextStyle(
+                            color: _selectedIndex != null &&
+                                    _selectedIndex == i
+                                ? Colors.white
+                                : Colors.grey,),
+
+            ),
+              alignment: Alignment.center,
+          ))
+              : Container(),
+        );
+      }
+    }
+    return slotlist;
   }
 }

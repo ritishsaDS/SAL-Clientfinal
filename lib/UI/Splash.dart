@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Home.dart';
 import 'OnBoardScreens.dart';
 
 class Splash extends StatefulWidget {
@@ -10,15 +12,13 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-
+var clientid;
   @override
   void initState() {
-
+    detail();
     super.initState();
 
-    Future.delayed(Duration(seconds: 13),(){
-      Get.to(DTWalkThoughScreen());
-    });
+
   }
 
   @override
@@ -29,5 +29,18 @@ class _SplashState extends State<Splash> {
       body: Center(child: Image.asset('assets/splashIcon.gif')),
     
     );
+  }
+  Future<void> detail() async {
+    SharedPreferences prefs =
+    await SharedPreferences.getInstance();
+
+    setState(() {
+      prefs.getString("cleintid")== null? Future.delayed(Duration(seconds: 13),(){
+        Get.to(
+
+            DTWalkThoughScreen());
+      }):Get.to(HomeMain());
+
+    });
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,9 +12,14 @@ import 'package:sal_user/UI/videoplayer.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/NavigationBar.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/Widgets/explorewidget.dart';
+import 'package:sal_user/data/repo/ExploreLikeUnlikeRepo.dart';
+import 'package:sal_user/models/get_topics_response_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:sal_user/models/get_contents_response_model.dart';
+
+import 'Professionalinfo.dart';
 
 class ExploreAll extends StatefulWidget {
   @override
@@ -20,9 +27,18 @@ class ExploreAll extends StatefulWidget {
 }
 
 class _ExploreAllState extends State<ExploreAll> {
-  List<String> categories = ['All', 'Liked', 'Anxiety', 'Sleep', 'Anger'];
-  int selectedIndex = 0;
-
+  List<dynamic> categories = [];
+  int selectedIndex =121;
+  GetTopicsResponseModel result;
+  var catId;
+  Status status = Status.LOADING;
+  List<String> selectedList = [];
+  @override
+  void initState() {
+    getTopics();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,13 +50,9 @@ class _ExploreAllState extends State<ExploreAll> {
           children: [
             upperHeader(),
             Expanded(
-                child: selectedIndex == 0
-                    ? AllContents()
-                    : selectedIndex == 1
-                        ? LikedExploreList()
-                        : Center(
-                            child: Text('Pending from api side'),
-                          ))
+                child:selectedIndex == 120? LikedExploreList(): AllContents(id:catId))
+
+
           ],
         ),
       ),
@@ -54,49 +66,142 @@ class _ExploreAllState extends State<ExploreAll> {
       margin: EdgeInsets.symmetric(
           vertical: SizeConfig.blockSizeVertical * 2,
           horizontal: SizeConfig.screenWidth * 0.02),
-      child: ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-            onTap: () {
-              setState(() {
-                selectedIndex = index;
-              });
-            },
-            child: Container(
-              alignment: Alignment.center,
-              height: SizeConfig.blockSizeVertical * 4,
-              padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.blockSizeHorizontal * 4,
-                  vertical: SizeConfig.blockSizeVertical),
-              decoration: BoxDecoration(
-                  color: selectedIndex != null && selectedIndex == index
-                      ? Color(0xff0066B3)
-                      : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(20)),
-              margin: EdgeInsets.only(
-                  right: SizeConfig.blockSizeHorizontal * 3,
-                  left: SizeConfig.blockSizeHorizontal),
-              child: Text(
-                categories[index],
-                style: GoogleFonts.openSans(
-                    color: selectedIndex != null && selectedIndex == index
-                        ? Colors.white
-                        : Color(fontColorSteelGrey)),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            InkWell(
+              onTap: () {
+                setState(() {
+                  selectedIndex=121;
+                  catId=null;
+                });
+              },
+              child: Container(
+                alignment: Alignment.center,
+                height: SizeConfig.blockSizeVertical * 4,
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.blockSizeHorizontal * 4,
+                    vertical: SizeConfig.blockSizeVertical),
+                decoration: BoxDecoration(
+                    color: selectedIndex != null && selectedIndex == 121
+                        ? Color(0xff0066B3)
+                        : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20)),
+                margin: EdgeInsets.only(
+                    right: SizeConfig.blockSizeHorizontal * 3,
+                    left: SizeConfig.blockSizeHorizontal),
+                child: Text(
+                  "All",
+                  style: GoogleFonts.openSans(
+                      color: selectedIndex != null && selectedIndex == 121
+                          ? Colors.white
+                          : Color(fontColorSteelGrey)),
+                ),
               ),
             ),
-          );
-        },
-        physics: BouncingScrollPhysics(),
-        shrinkWrap: true,
-        primary: false,
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
+            InkWell(
+              onTap: () {
+                setState(() {
+                  selectedIndex=120;
+                });
+              },
+              child: Container(
+                alignment: Alignment.center,
+                height: SizeConfig.blockSizeVertical * 4,
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.blockSizeHorizontal * 4,
+                    vertical: SizeConfig.blockSizeVertical),
+                decoration: BoxDecoration(
+                    color: selectedIndex != null && selectedIndex == 120
+                        ? Color(0xff0066B3)
+                        : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20)),
+                margin: EdgeInsets.only(
+                    right: SizeConfig.blockSizeHorizontal * 3,
+                    left: SizeConfig.blockSizeHorizontal),
+                child: Text(
+                  "Liked",
+                  style: GoogleFonts.openSans(
+                      color: selectedIndex != null && selectedIndex == 120
+                          ? Colors.white
+                          : Color(fontColorSteelGrey)),
+                ),
+              ),
+            ),
+            ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = index;
+                      print(selectedIndex);
+                      catId=categories[index]['id'];
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: SizeConfig.blockSizeVertical * 4,
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.blockSizeHorizontal * 4,
+                        vertical: SizeConfig.blockSizeVertical),
+                    decoration: BoxDecoration(
+                        color: selectedIndex != null && selectedIndex == index
+                            ? Color(0xff0066B3)
+                            : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(20)),
+                    margin: EdgeInsets.only(
+                        right: SizeConfig.blockSizeHorizontal * 3,
+                        left: SizeConfig.blockSizeHorizontal),
+                    child: Text(
+                      categories[index]['category'],
+                      style: GoogleFonts.openSans(
+                          color: selectedIndex != null && selectedIndex == index
+                              ? Colors.white
+                              : Color(fontColorSteelGrey)),
+                    ),
+                  ),
+                );
+              },
+              physics: BouncingScrollPhysics(),
+              shrinkWrap: true,
+              primary: false,
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+            ),
+          ],
+        ),
       ),
     );
+  }
+  Future<void> getTopics() async {
+    String url =
+        'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/meta';
+    try {
+      http.Response response = await http.get(url);
+      if (response.statusCode == 200) {
+
+        final responseJson = json.decode(response.body);
+        categories=responseJson['content_categories'];
+        result = null;
+        status = Status.ERROR;
+      } else {
+        result = null;
+        status = Status.ERROR;
+      }
+    } catch (e) {
+      print('get topic error :$e');
+      result = null;
+      status = Status.ERROR;
+    }
+
+    setState(() {});
   }
 }
 
 class AllContents extends StatefulWidget {
+  var id;
+  AllContents({this.id});
   @override
   _AllContentsState createState() => _AllContentsState();
 }
@@ -108,13 +213,14 @@ class _AllContentsState extends State<AllContents> {
   }
 
   String imgBasePath = "https://sal-prod.s3.ap-south-1.amazonaws.com/";
+  dynamic  liked=new List();
 
   Future<GetContentsResponseModel> getAllContents() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userId = prefs.getString("cleintid");
     try {
       String url =
-          "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/content?user_id=$userId&category_id=3";
+          "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/content?user_id=$userId&category_id=${widget.id}";
 
       print('CLIENT ID:${prefs.getString("cleintid")}');
       print('URL:$url');
@@ -123,6 +229,8 @@ class _AllContentsState extends State<AllContents> {
       print('satus code :${response.statusCode}');
       print('body:${response.body}');
       if (response.statusCode == 200) {
+        print(response.body);
+        ;
         return getContentsResponseModelFromJson(response.body);
       } else {
         return null;
@@ -152,168 +260,158 @@ class _AllContentsState extends State<AllContents> {
               child: Text('Server Error'),
             );
           }
+          if (snapshot.data.articles.length==0&&snapshot.data.audios.length==0&&snapshot.data.videos.length==0) {
+            return Center(
+              child: Text('No Data Found'),
+            );
+          }
+
           GetContentsResponseModel result = snapshot.data;
-          return SizedBox(
-            width: Get.width,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'POPULAR AUDIOS',
-                      style: TextStyle(
-                          color: Color(0xff77849C),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 140,
-                      width: Get.width,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: List.generate(
-                            result.audios.length + 1,
-                            (index) => index == result.audios.length
-                                ? GestureDetector(
-                                    onTap: () {
-                                      Get.to(SeeMoreExplore(
-                                        dataList: result.audios,
-                                        extension: 'Audio',
-                                      ));
-                                    },
-                                    child: seeMoreContainer(
-                                        result.audios[index - 1]))
-                                : GestureDetector(
-                                    onTap: () {
-                                      Get.to(PlayerPage(
-                                        data: result.audios[index],
-                                      ));
-                                    },
-                                    child: containerBox(result.audios[index]))),
+
+          return
+
+            SizedBox(
+              width: Get.width,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'POPULAR AUDIOS',
+                        style: TextStyle(
+                            color: Color(0xff77849C),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600),
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'POPULAR VIDEO',
-                      style: TextStyle(
-                          color: Color(0xff77849C),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 140,
-                      width: Get.width,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: List.generate(
-                            result.videos.length + 1,
-                            (index) => index == result.videos.length
-                                ? GestureDetector(
-                                    onTap: () {
-                                      Get.to(SeeMoreExplore(
-                                        dataList: result.videos,
-                                        extension: 'Video',
-                                      ));
-                                    },
-                                    child: seeMoreContainer(
-                                        result.videos[index - 1]))
-                                : GestureDetector(
-                                    onTap: () {
-                                      Get.to(ButterFlyAssetVideo(
-                                        data: result.videos[index],
-                                      ));
-                                    },
-                                    child: containerBox(result.videos[index]))),
+                      SizedBox(
+                        height: 10,
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'POPULAR ARTICLES',
-                      style: TextStyle(
-                          color: Color(0xff77849C),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 140,
-                      width: Get.width,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: List.generate(
-                            result.articles.length + 1,
-                            (index) => index == result.articles.length
-                                ? GestureDetector(
-                                    onTap: () {
-                                      Get.to(SeeMoreExplore(
-                                        dataList: result.articles,
-                                        extension: 'Articles',
-                                      ));
-                                    },
-                                    child: seeMoreContainer(
-                                        result.articles[index - 1]))
-                                : GestureDetector(
-                                    onTap: () {
-                                      Get.to(ArticleDetail(
-                                        title: result.articles[index].title,
-                                        description: result.articles[index].description,
-                                        id: result.articles[index].id,
-                                        image: result.articles[index].photo,
-                                      ));
-                                    },
-                                    child:
-                                        containerBox(result.articles[index]))),
+                      SizedBox(
+                        height: 140,
+                        width: Get.width,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: List.generate(
+                              result.audios.length ,
+                                  (index) => index == result.audios.length
+                                  ? GestureDetector(
+                                  onTap: () {
+                                    Get.to(SeeMoreExplore(
+                                      dataList: result.audios,
+                                      extension: 'Audio',
+                                    ));
+                                  },
+                                  child: seeMoreContainer(
+                                      result.audios[index]))
+                                  : GestureDetector(
+                                  onTap: () {
+                                    Get.to(PlayerPage(
+                                      data: result.audios[index],
+                                    ));
+                                  },
+                                  child: explorewidget(articles:result.audios[index],likedcontent:result.likedContentIds))),
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        height: 20,
+                      ),
+
+                      Text(
+                        'POPULAR ARTICLES',
+                        style: TextStyle(
+                            color: Color(0xff77849C),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        height: 180,
+                        width: Get.width,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: List.generate(
+                            result.articles.length ,
+                                (index) => index == result.articles.length
+                                ? GestureDetector(
+                                onTap: () {
+                                  Get.to(SeeMoreExplore(
+                                    dataList: result.articles,
+                                    extension: 'Articles',
+                                  ));
+                                },
+                                child: seeMoreContainer(
+                                    result.articles[index]))
+                                : GestureDetector(
+                                onTap: () {
+                                  Get.to(ArticleDetail(
+                                      description:result.articles[index].description,
+                                      image: result.articles[index].photo,
+                                      title:result.articles[index].title,
+                                      id: result.articles[index].contentId,
+                                      bg:result.articles[index].backgroundPhoto
+                                  ));
+                                },
+                                child:explorewidget(articles:result.articles[index],likedcontent:result.likedContentIds)
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      // Text(
+                      //   'POPULAR VIDEO',
+                      //   style: TextStyle(
+                      //       color: Color(0xff77849C),
+                      //       fontSize: 14,
+                      //       fontWeight: FontWeight.w600),
+                      // ),
+                      // SizedBox(
+                      //   height: 10,
+                      // ),
+                      // SizedBox(
+                      //   height: 140,
+                      //   width: Get.width,
+                      //   child: ListView(
+                      //     scrollDirection: Axis.horizontal,
+                      //     children: List.generate(
+                      //         result.videos.length ,
+                      //             (index) => index == result.videos.length
+                      //             ? GestureDetector(
+                      //             onTap: () {
+                      //               Get.to(SeeMoreExplore(
+                      //                 dataList: result.videos,
+                      //                 extension: 'Video',
+                      //               ));
+                      //             },
+                      //             child: seeMoreContainer(
+                      //                 result.videos[index ]))
+                      //             : GestureDetector(
+                      //             onTap: () {
+                      //               Get.to(ButterFlyAssetVideo(
+                      //                 data: result.videos[index],
+                      //
+                      //               ));
+                      //             },
+                      //             child: explorewidget(articles:result.videos[index]))),
+                      //   ),
+                      // ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
         });
   }
 
-  Container containerBox(ContentsArticle e) {
-    return Container(
-      height: 140,
-      width: 190,
-      margin: EdgeInsets.only(right: 10),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
-              image: NetworkImage(imgBasePath + e.photo), fit: BoxFit.fill)),
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        height: 50,
-        width: 190,
-        decoration: BoxDecoration(
-            color: Colors.black38,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20))),
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        alignment: Alignment.centerLeft,
-        child: Text(
-          '${e.title ?? ''}',
-          style: TextStyle(color: Colors.white, fontSize: 14),
-        ),
-      ),
-    );
-  }
 
   Container seeMoreContainer(ContentsArticle e) {
     return Container(

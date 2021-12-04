@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sal_user/UI/webview.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/models/Exploreallmodle.dart';
@@ -14,11 +15,15 @@ class ArticleDetail extends StatefulWidget {
   final String title;
   final String image;
   final String description;
+  final String bg;
+  final String content;
+  final String created_by;
+
 
 
 
   const ArticleDetail(
-      {Key key, this.id, this.title, this.image, this.description})
+      {Key key, this.id,this.bg,this.created_by, this.title, this.image, this.description,this.content})
       : super(key: key);
 
   @override
@@ -40,31 +45,32 @@ class _EventSummaryState extends State<ArticleDetail> {
     SizeConfig().init(context);
     return SafeArea(
         child: Material(
-      child: Column(
-        children: [
-          Container(
-            height: Get.height / 2,
-            color: Color(0xffD8DFE9),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            children: [
+              Container(
+                height: Get.height / 2,
+
+                decoration: BoxDecoration( color: Color(0xffD8DFE9),image: DecorationImage(image: NetworkImage("https://sal-prod.s3.ap-south-1.amazonaws.com/"+widget.bg),fit: BoxFit.fill)),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Obx(() => IconButton(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Obx(() => IconButton(
                           onPressed: () async {
                             SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
+                            await SharedPreferences.getInstance();
                             if (prefs.getString("cleintid") == null) {
                               Get.showSnackbar(GetBar(
                                 message: 'Please First Login',
@@ -76,12 +82,12 @@ class _EventSummaryState extends State<ArticleDetail> {
 
                             if (isLike.value) {
                               response =
-                                  await ExploreLikeUnlikeRepo.exploreUnLike(
-                                      widget.id);
+                              await ExploreLikeUnlikeRepo.exploreUnLike(
+                                  widget.id);
                             } else {
                               response =
-                                  await ExploreLikeUnlikeRepo.exploreLike(
-                                      widget.id);
+                              await ExploreLikeUnlikeRepo.exploreLike(
+                                  widget.id);
                             }
                             if (response != null) {
                               Get.showSnackbar(GetBar(
@@ -99,52 +105,43 @@ class _EventSummaryState extends State<ArticleDetail> {
                             color: isLike.value ? Colors.red : Colors.white,
                           ),
                         ))
-                  ],
-                ),
-                Spacer(),
-                Text(
-                  widget.title ?? 'N/A',
-                  style: TextStyle(fontSize: 22, color: Color(0xff445066)),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 15,
-                      backgroundColor: Color(0xffFAFAFA),
-                      backgroundImage: NetworkImage(
-                        basePath + widget.image,
-                      ),
+                      ],
+                    ),
+                    Spacer(),
+                    Text(
+                      widget.title ?? 'N/A',
+                      style: TextStyle(fontSize: 22, color: Color(0xff445066)),
                     ),
                     SizedBox(
-                      width: 10,
+                      height: 10,
                     ),
-                    Text(
-                      'N/A',
-                      style: TextStyle(fontSize: 14, color: Color(0xff445066)),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 15,
+                          backgroundColor: Color(0xffFAFAFA),
+                          backgroundImage: NetworkImage(
+                            basePath + widget.image,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          widget.created_by,
+                          style: TextStyle(fontSize: 14, color: Color(0xff445066)),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-              ],
-            ),
+              ),
+              Expanded(child: WebViewClass(link: widget.content,))
+            ],
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: SingleChildScrollView(
-                  child: Text(
-                widget.description,
-                style: TextStyle(color: Color(0xff77849C), fontSize: 14),
-              )),
-            ),
-          )
-        ],
-      ),
-    ));
+        ));
   }
 }

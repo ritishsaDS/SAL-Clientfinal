@@ -51,6 +51,7 @@ class payment extends StatefulWidget {
 
 class _paymentState extends State<payment> {
   var moodstatic = [
+    ' ',
     "0:30",
     "1:00",
     "1:30",
@@ -241,25 +242,29 @@ class _paymentState extends State<payment> {
               margin: EdgeInsets.only(top: 150),
             ),
             Positioned(
-              top: 100,
-              right: 140,
+              top: SizeConfig.screenHeight*0.18,
+              right: SizeConfig.screenWidth*0.35,
               child: Container(
+
                 child: Column(
                   children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: widget.getData['photo'] != null &&
-                                widget.getData['photo'] != ""
-                            ? Image.network(
-                                widget.mediaUrl + widget.getData['photo'],
-                                fit: BoxFit.cover,
-                                scale: 3,
-                              )
-                            : Image.asset(
-                                'assets/bg/person.png',
-                                fit: BoxFit.cover,
-                                scale: 4,
-                              )),
+                    Container(
+                      height:SizeConfig.screenHeight*0.1,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: widget.getData['photo'] != null &&
+                                  widget.getData['photo'] != ""
+                              ? Image.network(
+                                  widget.mediaUrl + widget.getData['photo'],
+                                  fit: BoxFit.fitHeight,
+                                  scale: 10,
+                                )
+                              : Image.asset(
+                                  'assets/bg/person.png',
+                                  fit: BoxFit.cover,
+                                  scale: 4,
+                                )),
+                    ),
                     SizedBox(
                       height: 10,
                     ),

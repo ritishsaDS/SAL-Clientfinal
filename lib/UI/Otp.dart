@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Home.dart';
 import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -119,6 +120,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     phone: "+91" + widget.phonenumber,
                   )
                       .then((value) {
+                        print(value);
                     if (value != null) {
                       if (value.meta.status == "200") {
                         Navigator.of(loginLoader.currentContext,
@@ -186,16 +188,18 @@ class _OTPScreenState extends State<OTPScreen> {
               verifyOtp
                   .verifyOtp(phone: "91" + widget.phonenumber, otp: digit)
                   .then((value) async {
+                print('STATUS:${value}');
                 if (value != null) {
-                  print('STATUS:${value.meta.status}');
+                  print('STATUS:${value}');
                   if (value.meta.status == "200") {
+                    print('STATUS:${value.meta.status}');
                     Navigator.of(loginLoader.currentContext,
                             rootNavigator: true)
                         .pop();
 
                     // toast(value.meta.message);
                     print('Client ID:${ value.client.clientId}');
-                    if (widget.screen == "Home" || widget.screen == null) {
+                    if (widget.screen == "Home") {
                       SharedPreferences prefs =
                           await SharedPreferences.getInstance();
 
@@ -210,7 +214,19 @@ class _OTPScreenState extends State<OTPScreen> {
                       //       MaterialPageRoute(
                       //           builder: (context) => ProfessionalInfo1()));
                       // });
-                    } else {
+                    }
+
+                    else if(  widget.screen == null){
+                      SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+
+                      prefs.setString("cleintid", value.client.clientId);
+                      prefs.setString("email", value.client.email);
+                      prefs.setString("phone", value.client.phone);
+                      prefs.setString("name", value.client.firstName);
+                      Get.offAll(HomeMain());
+                    }
+                    else {
                       Dialogs.showLoadingDialog(context, loginLoader);
                       /* Future.delayed(Duration(seconds: 2)).then((value) {
                   SharedPreferencesTest().checkIsLogin("0");
@@ -232,15 +248,15 @@ class _OTPScreenState extends State<OTPScreen> {
                               phone: "91" + phone.text)
                           .then((value) async {
                         if (value != null) {
-                          print(value.meta.status);
+                          //print(value.meta.status);
                           print(createUser.createCounsellor());
                           if (value.meta.status == "200") {
                             Navigator.of(loginLoader.currentContext,
                                     rootNavigator: true)
                                 .pop();
-                            print(value.meta.message);
-                            print(value.meta.status);
-                            print(value.clientId);
+                            // print(value.meta.message);
+                            // print(value.meta.status);
+                            // print(value.clientId);
 
                             SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
@@ -276,7 +292,8 @@ class _OTPScreenState extends State<OTPScreen> {
                         );
                       });
                     }
-                  } else {
+                  }
+                  else {
                     // firstController.clear();
                     //
                     Navigator.of(loginLoader.currentContext,
@@ -288,7 +305,8 @@ class _OTPScreenState extends State<OTPScreen> {
                       "",
                     );
                   }
-                } else {
+                }
+                else {
                   Navigator.of(loginLoader.currentContext, rootNavigator: true)
                       .pop();
                   showAlertDialog(
@@ -301,10 +319,11 @@ class _OTPScreenState extends State<OTPScreen> {
                 print('error MSG:$error');
                 // Navigator.of(loginLoader.currentContext, rootNavigator: true)
                 //     .pop();
+
                 showAlertDialog(
                   context,
-                  'OTP not verified',
-                  "",
+                  'Please Signup First',
+                  "Login First",
                 );
               });
             } else {

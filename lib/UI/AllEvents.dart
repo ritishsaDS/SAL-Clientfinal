@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/Availableeventrepo.dart';
@@ -74,7 +77,8 @@ class _AlleventsState extends State<Allevents> {
     "23:30"
         "24:00"
   ];
-  List<Color> colors = [Color.fromRGBO(42, 138, 163, 0.75),
+  List<Color> colors = [
+    Color.fromRGBO(42, 138, 163, 0.75),
     Color.fromRGBO(48, 37, 33, 0.75),
     Color.fromRGBO(42, 138, 163, 0.75),
     Color.fromRGBO(0, 90, 100, 0.75),Color.fromRGBO(0, 90, 100, 0.75),Color.fromRGBO(0, 90, 100, 0.75)];
@@ -84,57 +88,9 @@ class _AlleventsState extends State<Allevents> {
   //Map<String, Counsellor> counsellor ;
   @override
   void initState() {
+    AllEvents();
     super.initState();
-    isloading = true;
-    upcomintAppointments
-        .upcomingAppointmentRepo(
-      context,
-    )
-        .then((value) {
-      print("value");
-      print(value);
-      if (value != null) {
-        if (value.meta.status == "200") {
-          setState(() {
-            isloading = false;
-          });
-          print("jnjnjonaeno");
-          appointments.addAll(value.events);
-          print(appointments.length);
 
-          //toast(value.meta.message);
-          /*  SharedPreferencesTest().checkIsLogin("0");
-                                          SharedPreferencesTest()
-                                              .saveToken("set", value: value.token);*/
-
-          /*  Navigator.push(context,
-              MaterialPageRoute(
-                  builder: (conext) {
-                    return OTPScreen(
-                      phoneNumber: mobileController.text,
-                    );
-                  }));*/
-        } else {
-          showAlertDialog(
-            context,
-            value.meta.message,
-            "",
-          );
-        }
-      } else {
-        showAlertDialog(
-          context,
-          "No data found",
-          "",
-        );
-      }
-    }).catchError((error) {
-      showAlertDialog(
-        context,
-        error.toString(),
-        "",
-      );
-    });
   }
   @override
   Widget build(BuildContext context) {
@@ -144,12 +100,12 @@ class _AlleventsState extends State<Allevents> {
          horizontal: SizeConfig.screenWidth * 0.02,
          vertical: SizeConfig.blockSizeVertical * 2
      ),
-     child:appointments != null && appointments.length > 0  ?  ListView.builder(itemBuilder: (context, index){
-       return appointments != null && appointments.length > 0 ?
+     child:all != null && all.length > 0  ?  ListView.builder(itemBuilder: (context, index){
+       return all != null && all.length > 0 ?
         InkWell(
          onTap: (){
            Navigator.push(context, MaterialPageRoute(builder: (context)=>CafeEventsDetails(
-             id:appointments.elementAt(index).orderId
+             id:all[index]['order_id']
 //title:appointments.elementAt(index).title,
            )));
          },
@@ -162,7 +118,7 @@ class _AlleventsState extends State<Allevents> {
            decoration: BoxDecoration(
              borderRadius: BorderRadius.circular(20),
              image: DecorationImage(
-                 image: Image.network(images[index]).image,
+                 image: Image.network("https://sal-prod.s3.ap-south-1.amazonaws.com/"+all[index]['photo']).image,
                  fit: BoxFit.cover
              ),
            ),
@@ -179,7 +135,7 @@ class _AlleventsState extends State<Allevents> {
                height: SizeConfig.blockSizeVertical * 8,
                alignment: Alignment.center,
                decoration: BoxDecoration(
-                   color: colors[index],
+                   color: Color.fromRGBO(0, 90, 100, 0.75),
                    borderRadius: BorderRadius.only(
                      bottomRight: Radius.circular(20),
                      bottomLeft: Radius.circular(20),
@@ -192,7 +148,7 @@ class _AlleventsState extends State<Allevents> {
                    Row(
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                      children: [
-                       Text(appointments.elementAt(index).title,
+                       Text(all[index]['title'],
                          style: TextStyle(
                              color: Colors.white,
                              fontWeight: FontWeight.w600
@@ -202,7 +158,7 @@ class _AlleventsState extends State<Allevents> {
                    Row(
                      mainAxisAlignment: MainAxisAlignment.start,
                      children: [
-                       Text(appointments.elementAt(index).date.toString(),
+                       Text(all[index]['date'],
                          style: TextStyle(
                              color: Colors.white,
                              fontSize: SizeConfig.blockSizeVertical * 1.5
@@ -210,7 +166,7 @@ class _AlleventsState extends State<Allevents> {
                        SizedBox(
                          width: SizeConfig.blockSizeHorizontal * 10,
                        ),
-                       Text(moodstatic[int.parse(appointments.elementAt(index).time)],
+                       Text(moodstatic[int.parse(all[index]['time'])],
                          style: TextStyle(
                              color: Colors.white,
                              fontSize: SizeConfig.blockSizeVertical * 1.5
@@ -218,7 +174,7 @@ class _AlleventsState extends State<Allevents> {
                        SizedBox(
                          width: SizeConfig.blockSizeHorizontal * 10,
                        ),
-                       Text(appointments.elementAt(index).actualAmount,
+                       Text(all[index]['actual_amount'],
                          style: TextStyle(
                              color: Colors.white,
                              fontSize: SizeConfig.blockSizeVertical * 1.5
@@ -233,12 +189,50 @@ class _AlleventsState extends State<Allevents> {
        ): Container(
          child: Center(child: Text("No Events Avaialable", style:  TextStyle(color: Colors.black),)),
        );
-     }, itemCount: appointments.length,): Container(
+     }, itemCount: all.length,): Container(
        child: Center(child: Text("No Events Avaialable", style:  TextStyle(color: Colors.black),)),
      )
 
    );
 
 
+  }
+  dynamic all=new List();
+  void AllEvents() async {
+    setState(() {
+
+    });
+
+    try {
+      final response = await get(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/events'));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+        all=responseJson['events'];
+
+        setState(() {
+print(all);
+        });
+        //Navigator.push(context, MaterialPageRoute(builder: (context)=>Appointmentcancel()));
+
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
   }
 }

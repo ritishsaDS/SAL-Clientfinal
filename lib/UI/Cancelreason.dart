@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:sal_user/UI/AppointmentCancel.dart';
+import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
 class Cancelreason extends StatefulWidget{
+  var id;
+  Cancelreason({this.id});
   @override
   _CancelreasonState createState() => _CancelreasonState();
 }
@@ -800,7 +806,7 @@ Navigator.pop(context);
                     SizedBox(width: 10,),
                     MaterialButton(
                       onPressed: () async {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Appointmentcancel()));
+                        cancelAppointment();
 
                       },
                       child: Text("Cancel",
@@ -1208,5 +1214,42 @@ Navigator.pop(context);
         ),
       ),
     ));
+  }
+  void cancelAppointment() async {
+    setState(() {
+
+    });
+
+    try {
+      final response = await delete(Uri.parse(
+          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment?appointment_id=${widget.id}'));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+
+        setState(() {
+
+        });
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Appointmentcancel()));
+
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
   }
 }

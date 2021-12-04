@@ -46,7 +46,7 @@ class _UnusedSessionState extends State<UnusedSession> {
               children: [
                 Text(
                   "You have no unused sessions to schedule",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(
                   height: 10,
@@ -94,7 +94,7 @@ class _UnusedSessionState extends State<UnusedSession> {
 
     try {
       final response = await get(Uri.parse(uri));
-      print("bjkb" + response.body.toString());
+      print("bjkb" + response.request.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
         upcominglist = responseJson['appointment_slots'];
@@ -177,12 +177,14 @@ class _UnusedSessionState extends State<UnusedSession> {
                   children: [
                     GestureDetector(
                       onTap: () {
+                        print(upcominglist[i]
+                        ['appointment_id'],);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (conetxt) => CounsellorProfile2(
                                       appointment: upcominglist[i]
-                                          ['appointment_slot_id'],
+                                          ['appointment_id'],
                                       name: counsellorlist['${counsellorid}']
                                               ['first_name']
                                           .toString(),
@@ -202,7 +204,7 @@ class _UnusedSessionState extends State<UnusedSession> {
                       ),
                     ),
                     Text(
-                      "${upcominglist[i]['slots_bought']} Sessions",
+                      "${upcominglist[i]['slots_remaining']} Sessions",
                       style: TextStyle(
                           color: Color(fontColorGray),
                           fontWeight: FontWeight.w800,

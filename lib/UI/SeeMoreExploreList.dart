@@ -77,7 +77,7 @@ class SeeMoreExplore extends StatelessWidget {
                     image: DecorationImage(
                         image:
                             NetworkImage(imgBasePath + dataList[index].photo),
-                        fit: BoxFit.fill),
+                        fit: BoxFit.contain),
                   ),
                   child: Container(
                     width: SizeConfig.screenWidth,

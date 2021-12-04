@@ -32,7 +32,7 @@ String timezone,
       "last_name": last_name,
       "location": location,
       "phone": phone,
-      "timezone": "string"
+      "timezone": "UTC+5:30"
     }}');
     ApiResponse apiResponse = await apiHitter
         .getPostApiResponse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client",
@@ -49,7 +49,7 @@ String timezone,
           "last_name": last_name,
           "location": location,
           "phone": phone,
-          "timezone": "string"
+          "timezone": "UTC+5:30"
         });
     {
       try {

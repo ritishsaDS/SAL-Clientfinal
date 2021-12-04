@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:sal_user/UI/CousellorProfile.dart';
@@ -87,11 +88,13 @@ class _ConnectState extends State<Connect> {
   int checkboxValue = 0;
   var passlist = [];
   double price = 0;
+  double pricemax = 2500;
   DateTime selectedDate = DateTime.now();
   var getHomeContentModal = GetCounsellor();
   var getprofilecontent = GetTherapistDetailRepo();
   TextEditingController date = TextEditingController();
   var type = [
+
     'Anxiety Management',
     'anger',
     "stress",
@@ -248,6 +251,7 @@ class _ConnectState extends State<Connect> {
                       if (expand == false)
                         setState(() {
                           expand = true;
+                          //getdatafromserver();
                         });
                       else
                         setState(() {
@@ -313,10 +317,10 @@ class _ConnectState extends State<Connect> {
                                     .spaceBetween,
                                 children: [
                                   Container(
-                                    width: SizeConfig.screenWidth * 0.4,
+                                    width: SizeConfig.screenWidth * 0.5,
                                     child: RadioListTile(
                                       title: Text(
-                                        "Counsellor",
+                                        "Counselling Therapist",
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             color: Color(fontColorGray)),
@@ -330,6 +334,8 @@ class _ConnectState extends State<Connect> {
                                         setState(() {
                                           checkboxValue = value;
                                           passlist.add("Counsellor");
+                                          passlist.remove("Listener");
+                                          passlist.remove("Alternative Therapist");
                                           print(checkboxValue);
                                         });
                                       },
@@ -351,7 +357,12 @@ class _ConnectState extends State<Connect> {
                                       groupValue: checkboxValue,
                                       onChanged: (value) {
                                         setState(() {
+                                          pricemax=0;
                                           passlist.add("Listener");
+
+                                          passlist.remove("Counsellor");
+                                          passlist.remove("Alternative Therapist");
+
                                           checkboxValue = value;
                                           print(checkboxValue);
                                         });
@@ -380,6 +391,8 @@ class _ConnectState extends State<Connect> {
                                       onChanged: (value) {
                                         setState(() {
                                           passlist.add("Alternative Therapist");
+                                          passlist.remove("Counsellor");
+                                          passlist.remove("Listener");
                                           checkboxValue = value;
                                           print(checkboxValue);
                                         });
@@ -472,7 +485,7 @@ class _ConnectState extends State<Connect> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    "₹ ${price.round().toString()} - ₹ 2500",
+                                    "₹ ${price.round().toString()} ",
                                     style: TextStyle(
                                         color: Color(fontColorSteelGrey),
                                         fontWeight: FontWeight.w600),
@@ -492,6 +505,7 @@ class _ConnectState extends State<Connect> {
                                   divisions: 50,
                                   label: price.round().toString(),
                                   onChanged: (value) {
+
                                     setState(() {
                                       price = value;
                                     });
@@ -594,7 +608,17 @@ class _ConnectState extends State<Connect> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         MaterialButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              expand=false;
+                              checkboxValue=8;
+                              price=0;
+                              date=TextEditingController(text: "");
+                              languages.clear();
+
+                            });
+                            //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Connect()));
+                          },
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -610,20 +634,27 @@ class _ConnectState extends State<Connect> {
                         ),
                         MaterialButton(
                           onPressed: () {
+                            if(passlist.isEmpty){
+                              print("vjbilibk");
+
+                            }
                             //print(checkboxValue.toString()+"  "+topic+""+price.round().toString()+""+language+""+selectedDate.toString().substring(0,10));
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        SearchResult(
-                                            list: passlist,
-                                            type: checkboxValue,
-                                            topic: topictype,
-                                            language: language,
-                                            date: selectedDate
-                                                .toString()
-                                                .substring(0, 10),
-                                            price: price.round().toString())));
+                           else{
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SearchResult(
+                                              list: passlist,
+                                              type: checkboxValue,
+                                              topic: topictype,
+                                              language: language,
+                                              date: selectedDate
+                                                  .toString()
+                                                  .substring(0, 10),
+                                              price: price.round().toString())));
+
+                            }
                           },
                           color: Color(backgroundColorBlue),
                           shape: RoundedRectangleBorder(
@@ -640,7 +671,7 @@ class _ConnectState extends State<Connect> {
                   ),
                   Container(
                     width: SizeConfig.screenWidth,
-                    height: SizeConfig.screenHeight * 0.45,
+                    height: SizeConfig.screenHeight * 0.50,
                     margin: EdgeInsets.symmetric(
                         vertical: SizeConfig.blockSizeVertical),
                     child: ListView(
@@ -1053,18 +1084,20 @@ class _ConnectState extends State<Connect> {
                   print('SLOT DATA :${Therapist[i]['id']}');
 
 
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              CounsellorProfile(
-                                  getData: Therapist[i],
-                                  mediaUrl: mediaurl,
-                                  slot: slots[Therapist[i]['id']].isEmpty
-                                      ? {}
-                                      : slots[Therapist[i]['id']][0],
-                                  type: Therapist[i]['type'])));
-                },
+
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              CounsellorProfile(
+                  getData: Therapist[i],
+                  mediaUrl: mediaurl,
+                  slot: slots[Therapist[i]['id']].isEmpty
+                      ? {}
+                      : slots[Therapist[i]['id']][0],
+                  type: Therapist[i]['type'])));
+}
+                ,
                 child: Text(
                   "BOOK APPOINTMENT",
                   style: TextStyle(

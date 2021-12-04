@@ -25,7 +25,7 @@ class Reschedulebooking {
     var type;
     var body = {
 
-      "appointment_slot_id": appointment,
+
 
       "date":selectdate.toString().substring(0,10),
       "time": slotid,
@@ -35,7 +35,7 @@ class Reschedulebooking {
 
     print(body);
     try {
-      final response = await http.post(Uri.parse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment"),
+      final response = await http.put(Uri.parse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment?appointment_id=${appointment}"),
 
 
           body:json.encode(body));
@@ -50,11 +50,11 @@ class Reschedulebooking {
         loginwithserver = responseJson;
         if(loginwithserver['meta']['status']=="200"){
 
-          // showAlertDialog(
-          //   context,
-          //   "Appointment Book Successfully",
-          //   "",
-          // );
+          showAlertDialog(
+            context,
+            "Appointment Reschedule Successfully",
+            "",
+          );
           Dialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)

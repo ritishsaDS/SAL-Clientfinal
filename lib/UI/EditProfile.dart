@@ -378,7 +378,7 @@ class _EditProfileState extends State<EditProfile> {
   Future<DateTime> getDate(BuildContext context, {DateTime date}) async {
     final datePicked = await showDatePicker(
         context: context,
-        firstDate: DateTime(1900),
+        firstDate:  DateTime(1947, 4),
         initialDate: date ?? DateTime.now(),
         lastDate: DateTime.now(),
         initialEntryMode: DatePickerEntryMode.calendar,

@@ -12,6 +12,7 @@ import 'package:sal_user/data/repo/Addmoodrepo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Addnote.dart';
 import 'Splash1.dart';
+import 'calander/calander_screen.dart';
 
 class Mood extends StatefulWidget {
   @override
@@ -28,7 +29,7 @@ class _MoodState extends State<Mood> {
     "assets/icons/Group 7041.png",
     "assets/icons/Group 7042.png",
     "assets/icons/anxious.png",
-    "assets/icons/concerned.png",
+    "assets/icons/Group 1.png",
     "assets/icons/Group 7044.png",
     "assets/icons/Group 7043.png"
   ];
@@ -65,6 +66,21 @@ class _MoodState extends State<Mood> {
             color: Color(midnightBlue),
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.to(CalanderScreen());
+            },
+            child: Text(
+              'Mood Diary',
+              style: TextStyle(
+                  color: Color(
+                    0xff0066B3,
+                  ),
+                  fontSize: 18),
+            ),
+          ),
+        ],
       ),
       body: Container(
         margin: EdgeInsets.all(15),
@@ -252,7 +268,7 @@ class _MoodState extends State<Mood> {
                     ),
                   ),
                   // color: Colors.blue,
-                  child: Image.asset(image[i]),
+                  child: Image.asset(image[i],),
                 ),
               ),
               Text(moods[i]['title']),
