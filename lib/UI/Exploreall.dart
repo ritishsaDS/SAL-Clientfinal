@@ -310,6 +310,7 @@ class _AllContentsState extends State<AllContents> {
                                   onTap: () {
                                     Get.to(PlayerPage(
                                       data: result.audios[index],
+                                        likedcontent:result.likedContentIds
                                     ));
                                   },
                                   child: explorewidget(articles:result.audios[index],likedcontent:result.likedContentIds))),
@@ -353,7 +354,10 @@ class _AllContentsState extends State<AllContents> {
                                       image: result.articles[index].photo,
                                       title:result.articles[index].title,
                                       id: result.articles[index].contentId,
-                                      bg:result.articles[index].backgroundPhoto
+                                      bg:result.articles[index].backgroundPhoto,
+                                      content:result.articles[index].content,
+                                    created_by: result.articles[index].createdBy,
+                                      likedcontent:result.likedContentIds
                                   ));
                                 },
                                 child:explorewidget(articles:result.articles[index],likedcontent:result.likedContentIds)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sal_user/UI/AboutSAL.dart';
+import 'package:sal_user/UI/Assessment2.dart';
 import 'package:sal_user/UI/Assessments.dart';
 import 'package:sal_user/UI/Connect.dart';
 import 'package:sal_user/UI/CousellorProfile.dart';
@@ -33,6 +34,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
   bool isloading = true;
   List<Appointment> appointments = new List();
   var name = "";
+  var profile = 0;
   var photo;
 
   void initState() {
@@ -98,6 +100,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
     setState(() {
       name = prefs.getString("name");
       photo = prefs.getString("photo");
+
+      profile= prefs.getInt("profileval");
     });
   }
 
@@ -143,7 +147,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       top: SizeConfig.blockSizeVertical * 1.5,
                     ),
                     child: Text(
-                      "Complete your profile (60%)",
+                      profile==0?"Complete your profile (20%)":profile==1?"Complete your profile (40%)":profile==2?"Complete your profile (60%)":profile==3?"Complete your profile (80%)":"Profile Completed",
                       style: GoogleFonts.openSans(
                         color: Colors.white,
                         fontSize: SizeConfig.blockSizeVertical * 1.5,
@@ -161,7 +165,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     child: LinearProgressIndicator(
                       backgroundColor: Color(midnightBlue),
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      value: 0.6,
+                      value:profile==0?0.2:profile==1?0.2:profile==2?0.6:profile==3?0.8:1,
                     ),
                   ),
                 ],
@@ -175,13 +179,10 @@ class _DrawerMenuState extends State<DrawerMenu> {
               leading: ImageIcon(Image.asset('assets/icons/user.png').image),
               onTap: () {
                // Navigator.pop(context);
-               if(name == null){
-                 showAlertDialog(context, "Please Login First", "Login First");
-               }
-               else{
+
                  Navigator.push(context,
                      MaterialPageRoute(builder: (context) => MyProfile()));
-               }
+
 
               },
             ),
@@ -224,7 +225,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Assessments()));
+                    MaterialPageRoute(builder: (context) => Assessments2()));
                 // Navigator.push(context,
                 //     MaterialPageRoute(builder: (context) => Assessments()));
               },

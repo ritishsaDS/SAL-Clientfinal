@@ -81,6 +81,7 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
   }
 
   var moodstatic = [
+"12:00 AM",
     "0:30 AM",
     "1:00 AM",
     "1:30 AM",
@@ -127,8 +128,8 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
     "10:00 PM",
     "10:30 PM",
     "11:00 PM",
-    "11:30 PM"
-        "12:00 PM"
+    "11:30 PM",
+        "12:00 AM"
   ];
 
   @override
@@ -202,10 +203,11 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
       // print("bjkb" + response.body.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
-        print(responseJson);
-        appointvalue = responseJson['appointments'];
-        counsellors = responseJson;
+        print("----------------"+responseJson["counsellors"].toString());
+
         setState(() {
+          appointvalue = responseJson['appointments'];
+          counsellors = responseJson;
           isError = false;
           isloading = false;
           print('setstate');
@@ -239,16 +241,20 @@ class _UpcomingAppointmentState extends State<UpcomingAppointment> {
       var counsellorid;
       counsellorid = counsellors[appointvalue[i]['counsellor_id']];
       appointmentlist.add(listTileCafe1(
-          appointvalue[i]['time'],
-      appointvalue[i]['counsellor_id'],
-        appointvalue[i]['appointment_id'],
-          context,
-          counsellors["counsellors"][appointvalue[i]['counsellor_id']]
-              ["first_name"],
-          counsellors["counsellors"][appointvalue[i]['counsellor_id']]
+
+           slot:appointvalue[i]['time'],
+          id:appointvalue[i]['counsellor_id'],
+          appointmentid: appointvalue[i]['appointment_id'],
+          context:context,
+          contactName:counsellors["counsellors"][appointvalue[i]['counsellor_id']]
+              ["first_name"]==null?"":counsellors["counsellors"][appointvalue[i]['counsellor_id']]
+          ["first_name"],
+         type:counsellors["counsellors"][appointvalue[i]['counsellor_id']]
           ["type"],
-          moodstatic[int.parse(appointvalue[i]['time'])],
-          appointvalue[i]['date'].toString()));
+          time:moodstatic[int.parse(appointvalue[i]['time'])],
+          date:appointvalue[i]['date'].toString(),
+         timec: appointvalue[i]['time']
+      ));
     }
     return appointmentlist;
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/models/get_topics_response_model.dart';
@@ -11,9 +12,29 @@ import 'package:http/http.dart' as http;
 import 'Myprofile.dart';
 
 enum Status { LOADING, ERROR, COMPLETE }
+List<String> selectedInterestList = [];
+List<String> selectedInterestListid = [];
 
 class ProfessionalInfo1 extends StatefulWidget {
-  const ProfessionalInfo1({Key key}) : super(key: key);
+  bool signup;
+  var phone;
+  String phonenumber;
+  String screen;
+  dynamic data;
+  dynamic mediaurl;
+  String type;
+  var dob;
+  var gender;
+
+  ProfessionalInfo1(
+      {this.phonenumber,
+        this.screen,
+        this.type,
+        this.data,
+        this.gender,
+        this.dob,
+        this.mediaurl,
+   Key key,this.signup,this.phone}) : super(key: key);
 
   @override
   _ProfessionalInfo1State createState() => _ProfessionalInfo1State();
@@ -23,6 +44,7 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
   GetTopicsResponseModel result;
   Status status = Status.LOADING;
   List<String> selectedList = [];
+  List<String> selectedListid = [];
 
   Future<void> getTopics() async {
     String url =
@@ -58,6 +80,8 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
 
   @override
   void initState() {
+    selectedInterestListid.clear();
+    selectedInterestList.clear();
     getTopics();
     super.initState();
   }
@@ -132,8 +156,11 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
                                     onTap: () {
                                       if (selectedList.contains(e.topic)) {
                                         selectedList.remove(e.topic);
+                                        selectedListid.remove(e.id);
+
                                       } else {
                                         selectedList.add(e.topic);
+                                        selectedListid.add(e.id);
                                       }
                                       setState(() {});
                                     },
@@ -186,9 +213,19 @@ class _ProfessionalInfo1State extends State<ProfessionalInfo1> {
         ),
         backgroundColor: selectedList.isNotEmpty ? Colors.blue : Colors.grey,
         onPressed: () {
+
           if (selectedList.isNotEmpty) {
-            selectedInterestList = selectedList;
-            Get.offAll(HomeMain());
+            if(widget.signup==false){
+              selectedInterestList = selectedList;
+              selectedInterestListid = selectedListid;
+              Get.offAll(SignUp(phone:widget.phone,screen:widget.screen,mediaurl: widget.mediaurl,data: widget.data,type: widget.type,));
+            }
+            else{
+              selectedInterestList = selectedList;
+              selectedInterestListid = selectedListid;
+              Get.offAll(HomeMain());
+            }
+
             // Navigator.push(
             //     context, MaterialPageRoute(builder: (context) => HomeMain()));
           } else {

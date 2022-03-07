@@ -42,7 +42,7 @@ class _NavigationBarState extends State<NavigationBar> {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return Connect();
           }));
-        } else if (index == 3) {
+        } else if (index == 2) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return ExploreAll();
 
@@ -88,7 +88,7 @@ class _NavigationBarState extends State<NavigationBar> {
         BottomNavigationBarItem(
             icon: Container(
               child: Image.asset(
-                'assets/icons/nav cafe.png',
+                'assets/icons/nav explore.png',
                 scale: SizeConfig.blockSizeVertical * 0.4,
                 color: widget.index == 2 ? Colors.white : Color(fontColorGray),
               ),
@@ -104,7 +104,7 @@ class _NavigationBarState extends State<NavigationBar> {
         BottomNavigationBarItem(
           icon: Container(
             child: Image.asset(
-              'assets/icons/nav explore.png',
+              'assets/icons/nav cafe.png',
               scale: SizeConfig.blockSizeVertical * 0.4,
               color: widget.index == 3 ? Colors.white : Color(fontColorGray),
             ),

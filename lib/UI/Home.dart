@@ -13,6 +13,9 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Widgets/Drawemenu.dart';
 import 'package:sal_user/Widgets/Homepagecontent.dart';
 import 'package:sal_user/data/repo/ExploreLikeUnlikeRepo.dart';
+import 'package:sal_user/models/LikedExploreListResponseModel.dart';
+import 'package:sal_user/models/notificationModal.dart';
+import 'package:sal_user/models/notificationRepo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Articledetail.dart';
@@ -46,6 +49,7 @@ class _HomeMainState extends State<HomeMain> {
     Color.fromRGBO(0, 90, 100, 0.75),
     Color.fromRGBO(0, 90, 100, 0.75)
   ];
+  bool nofication=true;
 
   List<String> desc = [
     "How to have a\npeaceful mind",
@@ -56,11 +60,70 @@ class _HomeMainState extends State<HomeMain> {
     "Worlds of the\nwaterfall"
   ];
   var name = "";
+  var notificationcoint=0;
+  var notificationremain=0;
+  var notificationleft=0;
   RxBool isLike = false.obs;
+  var notification  = NotificationRepo();
+  List<Notifications> getPaymentsModal = new List();
+  bool isloading = true;
+  var lengthnotif;
   @override
   void initState() {
     getname();
+    getLikedIDs();
     getHomedata();
+
+      super.initState();
+      isloading = true;
+      notification
+          .notificationRepo(
+        context,
+      )
+          .then((value) {
+        if (value != null) {
+          if (value.meta.status == "200") {
+            setState(() {
+              isloading = false;
+              //print(value.n);
+              getPaymentsModal.addAll(value.notifications);
+              print("--------->${value.notifications.length}");
+              getLength(value.notifications.length);
+              lengthnotif=value.notifications.length;
+            });
+          } else {
+            setState(() {
+              isloading = false;
+            });
+            showAlertDialog(
+              context,
+              value.meta.message,
+              "",
+            );
+          }
+        }
+        else {
+          setState(() {
+            isloading = false;
+
+          });
+          showAlertDialog(
+            context,
+            value.meta.message,
+            "",
+          );
+        }
+      }).catchError((error) {
+        setState(() {
+          isloading = false;
+        });
+        showAlertDialog(
+          context,
+          error.toString(),
+          "",
+        );
+      });
+
     // TODO: implement initState
     super.initState();
   }
@@ -107,19 +170,41 @@ class _HomeMainState extends State<HomeMain> {
                               actions: [
                                 Container(
                                   margin: EdgeInsets.only(
-                                      right: SizeConfig.blockSizeHorizontal * 5),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  NotificationsScreen()));
-                                    },
-                                    child: Icon(
-                                      Icons.notifications_none_sharp,
-                                      color: Colors.white,
-                                    ),
+                                      right: SizeConfig.blockSizeHorizontal * 5,top:SizeConfig.blockSizeHorizontal * 4 ),
+                                  child: Stack(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                                         // prefs.getInt("zerocount")
+                                          prefs.setInt("zerocount", lengthnotif);
+                                          setState(() {
+                                            nofication=false;
+                                          });
+
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NotificationsScreen()));
+                                        },
+                                        child: Icon(
+                                          Icons.notifications_none_sharp,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                     notificationleft!=0? Positioned(
+                                        top:0,
+                                        right: 0,
+                                        child:  Visibility(
+                                          visible: nofication,
+                                          maintainState: nofication,
+                                          child: CircleAvatar(
+                                            radius: 5,
+                                            backgroundColor: Colors.yellow,),
+                                        ),
+                                      ):Container(),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -468,8 +553,71 @@ class _HomeMainState extends State<HomeMain> {
           title: homelist[i]['title'],
           id: homelist[i]['content_id'],
           bg:homelist[i]['background_photo'],
+likedcontent:likedids,
           url:mediaurl));
     }
     return homitemlist;
   }
+  dynamic likedcontent=new List();
+  var likedids=[];
+  void getLikedIDs() async{
+    String url =
+        "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/content/like?user_id=";
+    String imgBasePath = "https://sal-prod.s3.ap-south-1.amazonaws.com/";
+
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      print('CLIENT ID:${prefs.getString("cleintid")}');
+      print('URL:${url + prefs.getString("cleintid")}');
+      try{
+        final response = await get(url + prefs.getString("cleintid"));
+        print('satus code :${response.statusCode}');
+        print('body:${response.body}');
+        if (response.statusCode == 200) {
+          final responsejson=json.decode(response.body);
+          likedcontent=responsejson['articles'];
+          print("----------"+likedcontent.toString());
+          for(int i = 0; i<likedcontent.length;i++){
+            likedids.add(likedcontent[i]['content_id']);
+            print("kjsdvjk"+likedids.toString());
+          }
+          print("----------"+likedids.toString());
+         // return likedExploreListResponseModelFromJson(response.body);
+        } else {
+          return null;
+          // Get.showSnackbar(GetBar(
+          //   message: 'Liked data not found',
+          //   duration: Duration(seconds: 2),
+          // ));
+        }
+      }catch(e){
+        // Get.showSnackbar(GetBar(
+        //   message: 'Liked data not found',
+        //   duration: Duration(seconds: 2),
+        // ));
+        return null;
+
+      }
+
+    }
+Future<void> getLength(int number) async {
+  setState(() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt("notifcount", number);
+
+    notificationcoint=(number);
+    if( prefs.getInt("zerocount")==null){
+      notificationremain=0;
+    }
+    else{
+      notificationremain=int.parse(prefs.getInt("zerocount").toString());
+    }
+    notificationleft=notificationcoint-notificationremain;
+    isLoading = false;
+    print('setstate'+notificationleft.toString());
+  });
+
+
+}
 }

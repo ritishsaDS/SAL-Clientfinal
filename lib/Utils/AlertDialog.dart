@@ -9,7 +9,7 @@ import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 
 
-
+var profilevalue=0;
 
 showAlertDialog(BuildContext context, String message, String type,
     {double rate,
@@ -45,11 +45,9 @@ showAlertDialog(BuildContext context, String message, String type,
               child: InkWell(
                 onTap: () {
                   if (type == "Forget Password") {
+                    print("jksdvnnkl");
                     FocusScope.of(context).unfocus();
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) {
-                          return LoginScreen();
-                        }));
+                    return Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
                   } if (type == "GroupUpdate") {
                     FocusScope.of(context).unfocus();
 
@@ -58,7 +56,7 @@ showAlertDialog(BuildContext context, String message, String type,
                   }
                   else if(type=="Login First"){
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SignUp()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>SignUp()));
 
                   }
                   else{

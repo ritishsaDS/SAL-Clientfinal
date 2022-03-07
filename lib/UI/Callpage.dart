@@ -5,20 +5,42 @@ import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sal_user/Utils/Agorautils.dart';
+import 'package:sal_user/Utils/SizeConfig.dart';
+import 'package:sal_user/data/repo/AgoraRepo.dart';
+import 'package:sal_user/models/GetAgoraToken.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-
+/*import 'Rating.dart';*/
 
 class CallPage extends StatefulWidget {
   /// non-modifiable channel name of the page
   final String channelName;
+  final String session;
+  final String type;
 
   /// non-modifiable client role of the page
   final ClientRole role;
-  var  name;
+  var name;
+  var id;
+  var dif;
+  var ctype;
+  var counsellorname;
 
   /// Creates a call page with given channel name.
-  CallPage({Key key, this.channelName,this.name, this.role}) : super(key: key);
+  CallPage(
+      {Key key,
+        this.session,
+        this.type,
+        this.ctype,
+        this.counsellorname,
+        this.channelName,
+        this.id,
+        this.name,
+        this.dif,
+        this.role})
+      : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -28,7 +50,14 @@ class _CallPageState extends State<CallPage> {
   final _users = <int>[];
   final _infoStrings = <String>[];
   bool muted = false;
+  bool callshow = false;
   RtcEngine _engine;
+  String agoraToken;
+  var username = "";
+  int _uid;
+  int minutes;
+  String minutesStr = "";
+  bool isParent = false;
 
   @override
   void dispose() {
@@ -43,9 +72,57 @@ class _CallPageState extends State<CallPage> {
   @override
   void initState() {
     super.initState();
-    print(widget.role);
+    _callStart();
+
+    startTimer();
+    name();
+    String value = widget.dif.toString();
+    final withoutSub = value.replaceAll(RegExp('-'), '');
+    print(">>>>>>>>>>>>>>>>." + widget.dif.toString());
+    print(">>>>>>>>>>>>>>>>." + withoutSub);
+    print("Name>>>>>>>>>>" + widget.counsellorname.toString());
+    setState(() {
+      _start=int.parse(widget.dif.toString().replaceAll("-", ""));
+    });
     // initialize agora sdk
     initialize();
+  }
+
+  Timer _timer;
+  int _start = 00000000000;
+  var d;
+
+  void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    _timer = new Timer.periodic(
+      oneSec,
+          (Timer timer) {
+        String value = widget.dif.toString();
+        final withoutSub = value.replaceAll(RegExp('-'), '');
+        if (_start == 0) {
+          setState(() {
+            d = Duration(
+
+                minutes:0,
+                seconds: _start);
+            d.toString();
+            _start++;
+
+            print("-------" + _start.toString());
+          });
+        } else {
+          setState(() {
+            d = Duration(
+
+                minutes: 0,
+                seconds: _start);
+            d.toString();
+            _start++;
+            print("-------" + _start.toString());
+          });
+        }
+      },
+    );
   }
 
   Future<void> initialize() async {
@@ -58,14 +135,20 @@ class _CallPageState extends State<CallPage> {
       });
       return;
     }
+    await _getArogaToken();
+    await _waitForToken();
+  }
 
+  _waitForToken() async {
     await _initAgoraRtcEngine();
-    _addAgoraEventHandlers();
+
     await _engine.enableWebSdkInteroperability(true);
     VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
     configuration.dimensions = VideoDimensions(1920, 1080);
     await _engine.setVideoEncoderConfiguration(configuration);
-    await _engine.joinChannel(Token, widget.channelName, null, 0);
+
+    await _engine.joinChannel(agoraToken, widget.channelName, null, _uid);
+    _addAgoraEventHandlers();
   }
 
   /// Create agora sdk instance and initialize
@@ -80,12 +163,13 @@ class _CallPageState extends State<CallPage> {
   void _addAgoraEventHandlers() {
     _engine.setEventHandler(RtcEngineEventHandler(error: (code) {
       setState(() {
-        final info = 'onError: $code';
+        final info = 'onErrorsssss: $code';
         _infoStrings.add(info);
       });
     }, joinChannelSuccess: (channel, uid, elapsed) {
       setState(() {
         final info = 'onJoinChannel: $channel, uid: $uid';
+        print('onJoinChannel: $channel');
         _infoStrings.add(info);
       });
     }, leaveChannel: (stats) {
@@ -125,7 +209,25 @@ class _CallPageState extends State<CallPage> {
 
   /// Video view wrapper
   Widget _videoView(view) {
-    return Expanded(child: Container(child: view));
+    return Container(height: MediaQuery.of(context).size.height, child: view);
+  }
+
+  Widget _videoViewLocal(view) {
+    return GestureDetector(
+        onTap: () {
+          setState(() {
+            if (!isParent) {
+              isParent = true;
+            } else {
+              isParent = false;
+            }
+          });
+        },
+        child: Container(
+            alignment: Alignment.topRight,
+            height: 150,
+            width: 150,
+            child: view));
   }
 
   /// Video view row wrapper
@@ -140,21 +242,115 @@ class _CallPageState extends State<CallPage> {
 
   /// Video layout wrapper
   Widget _viewRows() {
+
     final views = _getRenderViews();
+    print('-------------'+views.length.toString());
+
     switch (views.length) {
       case 1:
         return Container(
             child: Column(
               children: <Widget>[_videoView(views[0])],
             ));
-      case 2:
+    /*case 2:
         return Container(
             child: Column(
-              children: <Widget>[
-                _expandedVideoRow([views[0]]),
-                _expandedVideoRow([views[1]])
+          children: <Widget>[
+            _expandedVideoRow([views[0]]),
+            _expandedVideoRow([views[1]])
+          ],
+        ));*/
+      case 2:
+        return Container(
+            child: Stack(
+              children: [
+                _videoView(isParent == false
+                    ? views[1]
+                    : callshow == false
+                    ? views[0]
+                    : Container(
+                  decoration: new BoxDecoration(color: Colors.black),
+                )),
+
+                /*: Positioned(
+              left: 10,
+              top: 80,
+              child: Container(
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white),
+                  child: Text(
+                    "Name: " + username.toString(),
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w800),
+                  )),
+            ),*/
+                /*(isParent == false)
+                ? Positioned(
+              right: 10,
+              bottom: 10,
+              child: Container(
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white),
+                  child: Text(
+                    "Name: " + username.toString(),
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w800),
+                  )),
+            )
+                : Positioned(
+              left: 10,
+              top: 80,
+              child: Container(
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white),
+                  child: Text(
+                    widget.ctype == "4"
+                        ? "Therapist" +
+                        " Name: " +
+                        widget.counsellorname.toString()
+                        : widget.ctype ==
+                        "2" +
+                            " Name: " +
+                            widget.counsellorname.toString()
+                        ? "Listener"
+                        : "Counsellor" +
+                        " Name: " +
+                        widget.counsellorname.toString(),
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w800),
+                  )),
+            ),*/
+                Container(
+                  margin: EdgeInsets.only(
+                      left: SizeConfig.screenWidth -
+                          SizeConfig.blockSizeHorizontal * 40),
+                  width: SizeConfig.blockSizeHorizontal * 40,
+                  height: SizeConfig.blockSizeHorizontal * 60,
+                  child: _videoViewLocal(isParent == false
+                      ? callshow == false
+                      ? views[0]
+                      : Container(
+                    decoration: new BoxDecoration(color: Colors.black),
+                  )
+                      : views[1]),
+                ),
               ],
-            ));
+            ) /*Column(
+          children: <Widget>[
+            _expandedVideoRow([views[0]]),
+            _expandedVideoRow([views[1]])
+          ],
+        )*/
+        );
       case 3:
         return Container(
             child: Column(
@@ -178,56 +374,90 @@ class _CallPageState extends State<CallPage> {
 
   /// Toolbar layout
   Widget _toolbar() {
-    if (widget.role == ClientRole.Audience) return Container();
-    return Container(
-      alignment: Alignment.bottomCenter,
-      padding: const EdgeInsets.symmetric(vertical: 48),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          RawMaterialButton(
-            onPressed: _onToggleMute,
-            child: Icon(
-              muted ? Icons.mic_off : Icons.mic,
-              color: muted ? Colors.white : Colors.blueAccent,
-              size: 20.0,
+    if (widget.role == ClientRole.Audience) {
+      return Container();
+    } else {
+      return Container(
+        alignment: Alignment.bottomCenter,
+        padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 40),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            RawMaterialButton(
+              onPressed: _onTogglecall,
+              child: Icon(
+                callshow
+                    ? Icons.missed_video_call_outlined
+                    : Icons.video_call_outlined,
+                color: callshow ? Colors.white : Colors.blueAccent,
+                size: 20.0,
+              ),
+              shape: CircleBorder(),
+              elevation: 2.0,
+              fillColor: callshow ? Colors.blueAccent : Colors.white,
+              padding: const EdgeInsets.all(12.0),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: muted ? Colors.blueAccent : Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          ),
-          RawMaterialButton(
-            onPressed: () => _onCallEnd(context),
-            child: Icon(
-              Icons.call_end,
-              color: Colors.white,
-              size: 35.0,
+            _start >= 300
+                ? RawMaterialButton(
+              onPressed: () => _onCallEnd(context),
+              child: Icon(
+                Icons.call_end,
+                color: Colors.white,
+                size: 35.0,
+              ),
+              shape: CircleBorder(),
+              elevation: 2.0,
+              fillColor: Colors.redAccent,
+              padding: const EdgeInsets.all(15.0),
+            )
+                : RawMaterialButton(
+              onPressed: () {
+                Fluttertoast.showToast(
+                    msg: "Please Wait For Few Minutes Please!");
+              },
+              child: Icon(
+                Icons.call_end,
+                color: Colors.white,
+                size: 35.0,
+              ),
+              shape: CircleBorder(),
+              elevation: 2.0,
+              fillColor: Colors.red[200],
+              padding: const EdgeInsets.all(15.0),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.redAccent,
-            padding: const EdgeInsets.all(15.0),
-          ),
-          // RawMaterialButton(
-          //   onPressed: _onSwitchCamera,
-          //   child: Icon(
-          //     Icons.switch_camera,
-          //     color: Colors.blueAccent,
-          //     size: 20.0,
-          //   ),
-          //   shape: CircleBorder(),
-          //   elevation: 2.0,
-          //   fillColor: Colors.white,
-          //   padding: const EdgeInsets.all(12.0),
-          // )
-        ],
-      ),
-    );
+            RawMaterialButton(
+              onPressed: _onToggleMute,
+              child: Icon(
+                muted ? Icons.mic_off : Icons.mic,
+                color: muted ? Colors.white : Colors.blueAccent,
+                size: 20.0,
+              ),
+              shape: CircleBorder(),
+              elevation: 2.0,
+              fillColor: muted ? Colors.blueAccent : Colors.white,
+              padding: const EdgeInsets.all(12.0),
+            ),
+            // RawMaterialButton(
+            //   onPressed: _onSwitchCamera,
+            //   child: Icon(
+            //     Icons.switch_camera,
+            //     color: Colors.blueAccent,
+            //     size: 20.0,
+            //   ),
+            //   shape: CircleBorder(),
+            //   elevation: 2.0,
+            //   fillColor: Colors.white,
+            //   padding: const EdgeInsets.all(12.0),
+            // )
+          ],
+        ),
+      );
+    }
   }
 
   /// Info panel to show logs
-  Widget _panel() {
+  /*Widget _panel() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 48),
       alignment: Alignment.bottomCenter,
@@ -274,10 +504,17 @@ class _CallPageState extends State<CallPage> {
         ),
       ),
     );
-  }
+  }*/
 
   void _onCallEnd(BuildContext context) {
+    setState(() {
+      _timer.cancel();
+      _callEnd();
+    });
     Navigator.pop(context);
+/*
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Rating(appointmentid: widget.channelName,counsellorid:widget.id ,)));
+*/
   }
 
   void _onToggleMute() {
@@ -287,17 +524,25 @@ class _CallPageState extends State<CallPage> {
     _engine.muteLocalAudioStream(muted);
   }
 
+  void _onTogglecall() {
+    setState(() {
+      callshow = !callshow;
+    });
+    if (callshow) {
+      _engine.enableLocalVideo(false);
+    } else {
+      _engine.enableLocalVideo(true);
+    }
+  }
+
   void _onSwitchCamera() {
     _engine.switchCamera();
   }
 
   @override
   Widget build(BuildContext context) {
-    if( widget.name=="Call"){
-      return  Scaffold(
-        appBar: AppBar(
-          title: Text('Agora Flutter QuickStart'),
-        ),
+    if (widget.name == "Call") {
+      return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
           child: Stack(
@@ -309,24 +554,89 @@ class _CallPageState extends State<CallPage> {
           ),
         ),
       );
-    }
-    else{
-      return  Scaffold(
-        appBar: AppBar(
-          title: Text('Agora Flutter QuickStart'),
-        ),
-        backgroundColor: Colors.black,
+    } else {
+      return Scaffold(
         body: Center(
           child: Stack(
             children: <Widget>[
               _viewRows(),
-              _panel(),
+              // _panel(),
               _toolbar(),
+              Positioned(
+                  left: 10,
+                  top: 35,
+                  child: Container(
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white),
+                      child: Text(
+                        d.toString().split(":")[1]+":"+d.toString().split(":")[2].substring(0,2),
+                        style: TextStyle(
+                            color: Colors.black),
+                      ))),
+              Positioned(
+                  right: 5,
+                  top: (_getRenderViews().length==2)?180:40,
+                  child: Container(
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white),
+                      child: Text(
+                        isParent == false
+                            ?  username.toString()
+                            :
+                        (_getRenderViews().length==2)?widget.counsellorname.toString():"",
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w800,fontSize: 12),
+                      ))),
+              Positioned(
+                right: 10,
+                bottom: 10,
+                child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color:(_getRenderViews().length!=2)?Colors.transparent: Colors.white),
+                    child: Text(
+                      isParent == false
+                          ?
+                      (_getRenderViews().length==2)?widget.counsellorname.toString():""
+                          :  username.toString(),
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w800),
+                    )),
+              ),
             ],
           ),
         ),
       );
     }
+  }
 
+  _getArogaToken() async {
+    GetAgoraToken getAgoraToken = await AgoraRepo.getAgoraToken(
+        widget.channelName, widget.session, widget.type);
+    print("New Token>>>>>>>${getAgoraToken.token}");
+    agoraToken = getAgoraToken.token;
+    _uid = int.parse(getAgoraToken.UID);
+  }
+
+  _callStart() async {
+    //await AgoraRepo.startCallAgora(widget.channelName);
+  }
+
+  _callEnd() async {
+    // await AgoraRepo.endCallAgora(widget.channelName);
+  }
+
+  name() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString("name");
+    });
   }
 }

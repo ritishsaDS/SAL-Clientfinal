@@ -82,6 +82,7 @@ class _UnusedSessionState extends State<UnusedSession> {
 
   dynamic upcominglist = new List();
   dynamic counsellorlist = new List();
+  dynamic orderlist = new List();
 
   Future<void> getunusedsession() async {
     setState(() {
@@ -99,6 +100,7 @@ class _UnusedSessionState extends State<UnusedSession> {
         final responseJson = json.decode(response.body);
         upcominglist = responseJson['appointment_slots'];
         counsellorlist = responseJson['counsellors'];
+        orderlist = responseJson['order_details'];
         print(upcominglist);
         // counsellorid=upcominglist['appointment_slots'][0]['counsellor_id'];
         //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
@@ -144,6 +146,31 @@ class _UnusedSessionState extends State<UnusedSession> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
+                onTap: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (conetxt) => CounsellorProfile2(
+                            slotbought: upcominglist[i]['slots_bought'],
+                            id:upcominglist[i]['counsellor_id'],
+                            slotremaing:int.parse(upcominglist[i]['slots_bought'])- int.parse(upcominglist[i]['slots_remaining']),
+                            amount:orderlist[upcominglist[i]['order_id']]['paid_amount'],
+                            created_at:upcominglist[i]['created_at'],
+                            appointment: upcominglist[i]
+
+                            ['appointment_slot_id'],
+
+
+                            name: counsellorlist['${counsellorid}']
+                            ['first_name']
+                                .toString(),
+                            lname: counsellorlist['${counsellorid}']
+                            ['last_name']
+                                .toString(),
+                            type: counsellorlist['${counsellorid}']
+                            ['type'],
+                          )));
+                },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 title: Column(
@@ -183,17 +210,25 @@ class _UnusedSessionState extends State<UnusedSession> {
                             context,
                             MaterialPageRoute(
                                 builder: (conetxt) => CounsellorProfile2(
-                                      appointment: upcominglist[i]
-                                          ['appointment_id'],
-                                      name: counsellorlist['${counsellorid}']
-                                              ['first_name']
-                                          .toString(),
-                                      lname: counsellorlist['${counsellorid}']
-                                              ['last_name']
-                                          .toString(),
-                                      type: counsellorlist['${counsellorid}']
-                                          ['type'],
-                                    )));
+                                  slotbought: upcominglist[i]['slots_bought'],
+                                  id:upcominglist[i]['counsellor_id'],
+                                  slotremaing:int.parse(upcominglist[i]['slots_bought'])- int.parse(upcominglist[i]['slots_remaining']),
+                                  amount:orderlist[upcominglist[i]['order_id']]['paid_amount'],
+                                  created_at:upcominglist[i]['created_at'],
+                                  appointment: upcominglist[i]
+
+                                  ['appointment_slot_id'],
+
+
+                                  name: counsellorlist['${counsellorid}']
+                                  ['first_name']
+                                      .toString(),
+                                  lname: counsellorlist['${counsellorid}']
+                                  ['last_name']
+                                      .toString(),
+                                  type: counsellorlist['${counsellorid}']
+                                  ['type'],
+                                )));
                       },
                       child: Text(
                         "Schedule",

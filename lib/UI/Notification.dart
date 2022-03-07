@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sal_user/UI/Home.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
@@ -32,6 +33,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         if (value.meta.status == "200") {
           setState(() {
             isloading = false;
+            //print(value.n);
             getPaymentsModal.addAll(value.notifications);
           });
         } else {
@@ -44,7 +46,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             "",
           );
         }
-      } else {
+      }
+      else {
         setState(() {
           isloading = false;
 
@@ -69,7 +72,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetList = new List<Widget>();
-    var child = SafeArea(child: Scaffold(
+    var child =
+    WillPopScope(child: Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -120,9 +124,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 color: Colors.black,
                                 fontSize: SizeConfig.blockSizeVertical * 1.75
                             ),),
-                            Container(
+                            (getPaymentsModal.elementAt(index).body.toString().contains("5PM"))?Container(
                               margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
-                              child:  Text(getPaymentsModal.elementAt(index).body,style: TextStyle(
+                              child:  Text(getPaymentsModal.elementAt(index).body.toString().replaceAll("5PM","0PM"),style: TextStyle(
+                                  color: Color(fontColorGray),
+                                  fontSize: SizeConfig.blockSizeVertical * 1.85
+                              ),),
+                            ):(getPaymentsModal.elementAt(index).body.toString().contains("5AM"))?Container(
+                              margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
+                              child:  Text(getPaymentsModal.elementAt(index).body.toString().replaceAll("5PM","0PM"),style: TextStyle(
+                                  color: Color(fontColorGray),
+                                  fontSize: SizeConfig.blockSizeVertical * 1.85
+                              ),),
+                            ):Container(
+                              margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
+                              child:  Text(getPaymentsModal.elementAt(index).body.toString(),style: TextStyle(
                                   color: Color(fontColorGray),
                                   fontSize: SizeConfig.blockSizeVertical * 1.85
                               ),),
@@ -147,7 +163,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ],
         ),
       ),
-    ));
+    ), onWillPop: (){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeMain()));
+    });
 
     widgetList.add(child);
     if (isloading) {

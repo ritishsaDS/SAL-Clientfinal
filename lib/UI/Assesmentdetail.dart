@@ -67,6 +67,7 @@ class _AssesmantState extends State<AssesmantDetail> {
       "gender": widget.gender,
       "name": widget.name,
       "phone": phone,
+
       "user_id": clientId
     };
     String url =
@@ -91,10 +92,14 @@ class _AssesmantState extends State<AssesmantDetail> {
           selectedQueOption.clear();
           setState(() {});
           Get.to(Result(
+            text:result['result'],
+            resultid:result['assessment_result_id'],
+            time:DateTime.now(),
+            title:widget.title,
             clientId: clientId,
             assessmentId: widget.id,
           ));
-          print(result['assessment_result_id']);
+          print(result['result']);
         }
       }
     } catch (e) {

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -16,7 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CafeEventsDetails extends StatefulWidget {
   var id;
-  CafeEventsDetails({this.id});
+  var screen;
+  CafeEventsDetails({this.screen,this.id});
 
 
   @override
@@ -32,6 +34,57 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
   BookEventRepo bookEventRepo=BookEventRepo();
   var upcomintAppointments = AllEventdetailrepo();
   var url;
+  var moodstatic = [
+    "0:30 AM",
+    "1:00 AM",
+    "1:30 AM",
+    "2:00 AM",
+    "2:30 AM",
+    "3:00 AM",
+    "3:30 AM",
+    "4:00 AM",
+    "4:30 AM",
+    "5:00 AM",
+    "5:30 AM",
+    "6:00 AM",
+    "6:30 AM",
+    "7:00 AM",
+    "7:30 AM",
+    "8:00 AM",
+    "8:30 AM",
+    "9:00 AM",
+    "9:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "12:00 PM",
+    "12:30 PM",
+    "1:00 PM",
+    "1:30 PM",
+    "2:00 PM",
+    "2:30 PM",
+    "3:00 PM",
+    "3:30 PM",
+    "4:00 PM",
+    "4:30 PM",
+    "5:00 PM",
+    "5:30 PM",
+    "6:00 PM",
+    "6:30 PM",
+    "7:00 PM",
+    "7:30 PM",
+    '8:00 PM',
+    '8:30 PM',
+    "9:00 PM",
+    "9:30 PM",
+    "10:00 PM",
+    "10:30 PM",
+    "11:00 PM",
+    "11:30 PM",
+    "12:00 AM",
+    "",""
+  ];
   //Map<String, Counsellor> counsellor ;
   @override
   void initState() {
@@ -49,14 +102,16 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    color: Color(0XFFD8DFE9),
+
                     width: SizeConfig.screenWidth,
                     alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(image: DecorationImage(image: NetworkImage("https://sal-prod.s3.ap-south-1.amazonaws.com/"+eventdetail['photo']),fit: BoxFit.fitWidth),),
                     padding: EdgeInsets.only(
                         left: SizeConfig.screenWidth * 0.025,
                         top: SizeConfig.blockSizeVertical * 3),
                     height: SizeConfig.screenHeight * 0.4,
-                    child: Column(
+                    child:
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -70,21 +125,22 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
                           ),
                         ),
                         Container(
+                         width: SizeConfig.screenWidth,
+                          color: Colors.black45,
                           margin: EdgeInsets.only(
                               top: SizeConfig.screenHeight * 0.18),
                           child: Text(
                             eventdetail['title'],
                             style: TextStyle(
-                                color: Color(fontColorSteelGrey),
+                                color: Colors.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: SizeConfig.blockSizeVertical * 3.5),
                           ),
                         ),
                         Container(
+                          color: Colors.black45,
                           width: SizeConfig.screenWidth,
-                          margin: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.screenWidth * 0.02,
-                              vertical: SizeConfig.blockSizeVertical),
+
                           child: Row(
                             children: [
                               Container(
@@ -99,7 +155,7 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
                                 child: Text(
                                  counsellordetail['first_name'],
                                   style: TextStyle(
-                                      color: Color(fontColorSteelGrey),
+                                      color:  Colors.white,
                                       fontWeight: FontWeight.w400),
                                 ),
                               ),
@@ -202,7 +258,7 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
                                                         fontWeight: FontWeight.w600,
                                                         color: Color(backgroundColorBlue),
                                                       ),),
-                                                    Text("Parenting, Stress",
+                                                    Text("${topic}",
                                                       style: TextStyle(
                                                         fontWeight: FontWeight.w400,
                                                         color: Color(fontColorGray),
@@ -254,7 +310,7 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
                                                         fontWeight: FontWeight.w600,
                                                         color: Color(backgroundColorBlue),
                                                       ),),
-                                                    Text(eventdetail['date'].toString(),
+                                                    Text(eventdetail['date'].toString().split("-")[2]+"/"+eventdetail['date'].toString().split("-")[1]+"/"+eventdetail['date'].toString().split("-")[0],
                                                       style: TextStyle(
                                                         fontWeight: FontWeight.w400,
                                                         color: Color(fontColorGray),
@@ -355,7 +411,8 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
                           ])),
                 ]),
           ),
-          bottomSheet: Container(
+          bottomSheet:
+          widget.screen=="My Events"?SizedBox():Container(
             width: SizeConfig.screenWidth,
             height: SizeConfig.screenHeight * 0.1,
             alignment: Alignment.center,
@@ -391,11 +448,28 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
                       ),),
                   ],
                 ),
-                MaterialButton(onPressed: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-            var      data=   Bookeventmodel(userId: prefs.getString("cleintid"),eventOrderId:widget.id ,couponCode:"" );
+                MaterialButton(
 
-                  bookEventRepo.diomwthod(data,context);
+                  onPressed: () async {
+
+
+                  print(eventdetail['date']);
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+            var      data=   Bookeventmodel(userId: prefs.getString("cleintid"),eventOrderId:widget.id.toString() ,couponCode:"", );
+                  var startTime;
+                  var start = new DateTime(int.parse(eventdetail['date'].toString().split("-")[0]), int.parse(eventdetail['date'].toString().split("-")[1]), int.parse(eventdetail['date'].toString().split("-")[2].substring(0,2)));
+                  var end = new DateTime(int.parse(DateTime.now().toString().split("-")[0]), int.parse(DateTime.now().toString().split("-")[1]), int.parse(DateTime.now().toString().split("-")[2].substring(0,2)));
+                  var difference;
+                  print(end);
+                  print(DateTime.now().toString().substring(0,4).toString());
+                  print(end.difference(start));
+
+                 if(int.parse(start.difference(end).toString().substring(0,2).replaceAll(":", ""))>=(0)){
+                   bookEventRepo.diomwthod(data,context,eventdetail['time']);
+                 }
+                 else{
+                   Fluttertoast.showToast(msg: "This Event is Already Passed");
+                 }
                 },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)
@@ -411,6 +485,7 @@ class _CafeEventsDetailsState extends State<CafeEventsDetails> {
   }
 
   dynamic eventdetail=new List();
+  var topic;
   dynamic counsellordetail=new List();
   var mediaurl;
   void getdetail() async {
@@ -427,6 +502,7 @@ print(widget.id);
         counsellordetail=responseJson['counsellor'];
         eventdetail=responseJson['event'];
         mediaurl=responseJson['media_url'];
+        topic=responseJson['topic'];
         setState(() {
          // isError = false;
           isloading = false;

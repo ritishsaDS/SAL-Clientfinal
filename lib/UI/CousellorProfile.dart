@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:sal_user/UI/Signup.dart';
+import 'package:sal_user/UI/login.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -18,12 +19,12 @@ import 'Sessions.dart';
 
 class CounsellorProfile extends StatefulWidget {
   final Map<String, dynamic> getData;
-  final Map<String, dynamic> slot;
+
   final String mediaUrl;
   final String type;
 
   const CounsellorProfile(
-      {Key key, this.getData, this.mediaUrl, this.type, this.slot})
+      {Key key, this.getData, this.mediaUrl, this.type})
       : super(key: key);
 
   @override
@@ -34,7 +35,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
   @override
   void initState() {
     print("mkermpfvvpr" + widget.getData.toString());
-    print("SLOT :${widget.slot}");
+
     getCounsellordetail();
   }
   bool isError = false;
@@ -113,19 +114,15 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                 print('CLIENT ID :${prefs.getString("cleintid")}');
                 print('DATA :${widget.getData}');
                 if (prefs.getString("cleintid") == null) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SignUp(
-                          data: widget.getData,
-                          mediaurl: widget.mediaUrl,
-                          slot: widget.slot,
-                          type: widget.type)));
+                  showAlertDialogs();
+
                 } else {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => DynamicEvent(
                             data: widget.getData,
                             mediaurl: widget.mediaUrl,
                             type: widget.type,
-                            slot: widget.slot,
+
                           )));
                 }
               },
@@ -144,7 +141,16 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        child: Column(
+        child:isLoading?Container(child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height*0.5,
+            ),
+            Center(child: CircularProgressIndicator(),),
+          ],
+        ),): Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -394,7 +400,7 @@ class _CounsellorProfileState extends State<CounsellorProfile> {
                                                             ),
                                                           ),
                                                           Text(
-                                                            "${overview['experience']}",
+                                                            "${overview==null||overview['experience']==null?"":overview['experience']}",
                                                             style: TextStyle(
                                                               fontWeight:
                                                                   FontWeight
@@ -817,10 +823,19 @@ dynamic content =new List();
     setState(() {
       isLoading = true;
     });
-
+var url='';
+if(widget.type=="1"){
+   url= "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor?counsellor_id=${widget.getData['id']}";
+}
+else if(widget.type=="2"){
+  url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/listener?listener_id=${widget.getData['id']}";
+}
+else {
+  url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/therapist?therapist_id=${widget.getData['id']}';
+}
     try {
       final response = await get(Uri.parse(
-          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/therapist?therapist_id=${widget.getData['id']}'));
+          url));
       print("bjkb" + response.body.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
@@ -829,7 +844,19 @@ dynamic content =new List();
         setState(() {
           content = responseJson['contents'];
           reviews = responseJson['reviews'];
-          overview = responseJson['therapist'];
+          if(widget.type=="1"){
+          //  url= "https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/counsellor?counsellor_id=${widget.getData['id']}";
+            overview = responseJson['counsellor'];
+          }
+          else if(widget.type=="2"){
+            overview = responseJson['listener'];
+            //url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/listener?listener_id=${widget.getData['id']}";
+          }
+          else {
+          //  url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/therapist?therapist_id=${widget.getData['id']}';
+            overview = responseJson['therapist'];
+          }
+
           isError = false;
           isLoading = false;
           print('setstate'+reviews.length.toString());
@@ -855,4 +882,87 @@ dynamic content =new List();
       );
     }
   }
+  showAlertDialogs() {
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      content: Container(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 1),
+                alignment: Alignment.center,
+                child: Text(
+                  "Please Do Login First",
+                  maxLines: 2,
+                  style: TextStyle(
+                      fontSize: SizeConfig.blockSizeVertical * 2.2,
+                      color: Colors.black),),
+              ),
+              Container(
+                margin:
+                EdgeInsets.only(top: SizeConfig.blockSizeVertical * 4),
+                alignment: Alignment.center,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+                            data: widget.getData,
+                            mediaurl: widget.mediaUrl,
+                            screen: "Appointment",
+                            type: widget.type)));
+                  },
+                  child: Container(
+                    decoration:
+                    boxDecoration(bgColor: Color(backgroundColorBlue), radius: 30),
+                    padding: EdgeInsets.fromLTRB(38, 8, 38, 10),
+                    child: Text("Ok",style: TextStyle( color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    ),
+                  ),
+                ),
+              )
+            ]),
+      ),
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      // barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(onWillPop: () async => false, child: alert);
+      },
+    );
+  }
+
+
+
+
+
+
+  BoxDecoration boxDecoration(
+      {double radius = 2,
+        Color color = Colors.transparent,
+        Color bgColor,
+        var showShadow = false}) {
+    return BoxDecoration(
+      color: bgColor ,
+      boxShadow: [BoxShadow(
+        blurRadius: 2.0, // soften the shadow
+        spreadRadius: 1,
+        color: Colors.grey,//extend the shadow
+        offset: Offset(
+          0.0, // Move to right 10  horizontally
+          1.0, // Move to bottom 5 Vertically
+        ),
+      ),],
+      border: Border.all(color: color),
+      borderRadius: BorderRadius.all(Radius.circular(radius)),
+    );
+  }
+
 }

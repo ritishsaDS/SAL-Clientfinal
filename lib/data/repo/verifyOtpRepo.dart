@@ -62,6 +62,7 @@ class VerifyOtpRepo extends BaseRepository {
         print("jnwernjn");
         return passEntity;
       } else {
+        print("jnwernjn"+response.data.toString());
         return VerifyOtpModal(meta: response.data);
       }
     } catch (error) {

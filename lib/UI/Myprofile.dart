@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
@@ -14,7 +15,6 @@ import 'EditProfile.dart';
 import 'Professionalinfo.dart';
 import 'login.dart';
 
-List<String> selectedInterestList = [];
 
 class MyProfile extends StatefulWidget {
   @override
@@ -25,7 +25,9 @@ class _MyProfileState extends State<MyProfile> {
   String imgBasePath = 'https://sal-prod.s3.ap-south-1.amazonaws.com/';
 
   @override
-  void initState() {}
+  void initState() {
+    getid();
+  }
 
   // bool isError = false;
   // bool isLoading = false;
@@ -89,7 +91,9 @@ class _MyProfileState extends State<MyProfile> {
                             ),
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(
+                                profile==null?
+                                    Get.to(SignUp())
+                                    : Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => EditProfile(
@@ -120,7 +124,7 @@ class _MyProfileState extends State<MyProfile> {
                               Center(
                                 child: CircleAvatar(
                                   radius: 50,
-                                  backgroundImage: profile['photo']
+                                  backgroundImage: profile==null||profile['photo']
                                                   .toString() ==
                                               "" ||
                                           profile['photo'] == null
@@ -135,6 +139,7 @@ class _MyProfileState extends State<MyProfile> {
                               ),
                               Center(
                                 child: Text(
+                                  profile==null||
                                   profile['first_name'] == null
                                       ? ""
                                       : profile['first_name'] +
@@ -156,6 +161,7 @@ class _MyProfileState extends State<MyProfile> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
+                                      profile==null?"":
                                       profile['gender'],
                                       style: GoogleFonts.openSans(
                                           color: Color(fontColorSteelGrey),
@@ -197,7 +203,7 @@ class _MyProfileState extends State<MyProfile> {
                                       height: 5,
                                     ),
                                     Text(
-                                      "${DateFormat('dd MMMM yyyy').format(DateTime.parse(profile['date_of_birth']))}",
+                                      profile==null?"": "${DateFormat('dd MMMM yyyy').format(DateTime.parse(profile['date_of_birth']))}",
                                       style: GoogleFonts.openSans(
                                           color: Color(0xff445066),
                                           fontWeight: FontWeight.w600,
@@ -217,7 +223,7 @@ class _MyProfileState extends State<MyProfile> {
                                       height: 5,
                                     ),
                                     Text(
-                                      profile['phone'],
+                                      profile==null?"":profile['phone'],
                                       style: GoogleFonts.openSans(
                                           color: Color(0xff445066),
                                           fontWeight: FontWeight.w600,
@@ -237,7 +243,7 @@ class _MyProfileState extends State<MyProfile> {
                                       height: 5,
                                     ),
                                     Text(
-                                      profile['email'],
+                                      profile==null?"": profile['email'],
                                       style: GoogleFonts.openSans(
                                           color: Color(0xff445066),
                                           fontWeight: FontWeight.w600,
@@ -338,6 +344,23 @@ class _MyProfileState extends State<MyProfile> {
           prefs.setString("photo",
               "https://sal-prod.s3.ap-south-1.amazonaws.com/${profile['photo']}");
         } else {}
+        if(profile['photo'].toString()!=null){
+
+            profilevalue=2;
+
+        }
+        if(profile["date_of_birth"]!=null){
+
+            profilevalue=profilevalue+1;
+
+        }
+        if(profile["phone"]!=null){
+
+            profilevalue=profilevalue+1;
+        }
+
+        SharedPreferences prefs=await SharedPreferences.getInstance();
+        prefs.setInt("profileval", profilevalue);
         // counsellorid=upcominglist['appointment_slots'][0]['counsellor_id'];
         //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
       } else {
@@ -348,11 +371,7 @@ class _MyProfileState extends State<MyProfile> {
     } catch (e) {
       print(e);
 
-      showAlertDialog(
-        context,
-        e.toString(),
-        "",
-      );
+
     }
   }
 }

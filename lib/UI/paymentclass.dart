@@ -133,7 +133,8 @@ class _paymentState extends State<payment> {
           widget.type,
           widget.screen,
           moodstatic[int.parse(widget.slot)]);
-    } else {
+    }
+    else {
       var options = {
         'key': 'rzp_test_6TdfVgJzVLhMwc',
         'amount': (widget.billing == null ? "0.00" : widget.billing),
@@ -186,11 +187,10 @@ class _paymentState extends State<payment> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
 
-    return SafeArea(
-        child: Scaffold(
-      body: SingleChildScrollView(
+    return Scaffold(
+        body: SafeArea(
+      child: Container(
         child: Stack(
           children: [
             Container(
@@ -202,23 +202,14 @@ class _paymentState extends State<payment> {
                   fit: BoxFit.fill,
                 ),
               ),
+              alignment: Alignment.center,
               padding: EdgeInsets.only(
                   top: 20, left: SizeConfig.blockSizeHorizontal * 40),
               height: SizeConfig.screenHeight,
               width: SizeConfig.screenWidth,
-              child: Positioned(
-                  left: 10,
-                  top: 10,
-                  child: Container(
-                    child: Text(
-                      "Summary ",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  )),
+
             ),
+
             Container(
               padding: EdgeInsets.only(top: 20, left: 10),
               child: Container(
@@ -394,6 +385,17 @@ class _paymentState extends State<payment> {
                 ],
               ),
             ),
+            Center(
+
+                child: Container(
+                  child: Text(
+                    "Summary ",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500),
+                  ),
+                )),
           ],
         ),
       ),

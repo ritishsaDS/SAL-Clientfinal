@@ -15,7 +15,8 @@ class Razor extends StatefulWidget {
   var date;
   dynamic type;
   var screen;
-  Razor({this.order,this.payment,this.data,this.date,this.type,this.screen});
+  var time;
+  Razor({this.order,this.time,this.payment,this.data,this.date,this.type,this.screen});
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -45,6 +46,7 @@ class _MyAppState extends State<Razor> {
   @override
   void initState() {
     super.initState();
+    print("-------------"+widget.time);
     openCheckout();
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
@@ -83,7 +85,7 @@ class _MyAppState extends State<Razor> {
     print("jjasdvjdvji"+widget.order);
     print("jjasdvjdvji"+response.paymentId);
     if(widget.screen=="Event"){
-      Eventpaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen);
+      Eventpaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen,widget.time);
     }
     Succespaymentrepo.diomwthod(context,widget.order,response.paymentId,widget.data,widget.date,widget.type,widget.screen,"23:00");
   //  successapi();

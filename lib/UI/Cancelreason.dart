@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:sal_user/UI/AppointmentCancel.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
@@ -9,14 +10,23 @@ import 'package:sal_user/Utils/SizeConfig.dart';
 
 class Cancelreason extends StatefulWidget{
   var id;
-  Cancelreason({this.id});
+  var cancel;
+  Cancelreason({this.id,this.cancel});
   @override
   _CancelreasonState createState() => _CancelreasonState();
 }
 
 class _CancelreasonState extends State<Cancelreason> {
-  int sessionRadio = 0;
-
+  int sessionRadio = 1;
+  var reason='';
+  TextEditingController aboutController = TextEditingController();
+  bool visible=false;
+@override
+  void initState() {
+   print(widget.cancel);
+   print(widget.id);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -81,6 +91,7 @@ class _CancelreasonState extends State<Cancelreason> {
                     child: RadioListTile(value: 1, groupValue: sessionRadio, onChanged: (value){
                       setState(() {
                         sessionRadio = value;
+                        reason="I found help elsewhere"; visible=false;
                       });
                     },
                       activeColor: Color(backgroundColorBlue),
@@ -258,6 +269,8 @@ class _CancelreasonState extends State<Cancelreason> {
                     child: RadioListTile(value: 2, groupValue: sessionRadio, onChanged: (value){
                       setState(() {
                         sessionRadio = value;
+                        reason="I want a different counsellor";
+                        visible=false;
                       });
                     },
                       activeColor: Color(backgroundColorBlue),
@@ -435,6 +448,8 @@ class _CancelreasonState extends State<Cancelreason> {
                     child: RadioListTile(value: 3, groupValue: sessionRadio, onChanged: (value){
                       setState(() {
                         sessionRadio = value;
+                       reason= "I want to change date and time";
+                        visible=false;
                       });
                     },
                       activeColor: Color(backgroundColorBlue),
@@ -612,6 +627,7 @@ class _CancelreasonState extends State<Cancelreason> {
                     child: RadioListTile(value: 4, groupValue: sessionRadio, onChanged: (value){
                       setState(() {
                         sessionRadio = value;
+                        visible=true;
                       });
                     },
                       activeColor: Color(backgroundColorBlue),
@@ -780,6 +796,44 @@ class _CancelreasonState extends State<Cancelreason> {
                   //   ),
                 ],
               ),
+              Visibility(
+                visible:visible ,
+                maintainState: visible,
+                child: Container(
+                  margin: EdgeInsets.only(
+                    left: SizeConfig.screenWidth * 0.05,
+                    right: SizeConfig.screenWidth * 0.05,
+                  ),
+                  //height: SizeConfig.blockSizeVertical * 6,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey)),
+                  child: TextFormField(
+                    controller: aboutController,
+                    decoration: InputDecoration(
+                        hintText: "Enter here",
+                        hintStyle: GoogleFonts.openSans(
+                          color: Color(fontColorGray),
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding:
+                        EdgeInsets.all(SizeConfig.blockSizeVertical * 1)),
+                    maxLines: 3,
+                    maxLength: 500,
+                    onFieldSubmitted: (term) {
+                      setState(() {
+
+                      });
+                    },
+                    onChanged: (term) {
+                      setState(() {
+                        reason=term;
+                      });
+                    },
+                  ),
+                ),
+              ),
               Container(
                 margin: EdgeInsets.only(
                   top: SizeConfig.blockSizeVertical * 10,
@@ -806,7 +860,7 @@ Navigator.pop(context);
                     SizedBox(width: 10,),
                     MaterialButton(
                       onPressed: () async {
-                        cancelAppointment();
+                       cancelReason();
 
                       },
                       child: Text("Cancel",
@@ -1215,14 +1269,71 @@ Navigator.pop(context);
       ),
     ));
   }
+  void cancelReason() async {
+    Map<String, dynamic> data= {
+      "cancellation_reason": reason.toString()
+    };
+    setState(() {
+
+    });
+    var url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/bulk?appointment_id=${widget.id}";
+
+    if(widget.cancel=="CANCEL ALL"){
+      url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/cancellationreason?appointment_id=${widget.id}&sessions=3";
+    }
+    else{
+      url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/cancellationreason?appointment_id=${widget.id}&sessions=2";
+    }
+    try {
+      final response = await put(Uri.parse(
+          url),body: jsonEncode(data));
+      print("bjkb" + response.body.toString());
+      print("bjkb" + "cancelllll");
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+
+        setState(() {
+          cancelAppointment();
+        });
+      //  Navigator.push(context, MaterialPageRoute(builder: (context)=>Appointmentcancel()));
+
+      } else {
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+
+      });
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
+  }
+
   void cancelAppointment() async {
     setState(() {
 
     });
+    var url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/bulk?appointment_id=${widget.id}";
 
+    if(widget.cancel=="CANCEL ALL"){
+      url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment/bulk?appointment_slot_id=${widget.id}";
+    }
+    else{
+      url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment?appointment_id=${widget.id}';
+    }
     try {
       final response = await delete(Uri.parse(
-          'https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/appointment?appointment_id=${widget.id}'));
+          url));
+      print("bjkb" + response.request.toString());
       print("bjkb" + response.body.toString());
       if (response.statusCode == 200) {
         final responseJson = json.decode(response.body);
@@ -1231,7 +1342,17 @@ Navigator.pop(context);
         setState(() {
 
         });
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>Appointmentcancel()));
+        if(responseJson['meta']['status']=="200"){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>Appointmentcancel()));
+        }
+        else{
+          showAlertDialog(
+            context,
+            responseJson['meta']['message'].toString(),
+            "",
+          );
+        }
+
 
       } else {
         print("bjkb" + response.statusCode.toString());

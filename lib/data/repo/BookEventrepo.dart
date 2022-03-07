@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart'as http;
 import 'package:sal_user/UI/Razorpay.dart';
 import 'package:sal_user/UI/Sessions.dart';
+import 'package:sal_user/UI/Signup.dart';
 import 'package:sal_user/UI/SummaryPayment.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/models/Appointmentlistener.dart';
@@ -17,9 +18,10 @@ import 'package:sal_user/models/appointmentmode.dart';
 
 class BookEventRepo {
 
-   Future<void> diomwthod(Bookeventmodel adddishmodel,context) async {
+   Future<void> diomwthod(Bookeventmodel adddishmodel,context,time) async {
     var types;
     var model;
+
 
 
       model = Bookeventmodel(eventOrderId:adddishmodel.eventOrderId,userId: adddishmodel.userId,couponCode: "" );
@@ -33,8 +35,9 @@ class BookEventRepo {
 
 
           body:json.encode(model));
-      print("bjkb" + model.toString());
+      print("bjkb--------" + time.toString());
       print("bjkb" + model.toJson().toString());
+      print("bjkb" + response.statusCode.toString());
       // showToast("Dish Added Successfully");
 
       if (response.statusCode == 200)
@@ -44,7 +47,7 @@ class BookEventRepo {
         loginwithserver = responseJson;
         print(responseJson);
         if(loginwithserver['meta']['status']=="200"){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>Razor(payment:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],screen:"Event")));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>Razor(payment:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],screen:"Event",time:time)));
 
           // if(screen=="Schedule"){
           //   Navigator.push(context,MaterialPageRoute(builder: (context)=>Sessions(mediaUrl: mediaurl,getData:data,date:adddishmodel.date,slot:adddishmodel.time,type:type,bill:loginwithserver)));
@@ -55,6 +58,9 @@ class BookEventRepo {
           //       date:adddishmodel.date,slot:adddishmodel.time    ,sessionNumbers: session.toString(),billing:loginwithserver['paid_amount_razorpay'],order:loginwithserver['order_id'],type:type,bill:loginwithserver)));
           //
           // }
+        }
+        else if(adddishmodel.userId==null){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> SignUp()));
         }
         else{
           showAlertDialog(

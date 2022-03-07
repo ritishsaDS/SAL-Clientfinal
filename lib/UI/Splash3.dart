@@ -32,7 +32,7 @@ class _Splash3State extends State<Splash3> {
               ),
               Expanded(child: SizedBox()),
               Text(
-                "Connect with your\nChancellor",
+                "Connect with your\n Counsellor",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Color(midnightBlue), fontSize: 22),
               ),

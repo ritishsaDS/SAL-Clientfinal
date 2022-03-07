@@ -16,6 +16,8 @@ import 'package:sal_user/models/Uplaodmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import 'Professionalinfo.dart';
+
 class EditProfile extends StatefulWidget {
   final String name;
   final String email;
@@ -267,7 +269,7 @@ class _EditProfileState extends State<EditProfile> {
               "location": "45.33",
               "timezone": "+5:30",
               "photo": profileImg,
-              "topicid": selectedInterestList
+              "topicid": selectedInterestListid.toString().replaceAll("[", "").replaceAll("]",'')
             };
 
             String uri =

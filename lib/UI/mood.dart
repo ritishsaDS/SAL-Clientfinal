@@ -5,8 +5,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:sal_user/UI/MoodDoneScreen.dart';
+import 'package:sal_user/UI/login.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
+import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/Widgets/Moodwidget.dart';
 import 'package:sal_user/data/repo/Addmoodrepo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -71,14 +73,7 @@ class _MoodState extends State<Mood> {
             onPressed: () {
               Get.to(CalanderScreen());
             },
-            child: Text(
-              'Mood Diary',
-              style: TextStyle(
-                  color: Color(
-                    0xff0066B3,
-                  ),
-                  fontSize: 18),
-            ),
+            child: Image.asset("assets/icons/Vector.png")
           ),
         ],
       ),
@@ -160,10 +155,7 @@ class _MoodState extends State<Mood> {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   print('CLIENT ID:${prefs.getString("cleintid")}');
                   if(prefs.getString("cleintid")==null){
-                    Get.showSnackbar(GetBar(
-                      message: 'Please First Login',
-                      duration: Duration(seconds: 2),
-                    ));
+                  showAlertDialogs();
                     return;
                   }
                   if (moodid == null) {
@@ -278,5 +270,60 @@ class _MoodState extends State<Mood> {
       ));
     }
     return moodlist;
+  }
+  showAlertDialogs() {
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      content: Container(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 1),
+                alignment: Alignment.center,
+                child: Text(
+                  "Please Do Login First",
+                  maxLines: 2,
+                  style: TextStyle(
+                      fontSize: SizeConfig.blockSizeVertical * 2.2,
+                      color: Colors.black),),
+              ),
+              Container(
+                margin:
+                EdgeInsets.only(top: SizeConfig.blockSizeVertical * 4),
+                alignment: Alignment.center,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+
+                            screen: "Moods",
+                           )));
+                  },
+                  child: Container(
+                    decoration:
+                    boxDecoration(bgColor: Color(backgroundColorBlue), radius: 30),
+                    padding: EdgeInsets.fromLTRB(38, 8, 38, 10),
+                    child: Text("Ok",style: TextStyle( color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    ),
+                  ),
+                ),
+              )
+            ]),
+      ),
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      // barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(onWillPop: () async => false, child: alert);
+      },
+    );
   }
 }

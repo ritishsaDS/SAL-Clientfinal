@@ -18,12 +18,13 @@ class ArticleDetail extends StatefulWidget {
   final String bg;
   final String content;
   final String created_by;
+  dynamic likedcontent;
 
 
 
 
-  const ArticleDetail(
-      {Key key, this.id,this.bg,this.created_by, this.title, this.image, this.description,this.content})
+   ArticleDetail(
+      {Key key, this.id,this.likedcontent,this.bg,this.created_by, this.title, this.image, this.description,this.content})
       : super(key: key);
 
   @override
@@ -37,6 +38,17 @@ class _EventSummaryState extends State<ArticleDetail> {
 
   @override
   void initState() {
+    if(widget.likedcontent==null){
+      widget.likedcontent=[];
+    }
+    else{
+      if(widget.likedcontent.contains(widget.id.toString())){
+        print("nkldfnklsdvnkl");
+        setState(() {
+          isLike=true.obs;
+        });
+      }
+    }
     super.initState();
   }
 

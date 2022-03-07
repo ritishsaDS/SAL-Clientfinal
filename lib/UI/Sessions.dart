@@ -59,7 +59,7 @@ TextEditingController coupon=TextEditingController();
   }
 
   int sessionRadio = 0;
-
+var sessionnumber;
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -173,6 +173,9 @@ TextEditingController coupon=TextEditingController();
 
                                         onTap: () async {
                                           if (sessionRadio > 0) {
+                                            setState(() {
+                                              sessionnumber=1;
+                                            });
                                             var numbersession;
                                             numbersession = sessionRadio == 2
                                                 ? numbersession = 3
@@ -251,6 +254,9 @@ TextEditingController coupon=TextEditingController();
                               ),
                             ),
                             Container(
+                                margin: EdgeInsets.only(left: 20),
+                                child: sessionnumber==1?Text(text,style: TextStyle(color: Colors.green),):Container()),
+                            Container(
                               width: SizeConfig.screenWidth,
                               margin: EdgeInsets.symmetric(
                                 vertical: SizeConfig.blockSizeVertical,
@@ -311,17 +317,17 @@ TextEditingController coupon=TextEditingController();
                                 MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    discount==''?"":"Discount",
+                                    discount!=''&&sessionnumber==1?"Discount":"",
                                     style:
                                     TextStyle(color: Color(fontColorGray)),
                                   ),
                                   widget.type == "2"
                                       ? Text("Free")
-                                      : Text(
+                                      : sessionnumber==1?Text(
                                     "${discount}",
                                     style: TextStyle(
                                         color: Color(fontColorGray)),
-                                  )
+                                  ):Container()
                                 ],
                               ),
                             ),
@@ -348,7 +354,7 @@ TextEditingController coupon=TextEditingController();
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                    discount==''?"${int.parse(widget.bill['prices']['price'])}":"${paidamount}",
+                                    discount!=''&&sessionnumber==1?"${paidamount}":"${int.parse(widget.bill['prices']['price'])}",
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600),
@@ -464,6 +470,9 @@ TextEditingController coupon=TextEditingController();
                                   suffixIcon: GestureDetector(
                                       onTap: () async {
                                         if (sessionRadio > 0) {
+                                          setState(() {
+                                            sessionnumber=3;
+                                          });
                                           var numbersession;
                                           numbersession = sessionRadio == 2
                                               ? numbersession = 3
@@ -543,7 +552,7 @@ TextEditingController coupon=TextEditingController();
                             ),
                            Container(
                                margin: EdgeInsets.only(left: 20),
-                               child: Text(text,style: TextStyle(color: Colors.green),)),
+                               child: sessionnumber==3?Text(text,style: TextStyle(color: Colors.green),):Container()),
                             Container(
                               width: SizeConfig.screenWidth,
                               margin: EdgeInsets.symmetric(
@@ -583,17 +592,17 @@ TextEditingController coupon=TextEditingController();
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    discount==''?"":"Discount",
+                                    discount!=''&&sessionnumber==3?"Discount":"",
                                     style:
                                         TextStyle(color: Color(fontColorGray)),
                                   ),
                                   widget.type == "2"
                                       ? Text("Free")
-                                      : Text(
+                                      :sessionnumber==3? Text(
                                           "${discount}",
                                           style: TextStyle(
                                               color: Color(fontColorGray)),
-                                        )
+                                        ):Container()
                                 ],
                               ),
                             ),
@@ -620,7 +629,7 @@ TextEditingController coupon=TextEditingController();
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                      discount==''?"${int.parse(widget.bill['prices']['price_3'])}":"${paidamount}",
+                                      discount!=''&&sessionnumber==3?"${paidamount}":"${int.parse(widget.bill['prices']['price_3'])}",
                                           style: TextStyle(
                                               color: Color(backgroundColorBlue),
                                               fontWeight: FontWeight.w600),
@@ -717,7 +726,13 @@ TextEditingController coupon=TextEditingController();
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   suffixIcon: GestureDetector(onTap: () async {
+                                    setState(() {
+                                      sessionnumber=5;
+                                    });
                                     if (sessionRadio > 0) {
+                                      setState(() {
+
+                                      });
                                       var numbersession;
                                       numbersession = sessionRadio == 2
                                           ? numbersession = 3
@@ -801,7 +816,7 @@ TextEditingController coupon=TextEditingController();
                             ),
                             Container(
                                 margin: EdgeInsets.only(left: 20),
-                                child: Text(text,style: TextStyle(color: Colors.green),)),
+                                child:sessionnumber==5?Text(text,style: TextStyle(color: Colors.green)):Container() ,),
                             Container(
                               width: SizeConfig.screenWidth,
                               margin: EdgeInsets.symmetric(
@@ -841,17 +856,17 @@ TextEditingController coupon=TextEditingController();
                                 MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    discount==''?"":"Discount",
+                                    discount!=''&&sessionnumber==5?"Discount":"",
                                     style:
                                     TextStyle(color: Color(fontColorGray)),
                                   ),
                                   widget.type == "2"
                                       ? Text("Free")
-                                      : Text(
+                                      : sessionnumber==5?Text(
                                     "${discount}",
                                     style: TextStyle(
                                         color: Color(fontColorGray)),
-                                  )
+                                  ):Container()
                                 ],
                               ),
                             ),
@@ -878,7 +893,7 @@ TextEditingController coupon=TextEditingController();
                                   widget.type == "2"
                                       ? Text("Free")
                                       : Text(
-                                    discount==''?"${int.parse(widget.bill['prices']['price_3'])}":"${paidamount}",
+                                    discount!=''&&sessionnumber==5?"${paidamount}":"${int.parse(widget.bill['prices']['price_5'])}",
                                     style: TextStyle(
                                         color: Color(backgroundColorBlue),
                                         fontWeight: FontWeight.w600),
@@ -956,7 +971,7 @@ TextEditingController coupon=TextEditingController();
                           date: widget.date.toString(),
                           noSession: "1",
                           time: widget.slot);
-                      if(text!=''){
+                      if(text!=''&&text!="Incorrect coupon code"){
                         print("jksdjnsdvko");
                         Navigator.push(context,MaterialPageRoute(builder: (context)=>payment(mediaUrl: widget.mediaUrl,getData:widget.getData,
                             date:widget.date,slot:widget.slot    ,sessionNumbers: numbersession.toString(),billing:razorpayamount,order:orderid,type:widget.type,bill:loginwithserver)));
@@ -1111,7 +1126,7 @@ TextEditingController coupon=TextEditingController();
         loginwithserver = responseJson;
 
         if(loginwithserver['meta']['message']=="Incorrect coupon code"){
-print("jnkjnkdfb");
+print("jnkjnkdfb"+sessionnumber.toString());
 setState(() {
   text="Incorrect coupon code";
   discount='';
@@ -1119,6 +1134,7 @@ setState(() {
 });
         }
         else{
+
           text="Coupon Applied Succesfully";
           paidamount=loginwithserver['billing']["paid_amount"];
           discount=loginwithserver['billing']['discount'];

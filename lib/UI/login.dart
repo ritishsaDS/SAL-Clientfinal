@@ -23,7 +23,11 @@ TextEditingController mobileController = TextEditingController();
 
 class LoginScreen extends StatefulWidget {
   var screen;
-   LoginScreen({this.screen});
+ var  data ;
+ var mediaurl;
+
+  var type;
+   LoginScreen({this.screen,this.data,this.mediaurl,this.type});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -225,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Navigator.push(context,
                                             MaterialPageRoute(
                                                 builder: (conext) {
-                                          return OTPScreen(phonenumber:mobileController.text,screen:widget.screen);
+                                          return OTPScreen(phonenumber:mobileController.text,screen:widget.screen,mediaurl: widget.mediaurl,data: widget.data,type: widget.type,);
                                         }));
                                       } else {
                                         Navigator.of(loginLoader.currentContext,

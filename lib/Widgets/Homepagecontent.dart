@@ -17,14 +17,30 @@ class Homecontentwidget extends StatefulWidget{
   var bg;
   var url;
   var created_by;
-var content;
-  Homecontentwidget({this.description,this.image,this.id,this.title,this.created_by,this.bg,this.url,this.content});
+  dynamic likedcontent;
+  var content;
+  Homecontentwidget({this.likedcontent,this.description,this.image,this.id,this.title,this.created_by,this.bg,this.url,this.content});
   @override
   _HomecontentwidgetState createState() => _HomecontentwidgetState();
 }
 
 class _HomecontentwidgetState extends State<Homecontentwidget> {
+
   RxBool isLike = false.obs;
+  @override
+  void initState() {
+    if(widget.likedcontent==null){
+      widget.likedcontent=[];
+    }
+    else{
+      if(widget.likedcontent.contains(widget.id.toString())){
+        print("nkldfnklsdvnkl");
+        setState(() {
+          isLike=true.obs;
+        });
+      }
+    }    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -68,15 +84,23 @@ class _HomecontentwidgetState extends State<Homecontentwidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.title,
-                    style: GoogleFonts.openSans(
-                        color: Colors.white, fontWeight: FontWeight.w600),
+                  Expanded(
+                    flex: 8,
+                    child: Text(
+                      widget.title,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: GoogleFonts.openSans(
+                          color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
                   ),
-                  Text(
-                    "3m",
-                    style: GoogleFonts.openSans(
-                      color: Colors.white,
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "3m",
+                      style: GoogleFonts.openSans(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/SizeConfig.dart';
 import 'package:sal_user/data/repo/Availableeventrepo.dart';
@@ -28,55 +29,57 @@ class _AlleventsState extends State<Allevents> {
     'Mental Health Workshop',
     'Parenting Workshop'];
   var moodstatic = [
-    "0:30",
-    "1:00",
-    "1:30",
-    "2:00",
-    "2:30",
-    "3:00",
-    "3:30",
-    "4:00",
-    "4:30",
-    "5:00",
-    "5:30",
-    "6:00",
-    "6:30",
-    "7:00",
-    "7:30",
-    "8:00",
-    "8:30",
-    "9:00",
-    "9:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
-    "17:30",
-    "18:00",
-    "18:30",
-    "19:00",
-    "19:30",
-    '20:00',
-    '20:30',
-    "21:00",
-    "21:30",
-    "22:00",
-    "22:30",
-    "23:00",
-    "23:30"
-        "24:00"
+    "0:30 AM",
+    "1:00 AM",
+    "1:30 AM",
+    "2:00 AM",
+    "2:30 AM",
+    "3:00 AM",
+    "3:30 AM",
+    "4:00 AM",
+    "4:30 AM",
+    "5:00 AM",
+    "5:30 AM",
+    "6:00 AM",
+    "6:30 AM",
+    "7:00 AM",
+    "7:30 AM",
+    "8:00 AM",
+    "8:30 AM",
+    "9:00 AM",
+    "9:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "12:00 PM",
+    "12:30 PM",
+    "1:00 PM",
+    "1:30 PM",
+    "2:00 PM",
+    "2:30 PM",
+    "3:00 PM",
+    "3:30 PM",
+    "4:00 PM",
+    "4:30 PM",
+    "5:00 PM",
+    "5:30 PM",
+    "6:00 PM",
+    "6:30 PM",
+    "7:00 PM",
+    "7:30 PM",
+    '8:00 PM',
+    '8:30 PM',
+    "9:00 PM",
+    "9:30 PM",
+    "10:00 PM",
+    "10:30 PM",
+    "11:00 PM",
+    "11:30 PM",
+    "12:00 AM",
+    "",""
   ];
+
   List<Color> colors = [
     Color.fromRGBO(42, 138, 163, 0.75),
     Color.fromRGBO(48, 37, 33, 0.75),
@@ -88,6 +91,7 @@ class _AlleventsState extends State<Allevents> {
   //Map<String, Counsellor> counsellor ;
   @override
   void initState() {
+
     AllEvents();
     super.initState();
 
@@ -105,7 +109,9 @@ class _AlleventsState extends State<Allevents> {
         InkWell(
          onTap: (){
            Navigator.push(context, MaterialPageRoute(builder: (context)=>CafeEventsDetails(
-             id:all[index]['order_id']
+             id:all[index]['order_id'],
+               screen:"All Events"
+
 //title:appointments.elementAt(index).title,
            )));
          },
@@ -113,7 +119,7 @@ class _AlleventsState extends State<Allevents> {
            margin: EdgeInsets.symmetric(
                vertical: SizeConfig.blockSizeVertical
            ),
-           width: SizeConfig.screenWidth * 0.4,
+
            alignment: Alignment.bottomCenter,
            decoration: BoxDecoration(
              borderRadius: BorderRadius.circular(20),
@@ -158,26 +164,46 @@ class _AlleventsState extends State<Allevents> {
                    Row(
                      mainAxisAlignment: MainAxisAlignment.start,
                      children: [
-                       Text(all[index]['date'],
+                       Text("${DateFormat('EEEE').format(DateTime.parse(all[index]['date'].toString()))}"+", "+(all[index]['date'].toString().split("-")[2])+" ${DateFormat('MMMM').format(DateTime.parse(all[index]['date'].toString()))}",
                          style: TextStyle(
                              color: Colors.white,
                              fontSize: SizeConfig.blockSizeVertical * 1.5
                          ),),
                        SizedBox(
-                         width: SizeConfig.blockSizeHorizontal * 10,
+                         width: SizeConfig.blockSizeHorizontal * 2,
+                       ),
+                       Container(
+                         height: 5,
+                         width: 5,
+                         decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white,),
+
+                       ),
+                       SizedBox(
+                         width: SizeConfig.blockSizeHorizontal * 8,
                        ),
                        Text(moodstatic[int.parse(all[index]['time'])],
                          style: TextStyle(
                              color: Colors.white,
-                             fontSize: SizeConfig.blockSizeVertical * 1.5
+                             fontSize: SizeConfig.blockSizeVertical * 1.8,
+                             fontWeight: FontWeight.w600
                          ),),
                        SizedBox(
-                         width: SizeConfig.blockSizeHorizontal * 10,
+                         width: SizeConfig.blockSizeHorizontal * 2,
                        ),
-                       Text(all[index]['actual_amount'],
+                       Container(
+                         height: 5,
+                         width: 5,
+                         decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white,),
+
+                       ),
+                       SizedBox(
+                         width: SizeConfig.blockSizeHorizontal * 8,
+                       ),
+                       Text("₹"+all[index]['price'],
                          style: TextStyle(
                              color: Colors.white,
-                             fontSize: SizeConfig.blockSizeVertical * 1.5
+                             fontSize: SizeConfig.blockSizeVertical * 1.8,
+                           fontWeight: FontWeight.w600
                          ),),
                      ],
                    ),
@@ -213,6 +239,7 @@ class _AlleventsState extends State<Allevents> {
 
         setState(() {
 print(all);
+print(DateTime.parse(all[0]['date']));
         });
         //Navigator.push(context, MaterialPageRoute(builder: (context)=>Appointmentcancel()));
 

@@ -12,8 +12,9 @@ import 'package:sal_user/models/get_contents_response_model.dart';
 
 class PlayerPage extends StatefulWidget {
   final ContentsArticle data;
+  dynamic likedcontent;
 
-  const PlayerPage({Key key, this.data}) : super(key: key);
+   PlayerPage({Key key, this.likedcontent,this.data}) : super(key: key);
 
   @override
   _PlayerPageState createState() => _PlayerPageState();
@@ -28,8 +29,20 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
   final audioPlayer = AudioPlayer();
 
   AudioPlayerController _playerController = Get.put(AudioPlayerController());
-
+  RxBool isLikeStatus=false.obs;
   void initState() {
+    super.initState();
+    if(widget.likedcontent==null){
+      widget.likedcontent=[];
+    }
+    else{
+      if(widget.likedcontent.contains(widget.data.contentId)){
+        print("nkldfnklsdvnkl");
+        setState(() {
+          isLikeStatus=true.obs;
+        });
+      }
+    }
     super.initState();
     _playerController.setCompleteDuration(0);
     _playerController.setIsRepeat(false);
@@ -192,14 +205,20 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                   String response;
                                   print(
                                       'Status:${controller.isLikeStatus.value}');
-                                  if (controller.isLikeStatus.value) {
+                                  if (isLikeStatus.value) {
                                     response =
                                         await ExploreLikeUnlikeRepo.exploreUnLike(
-                                            data.id);
+                                            data.contentId);
+                                    setState(() {
+                                      isLikeStatus=false.obs;
+                                    });
                                   } else {
                                     response =
                                         await ExploreLikeUnlikeRepo.exploreLike(
-                                            data.id);
+                                            data.contentId);
+                                    setState(() {
+                                      isLikeStatus=true.obs;
+                                    });
                                   }
                                   if (response != null) {
                                     Get.showSnackbar(GetBar(
@@ -211,10 +230,10 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                   }
                                 },
                                 icon: Icon(
-                                  controller.isLikeStatus.value
+                                  isLikeStatus.value
                                       ? Icons.favorite
                                       : Icons.favorite_border,
-                                  color: controller.isLikeStatus.value
+                                  color: isLikeStatus.value
                                       ? Colors.red
                                       : Colors.white,
                                 ),

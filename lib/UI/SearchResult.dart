@@ -42,6 +42,7 @@ class _SearchResultState extends State<SearchResult> {
   var therapist;
   var filters=[];
   var moodstatic = [
+    "0:00",
     "0:30",
     "1:00",
     "1:30",
@@ -105,10 +106,20 @@ class _SearchResultState extends State<SearchResult> {
   @override
   void initState() {
 
-    print(widget.type);
+    print(filters);
+    if(filters.length!=0){
+      filters.add(widget.list[0]);
+    }
+
+    if(widget.language.toString()!="null")
+      filters.add(widget.language.toString().substring(2));
+
     setState(() {
+      if(widget.price=="500"){
+        widget.price="2500";
+      }
       filters=widget.list;
-      url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}${widget.price==null?"":"&price=""${widget.price},2500"}";
+      url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null||widget.type==0?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}${widget.language==null?"":"&language="+widget.language.toString().split(",")[0]}${widget.price==null?"":"&price=500,${widget.price}"}";
     });
     // gettherapist();
     getCouncilorfromserver();
@@ -118,6 +129,7 @@ class _SearchResultState extends State<SearchResult> {
   }
 
   String price;
+  String Age;
   String rating;
   double experience = 0;
   @override
@@ -162,7 +174,7 @@ class _SearchResultState extends State<SearchResult> {
               context: context,
               builder: (BuildContext context) => Container(
                 width: SizeConfig.screenWidth,
-                height: SizeConfig.screenHeight * 0.5,
+                height: widget.type!=2?SizeConfig.screenHeight * 0.35:SizeConfig.screenHeight * 0.3,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(10),
@@ -211,14 +223,14 @@ class _SearchResultState extends State<SearchResult> {
                       margin: EdgeInsets.symmetric(
                           horizontal: SizeConfig.screenWidth * 0.05),
                       child: Text(
-                        "Price",
+                        widget.type==2?"Age":"Price",
                         style: TextStyle(
                             color: Color(backgroundColorBlue),
                             fontWeight: FontWeight.w600,
                             fontSize: SizeConfig.blockSizeVertical * 1.75),
                       ),
                     ),
-                    Container(
+                    widget.type!=2?Container(
                       width: SizeConfig.screenWidth,
                       margin: EdgeInsets.symmetric(
                           vertical: SizeConfig.blockSizeVertical,
@@ -266,7 +278,7 @@ class _SearchResultState extends State<SearchResult> {
                           );
                         }).toList(),
                         hint: Text(
-                          "Sort By Price",
+                          widget.type==2?"Sort By Age":"Sort By Price",
                           style: TextStyle(
                               color: Color(fontColorGray),
                               fontSize: SizeConfig.blockSizeVertical * 1.75,
@@ -281,27 +293,16 @@ class _SearchResultState extends State<SearchResult> {
                           setState(() {
                             price = value;
                             print(price);
+                            url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null||widget.type==0?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}${widget.language==null?"":"&language="+widget.language.toString().split(",")[0]}${widget.price==null?"":"&price=""500,${widget.price}"}&${widget.type=="2"?"sort_by=3":"sort_by=1"}&order_by${price=='High to Low'?"=2":"=1"}";
 
-                            url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?type=${widget.type}&topic=${widget.topic.toString().split(",")[0]}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}&sort_by=1&order_by${price=='High to Low'?"=1":"=2"}';
+                            //url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?type=${widget.type}&topic=${widget.topic.toString().split(",")[0]}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}&sort_by=1&order_by${price=='High to Low'?"=1":"=2"}';
                             getCouncilorfromserver();
                             Navigator.pop(context);
                             print(url);
                           });
                         },
                       ),
-                    ),
-                    Container(
-                      width: SizeConfig.screenWidth,
-                      margin: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.screenWidth * 0.05),
-                      child: Text(
-                        "Rating",
-                        style: TextStyle(
-                            color: Color(backgroundColorBlue),
-                            fontWeight: FontWeight.w600,
-                            fontSize: SizeConfig.blockSizeVertical * 1.75),
-                      ),
-                    ),
+                    ):
                     Container(
                       width: SizeConfig.screenWidth,
                       margin: EdgeInsets.symmetric(
@@ -336,7 +337,7 @@ class _SearchResultState extends State<SearchResult> {
                           isDense: true,
                           contentPadding: EdgeInsets.all(12),
                         ),
-                        items: <String>['Sort By Rating High to Low',]
+                        items:<String>['High to Low', 'Low to High']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -350,7 +351,7 @@ class _SearchResultState extends State<SearchResult> {
                           );
                         }).toList(),
                         hint: Text(
-                          "Sort By Rating",
+                          widget.type==2?"Sort By Age":"Sort By Price",
                           style: TextStyle(
                               color: Color(fontColorGray),
                               fontSize: SizeConfig.blockSizeVertical * 1.75,
@@ -360,13 +361,14 @@ class _SearchResultState extends State<SearchResult> {
                           Icons.keyboard_arrow_down_rounded,
                           color: Color(fontColorGray),
                         ),
-                        value: rating,
+                        value: Age,
                         onChanged: (value) {
                           setState(() {
-                            rating = value;
+                            Age = value;
+                            print(Age);
+                            url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null||widget.type==0?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}${widget.language==null?"":"&language="+widget.language.toString().split(",")[0]}${widget.price==null?"":"&price=""500,${widget.price}"}&sort_by=3&order_by=${Age=="High to Low"?"2":"1"}";
 
-
-                            url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}&sort_by=2&order_by=1';
+                            //url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?type=${widget.type}&topic=${widget.topic.toString().split(",")[0]}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}&sort_by=1&order_by${price=='High to Low'?"=1":"=2"}';
                             getCouncilorfromserver();
                             Navigator.pop(context);
                             print(url);
@@ -374,7 +376,91 @@ class _SearchResultState extends State<SearchResult> {
                         },
                       ),
                     ),
-                    Container(
+                    // Container(
+                    //   width: SizeConfig.screenWidth,
+                    //   margin: EdgeInsets.symmetric(
+                    //       horizontal: SizeConfig.screenWidth * 0.05),
+                    //   child: Text(
+                    //     "Rating",
+                    //     style: TextStyle(
+                    //         color: Color(backgroundColorBlue),
+                    //         fontWeight: FontWeight.w600,
+                    //         fontSize: SizeConfig.blockSizeVertical * 1.75),
+                    //   ),
+                    // ),
+                    // Container(
+                    //   width: SizeConfig.screenWidth,
+                    //   margin: EdgeInsets.symmetric(
+                    //       vertical: SizeConfig.blockSizeVertical,
+                    //       horizontal: SizeConfig.screenWidth * 0.05),
+                    //   child: DropdownButtonFormField<String>(
+                    //     decoration: InputDecoration(
+                    //       border: OutlineInputBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         borderSide: BorderSide(color: Color(fontColorGray)),
+                    //       ),
+                    //       disabledBorder: OutlineInputBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         borderSide: BorderSide(color: Color(fontColorGray)),
+                    //       ),
+                    //       focusedBorder: OutlineInputBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         borderSide: BorderSide(color: Color(fontColorGray)),
+                    //       ),
+                    //       focusedErrorBorder: OutlineInputBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         borderSide: BorderSide(color: Color(fontColorGray)),
+                    //       ),
+                    //       errorBorder: OutlineInputBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         borderSide: BorderSide(color: Color(fontColorGray)),
+                    //       ),
+                    //       enabledBorder: OutlineInputBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         borderSide: BorderSide(color: Color(fontColorGray)),
+                    //       ),
+                    //       isDense: true,
+                    //       contentPadding: EdgeInsets.all(12),
+                    //     ),
+                    //     items: <String>['High to Low',"Low to high"]
+                    //         .map<DropdownMenuItem<String>>((String value) {
+                    //       return DropdownMenuItem<String>(
+                    //         value: value,
+                    //         child: Text(
+                    //           value,
+                    //           style: TextStyle(
+                    //               color: Color(midnightBlue),
+                    //               fontWeight: FontWeight.w400,
+                    //               fontSize: SizeConfig.blockSizeVertical * 2),
+                    //         ),
+                    //       );
+                    //     }).toList(),
+                    //     hint: Text(
+                    //       "Sort By Rating",
+                    //       style: TextStyle(
+                    //           color: Color(fontColorGray),
+                    //           fontSize: SizeConfig.blockSizeVertical * 1.75,
+                    //           fontWeight: FontWeight.w400),
+                    //     ),
+                    //     icon: Icon(
+                    //       Icons.keyboard_arrow_down_rounded,
+                    //       color: Color(fontColorGray),
+                    //     ),
+                    //     value: rating,
+                    //     onChanged: (value) {
+                    //       setState(() {
+                    //         rating = value;
+                    //         url="https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null||widget.type==0?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}${widget.language==null?"":"&language="+widget.language.toString().split(",")[0]}${widget.price==null?"":"&price=""${widget.price},2500"}&sort_by=2&${price==null?"":price=='High to Low'?"=1":"=2"}&${rating=='High to Low'?"order_by=1":"order_by=2"}";
+                    //
+                    //        // url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client/search?${widget.type==null?"":"type=${widget.type}"}&${widget.topic==null?"":"topic=${widget.topic.toString().split(",")[0]}"}&language=${widget.language==null?"":widget.language.toString().split(",")[0]}&sort_by=2&order_by=1';
+                    //         getCouncilorfromserver();
+                    //         Navigator.pop(context);
+                    //         print(url);
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
+                   widget.type!=2? Container(
                       width: SizeConfig.screenWidth,
                       margin: EdgeInsets.symmetric(
                           horizontal: SizeConfig.screenWidth * 0.05),
@@ -385,8 +471,8 @@ class _SearchResultState extends State<SearchResult> {
                             fontWeight: FontWeight.w600,
                             fontSize: SizeConfig.blockSizeVertical * 1.75),
                       ),
-                    ),
-                    SliderTheme(
+                    ):Container(),
+                    widget.type!=2? SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         thumbColor: Colors.white,
                         activeTrackColor: Color(backgroundColorBlue),
@@ -406,7 +492,7 @@ class _SearchResultState extends State<SearchResult> {
                           },
                         );
                       }),
-                    ),
+                    ):Container(),
                   ],
                 ),
               ),
@@ -487,13 +573,14 @@ class _SearchResultState extends State<SearchResult> {
                 margin: EdgeInsets.symmetric(
                     vertical: SizeConfig.blockSizeVertical,
                     horizontal: SizeConfig.screenWidth * 0.05),
-                child: Therapist.length == 0||Therapist==null
+                child: Therapist==null||Therapist.length == 0||Therapist==null
                     ? Column(
                         children: [Text("No Record Found")],
                       )
-                    : ListView(
+                    : Padding(
+                    padding: const EdgeInsets.only(bottom: 24.0),child:ListView(
                         children: Councilorwidget(),
-                      )),
+                      ))),
           ],
         ),
       ),
@@ -677,9 +764,14 @@ print("jndi");
                       Row(
                         children: [
                           Text(
-                            "Counsellor",
+                            Therapist[i]['type'] == "1"
+                                ? "Counsellor"
+                                : Therapist[i]['type'] == "2"
+                                ? "Listener"
+                                : "Therapist",
                             style: TextStyle(
                                 color: Color(fontColorSteelGrey),
+                                fontWeight: FontWeight.w600,
                                 fontSize: SizeConfig.blockSizeVertical * 2),
                           ),
                           Container(
@@ -737,12 +829,8 @@ print("jndi");
                   print('SLOT :${slots[Therapist[i]['id']]}');
                   print('SLOT DATA :${Therapist[i]['id']}');
 
-                  if(slots[Therapist[i]['id']].isEmpty==true){
-                    Get.showSnackbar(GetBar(
-                      message: 'No Slot Avialable',
-                      duration: Duration(seconds: 2),
-                    ));}
-                  else{
+
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -750,12 +838,10 @@ print("jndi");
                                 CounsellorProfile(
                                     getData: Therapist[i],
                                     mediaUrl: mediaurl,
-                                    slot: slots[Therapist[i]['id']].isEmpty
-                                        ? {}
-                                        : slots[Therapist[i]['id']][0],
+
                                     type: Therapist[i]['type'])));
                   }
-                },
+                ,
                 child: Text(
                   "BOOK APPOINTMENT",
                   style: TextStyle(
@@ -803,36 +889,36 @@ print("jndi");
       for (int i = 0; i < value.length; i++) {
         print('INdex:${(i / 2) == 0}');
         print("knejknp" + value[i].length.toString());
-        if (i.isEven) {
-          slotlist.add(
-            value[i].length < 3
-                ? GestureDetector(
-              onTap: () {
-                _onSelectedslot(i, therapistid);
-              },
-              child: Container(
-                width: SizeConfig.screenWidth * 0.2,
-                padding: EdgeInsets.all(8),
-                margin: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.blockSizeHorizontal),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: _selectedIndexs != null &&
-                        _selectedIndexs == i &&
-                        therapist == (therapistid)
-                        ? Colors.blue
-                        : Colors.grey,
-                  ),
+
+        slotlist.add(
+          value[i].length < 3
+              ? GestureDetector(
+            onTap: () {
+              _onSelectedslot(i, therapistid);
+            },
+            child: Container(
+              width: SizeConfig.screenWidth * 0.2,
+              padding: EdgeInsets.all(8),
+              margin: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.blockSizeHorizontal),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _selectedIndexs != null &&
+                      _selectedIndexs == i &&
+                      therapist == (therapistid)
+                      ? Colors.blue
+                      : Colors.grey,
                 ),
-                child: Text(moodstatic[int.parse(value[i])].toString()),
-                alignment: Alignment.center,
               ),
-            )
-                : Container(),
-          );
-        }
+              child: Text(moodstatic[int.parse(value[i])].toString()),
+              alignment: Alignment.center,
+            ),
+          )
+              : Container(),
+        );
       }
+
       return slotlist;
     }
   }

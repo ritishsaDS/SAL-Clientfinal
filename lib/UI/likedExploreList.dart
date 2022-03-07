@@ -76,54 +76,56 @@ class LikedExploreList extends StatelessWidget {
               ),
             );
           }
-          return Column(
-            children: [
-              response.videos.isEmpty ? SizedBox() : popularVideoText(),
-              response.videos.isEmpty
-                  ? SizedBox()
-                  : Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.screenWidth * 0.02,
-                          vertical: SizeConfig.blockSizeVertical),
-                      width: SizeConfig.screenWidth,
-                      height: SizeConfig.screenHeight * 0.2,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children:
-                            response.videos.map((e) => showData(e)).toList(),
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                response.videos.isEmpty ? SizedBox() : popularVideoText(),
+                response.videos.isEmpty
+                    ? SizedBox()
+                    : Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.screenWidth * 0.02,
+                            vertical: SizeConfig.blockSizeVertical),
+                        width: SizeConfig.screenWidth,
+                        height: SizeConfig.screenHeight * 0.2,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              response.videos.map((e) => showData(e)).toList(),
+                        ),
                       ),
-                    ),
-              response.audios.isEmpty ? SizedBox() : popularAudioText(),
-              response.audios.isEmpty
-                  ? SizedBox()
-                  : Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.screenWidth * 0.02,
-                          vertical: SizeConfig.blockSizeVertical),
-                      width: SizeConfig.screenWidth,
-                      height: SizeConfig.screenHeight * 0.2,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children:
-                            response.audios.map((e) => showData(e)).toList(),
+                response.audios.isEmpty ? SizedBox() : popularAudioText(),
+                response.audios.isEmpty
+                    ? SizedBox()
+                    : Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.screenWidth * 0.02,
+                            vertical: SizeConfig.blockSizeVertical),
+                        width: SizeConfig.screenWidth,
+                        height: SizeConfig.screenHeight * 0.2,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              response.audios.map((e) => showData(e)).toList(),
+                        ),
                       ),
-                    ),
-              response.articles.isEmpty ? SizedBox() : popularArticles(),
-              response.articles.isEmpty
-                  ? SizedBox()
-                  : Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.screenWidth * 0.02,
-                          vertical: SizeConfig.blockSizeVertical),
-                      width: SizeConfig.screenWidth,
-                      height: SizeConfig.screenHeight * 0.2,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children:
-                            response.articles.map((e) => showData(e)).toList(),
+                response.articles.isEmpty ? SizedBox() : popularArticles(),
+                response.articles.isEmpty
+                    ? SizedBox()
+                    : Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.screenWidth * 0.02,
+                            vertical: SizeConfig.blockSizeVertical),
+                        width: SizeConfig.screenWidth,
+                        height: SizeConfig.screenHeight * 0.2,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:
+                              response.articles.map((e) => showData(e)).toList(),
+                        ),
                       ),
-                    ),
-            ],
+              ],
+            ),
           );
         },
       ),

@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Myprofile.dart';
+import 'package:sal_user/UI/Professionalinfo.dart';
 import 'package:sal_user/base/BaseRepository.dart';
 import 'package:sal_user/data/api/ApiHitter.dart';
 import 'package:sal_user/models/CreateTherapistprofilemodel.dart';
@@ -32,7 +34,8 @@ String timezone,
       "last_name": last_name,
       "location": location,
       "phone": phone,
-      "timezone": "UTC+5:30"
+      "timezone": "UTC+5:30",
+      "topic_ids":selectedInterestListid.toString().replaceAll("]", "").replaceAll("[", "")
     }}');
     ApiResponse apiResponse = await apiHitter
         .getPostApiResponse("https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client",
@@ -49,8 +52,11 @@ String timezone,
           "last_name": last_name,
           "location": location,
           "phone": phone,
-          "timezone": "UTC+5:30"
-        });
+          "timezone": "UTC+5:30",
+          "topic_ids":selectedInterestListid.toString().replaceAll("]", "").replaceAll("[", "")
+        }
+
+        );
     {
       try {
         print('SUCCESS:${apiResponse.status}');

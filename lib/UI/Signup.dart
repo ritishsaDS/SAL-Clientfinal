@@ -1,12 +1,18 @@
+import 'dart:convert';
+
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sal_user/UI/Home.dart';
 import 'package:sal_user/UI/Sessions.dart';
+import 'package:sal_user/UI/mood.dart';
 import 'package:sal_user/UI/webview.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -18,6 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Myprofile.dart';
 import 'Otp.dart';
+import 'Professionalinfo.dart';
 import 'Schedulescreen.dart';
 import 'login.dart';
 
@@ -34,16 +41,19 @@ class SignUp extends StatefulWidget {
   dynamic data;
   dynamic mediaurl;
   dynamic type;
+  var phone;
   final Map<String, dynamic> slot;
+var screen;
 
-
-  SignUp({this.data, this.mediaurl, this.type, this.slot});
+  SignUp({this.data,this.screen,this.phone, this.mediaurl, this.type, this.slot});
 
   @override
   _SignUpState createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
+  bool isError = false;
+  bool isLoading = false;
   bool checkboxvalue = false;
   GlobalKey<FormState> nameForm = GlobalKey<FormState>();
   final GlobalKey<State> loginLoader = new GlobalKey<State>();
@@ -80,7 +90,7 @@ class _SignUpState extends State<SignUp> {
   void initState() {
     // TODO: implement initState
     // print(widget.gender);
-
+phone=TextEditingController(text: widget.phone);
     super.initState();
   }
 
@@ -121,7 +131,7 @@ class _SignUpState extends State<SignUp> {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.90,
+
           // child: Column(
           //   children: [
           //     Container(
@@ -748,15 +758,24 @@ class _SignUpState extends State<SignUp> {
                   children: [
                     Text("Please provide us the \n following details",style: TextStyle( color: Color(0xff77849C),
 
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600),),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600),),
                     SizedBox(
                       height: 20,
                     ),
                     textField(
-                        title: 'Name',
-                        hint: 'Enter Name',
+                        readonly:false,
+                        title: 'First Name',
+                        hint: 'First Name',
                         controller: firstNameController),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    textField(
+                        readonly:false,
+                        title: 'Last Name',
+                        hint: 'Last Name',
+                        controller: lastNameController),
                     SizedBox(
                       height: 20,
                     ),
@@ -849,6 +868,7 @@ class _SignUpState extends State<SignUp> {
                       height: 10,
                     ),
                     textField(
+                        readonly:false,
                         title: 'Email Id',
                         hint: 'Enter Email Id',
                         controller: email),
@@ -856,23 +876,24 @@ class _SignUpState extends State<SignUp> {
                       height: 20,
                     ),
                     textField(
+                        readonly:true,
                         title: 'Mobile Number',
                         hint: 'Enter Mobile number',
                         controller: phone),
                     SizedBox(
                       height: 20,
                     ),
-                Container(
-                       // margin: EdgeInsets.only(left: 15),
+                    Container(
+                      // margin: EdgeInsets.only(left: 15),
                         child: Row(
                           children: [
-                        Checkbox(
-                                      value: checkboxvalue,
-                                      onChanged: (val) {
-                                        setState(() {
-                                          checkboxvalue = val;
-                                        });
-                                      }),
+                            Checkbox(
+                                value: checkboxvalue,
+                                onChanged: (val) {
+                                  setState(() {
+                                    checkboxvalue = val;
+                                  });
+                                }),
                             RichText(
                               text: TextSpan(
                                 children: [
@@ -891,21 +912,21 @@ class _SignUpState extends State<SignUp> {
                                   TextSpan(
                                     text: " & ", style: GoogleFonts.openSans(
                                       color: Color(0xff77849C),
-                                                    fontSize: SizeConfig.blockSizeVertical * 1.7,
-                                                    fontWeight: FontWeight.w400),
+                                      fontSize: SizeConfig.blockSizeVertical * 1.7,
+                                      fontWeight: FontWeight.w400),
                                   ),
                                   TextSpan(
                                     text: "\nPrivacy Policy ",style:  GoogleFonts.openSans(
-                                                        color: Color(backgroundColorBlue),
-                                                        fontSize: SizeConfig.blockSizeVertical * 1.8,
-                                                        fontWeight: FontWeight.w400),
+                                      color: Color(backgroundColorBlue),
+                                      fontSize: SizeConfig.blockSizeVertical * 1.8,
+                                      fontWeight: FontWeight.w400),
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         )
-                      ),
+                    ),
                     // Container(
                     //   margin: EdgeInsets.only(left: 30),
                     //   child: GestureDetector(
@@ -938,7 +959,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
   Column textField(
-      {String title, String hint, TextEditingController controller}) {
+      {String title, String hint, TextEditingController controller,readonly}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -960,6 +981,7 @@ class _SignUpState extends State<SignUp> {
             }
             return null;
           },
+          readOnly: readonly,
           controller: controller,
           keyboardType: title == 'Mobile Number'
               ? TextInputType.number
@@ -998,11 +1020,11 @@ class _SignUpState extends State<SignUp> {
           final datePicked = await getDate(context);
           if (datePicked != null) {
             print(datePicked);
-          setState(() {
-            dobController=TextEditingController(text: datePicked.toString().substring(0,10));
-            //dobController.text = DateFormat('yyyy-MM-dd').format(datePicked);
-            return datePicked;
-          });
+            setState(() {
+              dobController=TextEditingController(text: datePicked.toString().substring(0,10));
+              //dobController.text = DateFormat('yyyy-MM-dd').format(datePicked);
+              return datePicked;
+            });
           }
           return null;
         },
@@ -1050,174 +1072,290 @@ class _SignUpState extends State<SignUp> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         onPressed: () async {
           if (_formKey.currentState.validate()) {
-    setState(() {
+            setState(() {
 
-    });
-    print(widget.type.toString());
-    print(selectedDob.toString().substring(0, 10));
-    Dialogs.showLoadingDialog(context, loginLoader);
-    /* Future.delayed(Duration(seconds: 2)).then((value) {
+            });
+            print(widget.type.toString());
+            print(selectedDob.toString().substring(0, 10));
+            if(!checkboxvalue){
+              Fluttertoast.showToast(msg: "Please Accept Our Terms & Conditions ");
+            }
+           if(checkboxvalue){
+             Dialogs.showLoadingDialog(context, loginLoader);
+             SignUp();
+           }
+            /* Future.delayed(Duration(seconds: 2)).then((value) {
             SharedPreferencesTest().checkIsLogin("0");
             Navigator.of(context).pushNamed('/Price5');
           });*/
-    // print(mobileController.text);
-    createUser
-        .createCounsellor(
-    age: selectedDob.toString().substring(0, 10),
-    context: context,
-    timezone: "4:50",
-    device_id: "frst5533",
-    gender: radioValue.toString(),
-    location: "45.333",
-    email: email.text,
-    experience: experience.text,
-    first_name: firstNameController.text,
-    last_name: "",
-    phone: "91" + phone.text)
-        .then((value) async {
-          print("jnkdjn;nkl"+value.toString());
-    if (value != null) {
-    print(value.meta.status);
-    print(createUser.createCounsellor());
-    if (value.meta.status == "200") {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    print(value.meta.message);
-    print(value.meta.status);
-    print(value.clientId);
-
-    SharedPreferences prefs =
-    await SharedPreferences.getInstance();
-
-    prefs.setString("cleintid", value.clientId);
-    prefs.setString("email", email.text);
-    prefs.setString("phone", "91" + phone.text);
-    prefs.setString("name", firstNameController.text);
-
-    Navigator.push(
-    context,
-    MaterialPageRoute(
-    builder: (context) => DynamicEvent(
-    data: widget.data,
-    mediaurl: widget.mediaurl,
-    slot: widget.slot,
-
-    )));
-    }
-    else {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    value.meta.message,
-    "",
-    );
-    if (value.meta.message ==
-    "Verify phone number wth OTP") {
-    print("knrjorn");
-
-    Dialogs.showLoadingDialog(context, loginLoader);
-    sendOtp
-        .sendOtp(
-    context: context,
-    phone: "91" + phone.text,
-    )
-        .then((value) {
-    if (value != null) {
-    if (value.meta.status == "200") {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    Navigator.push(context,
-    MaterialPageRoute(builder: (conext) {
-    return OTPScreen(
-    phonenumber: phone.text,
-    screen: "Signup",
-    data: widget.data,
-    mediaurl: widget.mediaurl,
-    type: widget.type,
-    gender: radioValue.toString(),
-    dob: selectedDob
-        .toString()
-        .substring(0, 10));
-    }));
-    } else {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    value.meta.message,
-    "",
-    );
-    }
-    } else {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    value.meta.message,
-    "",
-    );
-    }
-    }).catchError((error) {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    error.toString(),
-    "",
-    );
-    });
-
-    // Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen(screen:"Signup")));
-    }
-    else {
-    print(value.meta.message);
-    }
-    }
-    } else {
-    print("nkascdsdjsdv;jo");
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    value.meta.message,
-    "",
-    );
-    if (value.meta.message ==
-    "Verify phone number with OTP") {
-    print("knrjorn");
-    Navigator.push(
-    context,
-    MaterialPageRoute(
-    builder: (context) =>
-    LoginScreen(screen: "Signup")));
-    } else {
-    print("kaanrjorn");
-    }
-    }
-    }).catchError((error) {
-    Navigator.of(loginLoader.currentContext,
-    rootNavigator: true)
-        .pop();
-    showAlertDialog(
-    context,
-    error.toString(),
-    "",
-    );
-    });
-    }},
+            // print(mobileController.text);
+            // createUser
+            //     .createCounsellor(
+            //     age: selectedDob.toString().substring(0, 10),
+            //     context: context,
+            //     timezone: "4:50",
+            //     device_id: "dhagte4twjac",
+            //     gender: radioValue.toString(),
+            //     location: "45.333",
+            //     email: email.text,
+            //     experience: experience.text,
+            //     first_name: firstNameController.text,
+            //     last_name: "",
+            //     phone: "91" + phone.text)
+            //     .then((value) async {
+            //   print("jnkdjn;nkl"+value.toString());
+            //   if (value != null) {
+            //     print(value.meta.status);
+            //     print(createUser.createCounsellor());
+            //     if (value.meta.status == "200") {
+            //       Navigator.of(loginLoader.currentContext,
+            //           rootNavigator: true)
+            //           .pop();
+            //       print(value.meta.message);
+            //       print(value.meta.status);
+            //       print(value.clientId);
+            //
+            //       SharedPreferences prefs =
+            //       await SharedPreferences.getInstance();
+            //
+            //       prefs.setString("cleintid", value.clientId);
+            //       prefs.setString("email", email.text);
+            //       prefs.setString("phone", "91" + phone.text);
+            //       prefs.setString("name", firstNameController.text);
+            //
+            //
+            //       Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: (context) => HomeMain(
+            //
+            //
+            //               )));
+            //     }
+            //     else {
+            //       Navigator.of(loginLoader.currentContext,
+            //           rootNavigator: true)
+            //           .pop();
+            //       showAlertDialog(
+            //         context,
+            //         value.meta.message,
+            //         "",
+            //       );
+            //       if (value.meta.message ==
+            //           "Verify phone number wth OTP") {
+            //         print("knrjorn");
+            //
+            //         Dialogs.showLoadingDialog(context, loginLoader);
+            //         sendOtp
+            //             .sendOtp(
+            //           context: context,
+            //           phone: "91" + phone.text,
+            //         )
+            //             .then((value) {
+            //           if (value != null) {
+            //             if (value.meta.status == "200") {
+            //               Navigator.of(loginLoader.currentContext,
+            //                   rootNavigator: true)
+            //                   .pop();
+            //               Navigator.push(context,
+            //                   MaterialPageRoute(builder: (conext) {
+            //                     return OTPScreen(
+            //                         phonenumber: phone.text,
+            //                         screen: "Signup",
+            //                         data: widget.data,
+            //                         mediaurl: widget.mediaurl,
+            //                         type: widget.type,
+            //                         gender: radioValue.toString(),
+            //                         dob: selectedDob
+            //                             .toString()
+            //                             .substring(0, 10));
+            //                   }));
+            //             } else {
+            //               Navigator.of(loginLoader.currentContext,
+            //                   rootNavigator: true)
+            //                   .pop();
+            //               showAlertDialog(
+            //                 context,
+            //                 value.meta.message,
+            //                 "",
+            //               );
+            //             }
+            //           } else {
+            //             Navigator.of(loginLoader.currentContext,
+            //                 rootNavigator: true)
+            //                 .pop();
+            //             showAlertDialog(
+            //               context,
+            //               value.meta.message,
+            //               "",
+            //             );
+            //           }
+            //         }).catchError((error) {
+            //           Navigator.of(loginLoader.currentContext,
+            //               rootNavigator: true)
+            //               .pop();
+            //           showAlertDialog(
+            //             context,
+            //             error.toString(),
+            //             "",
+            //           );
+            //         });
+            //
+            //         // Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen(screen:"Signup")));
+            //       }
+            //       else {
+            //         print(value.meta.message);
+            //       }
+            //     }
+            //   } else {
+            //     print("nkascdsdjsdv;jo");
+            //     Navigator.of(loginLoader.currentContext,
+            //         rootNavigator: true)
+            //         .pop();
+            //     showAlertDialog(
+            //       context,
+            //       value.meta.message,
+            //       "",
+            //     );
+            //     if (value.meta.message ==
+            //         "Verify phone number with OTP") {
+            //       print("knrjorn");
+            //       Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: (context) =>
+            //                   LoginScreen(screen: "Signup")));
+            //     } else {
+            //       print("kaanrjorn");
+            //     }
+            //   }
+            // }).catchError((error) {
+            //   Navigator.of(loginLoader.currentContext,
+            //       rootNavigator: true)
+            //       .pop();
+            //   showAlertDialog(
+            //     context,
+            //     error.toString(),
+            //     "",
+            //   );
+            // });
+          }},
         child: Text(
           'NEXT',
           style: TextStyle(color: Colors.white, letterSpacing: 0.5),
         ),
       ),
     );
+  }
+  Future<void> SignUp() async {
+
+    setState(() {
+      isLoading = true;
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> body={
+      "date_of_birth": dobController.text.toString().substring(0, 10),
+      "device_id": "54646digl45",
+      "email": email.text,
+      "first_name": firstNameController.text,
+      "gender": radioValue.toString(),
+      "last_name": lastNameController.text,
+      "location": "45.33",
+      "phone": "91"+phone.text,
+      "timezone": "UTC+5:30",
+      "topic_ids":selectedInterestListid.toString().replaceAll("]", "").replaceAll("[", "")
+
+    };
+
+    print(prefs.getString("type"));
+    print(body);
+    var url='https://yvsdncrpod.execute-api.ap-south-1.amazonaws.com/prod/client';
+
+    Map<String, String> requestHeaders = {
+      "Content-Type": "application/json",
+      "accept": "application/json"
+
+    };
+
+    try {
+      final response = await post(Uri.parse(url),headers: requestHeaders,
+
+
+
+          body:json.encode(body));
+      print("bjkb" + response.body.toString());
+      if (response.statusCode == 200) {
+
+        final responseJson = json.decode(response.body);
+
+//if (){}
+       if(responseJson['meta']['status']=="200"){
+         SharedPreferences prefs =
+         await SharedPreferences.getInstance();
+         print(responseJson);
+         setState(() {
+           prefs.setString("email", email.text);
+           prefs.setString("phone", "91"+phone.text);
+           prefs.setString("name",firstNameController.text);
+           prefs.setString("cleintid", responseJson['client_id']);
+           print(prefs.getString("cleintid"));
+         });
+         if(widget.screen=="Appointment"){
+           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>DynamicEvent( data: widget.data,
+             mediaurl: widget.mediaurl,
+             type: widget.type,)));
+
+         }
+         else if(widget.screen=="Mood"){
+           Get.to(Mood());
+         }
+         else{
+           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>HomeMain()));
+
+         }
+       }
+       else{
+         Navigator.of(loginLoader.currentContext,
+             rootNavigator: true)
+             .pop();
+         showAlertDialog(
+           context,
+           responseJson['meta']['message'].toString(),
+           "",
+         );
+       }
+        // counsellorid=upcominglist['appointment_slots'][0]['counsellor_id'];
+        //  print( upcominglist['appointment_slots'][0]['counsellor_id'],);
+        setState(() {
+          isError = false;
+          isLoading = false;
+          print('setstate');
+        });
+      } else {
+        Navigator.of(loginLoader.currentContext,
+            rootNavigator: true)
+            .pop();
+        print("bjkb" + response.statusCode.toString());
+        // showToast("Mismatch Credentials");
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+      Navigator.of(loginLoader.currentContext,
+          rootNavigator: true)
+          .pop();
+      showAlertDialog(
+        context,
+        e.toString(),
+        "",
+      );
+    }
   }
 }

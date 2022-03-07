@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:sal_user/UI/CousellorProfile.dart';
 import 'package:sal_user/UI/Sessions.dart';
 import 'package:sal_user/Utils/AlertDialog.dart';
 import 'package:sal_user/Utils/Colors.dart';
@@ -44,7 +45,7 @@ class _DynamicEventState extends State<DynamicEvent> {
   var selectdate = DateTime.now();
 
   var moodstaticList = [
-    ' ',
+    "0:00",
     "0:30",
     "1:00",
     "1:30",
@@ -152,7 +153,7 @@ class _DynamicEventState extends State<DynamicEvent> {
     super.initState();
     print("jndfvko"+widget.data.toString());
     getdatafromserver();
-    setSlotTime();
+    //setSlotTime();
 
     _controller = CalendarController();
     _eventController = TextEditingController();
@@ -205,278 +206,289 @@ class _DynamicEventState extends State<DynamicEvent> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: (){
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CounsellorProfile(mediaUrl: widget.mediaurl,getData: widget.data,type: widget.type,)));
+      },
+      child: Scaffold(
         backgroundColor: Colors.white,
-        centerTitle: true,
-        title: Text(
-          "Schedule",
-          style: TextStyle(
-            color: Color(midnightBlue),
-            fontWeight: FontWeight.w600,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          title: Text(
+            "Schedule",
+            style: TextStyle(
+              color: Color(midnightBlue),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          elevation: 0.0,
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: Color(midnightBlue),
+            ),
           ),
         ),
-        elevation: 0.0,
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Color(midnightBlue),
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Stack(
-                children: [
-                  TableCalendar(
-                    events: _events,
-                    daysOfWeekStyle: DaysOfWeekStyle(
-                      weekdayStyle: TextStyle(color: Colors.black),
-                      weekendStyle: TextStyle(color: Colors.black),
-                    ),
-                    initialCalendarFormat: CalendarFormat.week,
-                    calendarStyle: CalendarStyle(
-                      // canEventMarkersOverflow: true,
-                      weekdayStyle: TextStyle(color: Colors.black),
-                      highlightToday: false,
-                      weekendStyle: TextStyle(color: Colors.black),
-                      //outsideWeekendStyle: TextStyle(color: Colors.white60),
-                      // outsideStyle: TextStyle(color: Colors.white60),
-                      // outsideWeekendStyle:TextStyle(color: Colors.black),
-                      /// todayColor: Colors.orange,
-                      selectedColor: Theme.of(context).primaryColor,
-                      // todayStyle: TextStyle(
-                      //     fontWeight: FontWeight.bold,
-                      //     fontSize: 18.0,
-                      //     color: Colors.white)),
-                    ),
-                    headerStyle: HeaderStyle(
-                      headerMargin: EdgeInsets.symmetric(vertical: 5),
-                      // formatButtonVisible: true,
-                      // formatButtonShowsNext: true,
-                      formatButtonDecoration:
-                          BoxDecoration(color: Colors.transparent),
-                      formatButtonTextStyle:
-                          TextStyle(color: Colors.transparent),
-                      //
-                      // decoration: BoxDecoration(
-                      //   //color: Colors.blue,
-                      //     border: Border(bottom: BorderSide(color: Colors.blue))),
-                      centerHeaderTitle: true,
-                      leftChevronIcon: Icon(Icons.arrow_back_ios,
-                          size: 15, color: Color(backgroundColorBlue)),
-                      rightChevronIcon: Icon(Icons.arrow_forward_ios,
-                          size: 15, color: Color(backgroundColorBlue)),
-
-                      titleTextStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Stack(
+                  children: [
+                    TableCalendar(
+                      events: _events,
+                      daysOfWeekStyle: DaysOfWeekStyle(
+                        weekdayStyle: TextStyle(color: Colors.black),
+                        weekendStyle: TextStyle(color: Colors.black),
                       ),
-                    ),
-                    startingDayOfWeek: StartingDayOfWeek.monday,
-                    onDaySelected: (date, events, holidays) {
-                      setState(() {
-                        _selectedEvents = events;
-                        selectdate = date;
-                        print(selectdate);
-                        getdatafromserver();
-                      });
-                    },
-                    builders: CalendarBuilders(
-                      selectedDayBuilder: (context, date, events) => Container(
-                          margin: EdgeInsets.all(4.0),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: Color(0XFF0066B3),
-                              borderRadius: BorderRadius.circular(40.0)),
-                          child: Text(
-                            date.day.toString(),
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      // todayDayBuilder: (context, date, events) => Container(
-                      //     margin:  EdgeInsets.all(4.0),
-                      //     alignment: Alignment.center,
-                      //     decoration: BoxDecoration(
-                      //         color: Theme.of(context).primaryColor,
-                      //         borderRadius: BorderRadius.circular(40.0)),
-                      //     child: Text(
-                      //       date.day.toString(),
-                      //       style: TextStyle(color: Colors.white),
-                      //     )),
-                    ),
-                    calendarController: _controller,
-                  ),
-                  Positioned(
-                      right: 5,
-                      top: 60,
-                      child: RotatedBox(
-                        quarterTurns: 3,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _controller.toggleCalendarFormat();
-                            });
-                          },
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.black,
-                            size: 15,
-                          ),
-                        ),
-                      ))
-                ],
-              ),
-              ..._selectedEvents.map((event) => Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height / 20,
-                      width: MediaQuery.of(context).size.width / 2,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
+                      initialCalendarFormat: CalendarFormat.week,
+                      calendarStyle: CalendarStyle(
+                        // canEventMarkersOverflow: true,
+                        weekdayStyle: TextStyle(color: Colors.black),
+                        highlightToday: false,
+                        weekendStyle: TextStyle(color: Colors.black),
+                        //outsideWeekendStyle: TextStyle(color: Colors.white60),
+                        // outsideStyle: TextStyle(color: Colors.white60),
+                        // outsideWeekendStyle:TextStyle(color: Colors.black),
+                        /// todayColor: Colors.orange,
+                        selectedColor: Theme.of(context).primaryColor,
+                        // todayStyle: TextStyle(
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 18.0,
+                        //     color: Colors.white)),
+                      ),
+                      headerStyle: HeaderStyle(
+                        headerMargin: EdgeInsets.symmetric(vertical: 5),
+                        // formatButtonVisible: true,
+                        // formatButtonShowsNext: true,
+                        formatButtonDecoration:
+                            BoxDecoration(color: Colors.transparent),
+                        formatButtonTextStyle:
+                            TextStyle(color: Colors.transparent),
+                        //
+                        // decoration: BoxDecoration(
+                        //   //color: Colors.blue,
+                        //     border: Border(bottom: BorderSide(color: Colors.blue))),
+                        centerHeaderTitle: true,
+                        leftChevronIcon: Icon(Icons.arrow_back_ios,
+                            size: 15, color: Color(backgroundColorBlue)),
+                        rightChevronIcon: Icon(Icons.arrow_forward_ios,
+                            size: 15, color: Color(backgroundColorBlue)),
+
+                        titleTextStyle: TextStyle(
                           color: Colors.white,
-                          border: Border.all(color: Colors.grey)),
-                      child: Center(
-                          child: Text(
-                        event,
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      )),
+                          fontSize: 12,
+                        ),
+                      ),
+                      startingDayOfWeek: StartingDayOfWeek.monday,
+                      onDaySelected: (date, events, holidays) {
+                        setState(() {
+                          _selectedEvents = events;
+                          selectdate = date;
+                          print(selectdate);
+                          getdatafromserver();
+                        });
+                      },
+                      builders: CalendarBuilders(
+                        selectedDayBuilder: (context, date, events) => Container(
+                            margin: EdgeInsets.all(4.0),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: Color(0XFF0066B3),
+                                borderRadius: BorderRadius.circular(40.0)),
+                            child: Text(
+                              date.day.toString(),
+                              style: TextStyle(color: Colors.white),
+                            )),
+                        // todayDayBuilder: (context, date, events) => Container(
+                        //     margin:  EdgeInsets.all(4.0),
+                        //     alignment: Alignment.center,
+                        //     decoration: BoxDecoration(
+                        //         color: Theme.of(context).primaryColor,
+                        //         borderRadius: BorderRadius.circular(40.0)),
+                        //     child: Text(
+                        //       date.day.toString(),
+                        //       style: TextStyle(color: Colors.white),
+                        //     )),
+                      ),
+                      calendarController: _controller,
                     ),
-                  )),
-              Divider(
-                height: 20,
-                thickness: 1.6,
-                color: Colors.grey[300],
-              ),
-              Container(
-                  margin: EdgeInsets.all(10),
-                  height: SizeConfig.screenHeight * 0.54,
-                  child: value.isEmpty
-                      ? Center(child: Text('Slot not available'))
-                      : GridView.count(
-                          childAspectRatio: 3.5 / 2,
-                          // Create a grid with 2 columns. If you change the scrollDirection to
-                          // horizontal, this produces 2 rows.
-                          crossAxisCount: 4,
-                          mainAxisSpacing: 20,
-                          crossAxisSpacing: 15,
-                          // Generate 100 widgets that display their index in the List.
-                          children:slotarray()
-                          //     List.generate(value.length, (index) {
-                          //   return GestureDetector(
-                          //     onTap: () {
-                          //       setState(() {
-                          //         _onSelected(index);
-                          //
-                          //         slotid =
-                          //             slot[int.parse(listAvailableSlot[index])];
-                          //         print(slotid);
-                          //       });
-                          //     },
-                          //     child: Container(
-                          //       padding: EdgeInsets.all(5),
-                          //       decoration: BoxDecoration(
-                          //           borderRadius: BorderRadius.circular(10),
-                          //           color: _selectedIndex != null &&
-                          //                   _selectedIndex == index
-                          //               ? Color(backgroundColorBlue)
-                          //               : Colors.white,
-                          //           border: Border.all(
-                          //             color: _selectedIndex != null &&
-                          //                     _selectedIndex == index
-                          //                 ? Color(backgroundColorBlue)
-                          //                 : Colors.grey,
-                          //           )),
-                          //       child: Center(
-                          //         child: Text(
-                          //           moodstaticList[
-                          //               int.parse(value[index])],
-                          //           style: TextStyle(
-                          //             color: _selectedIndex != null &&
-                          //                     _selectedIndex == index
-                          //                 ? Colors.white
-                          //                 : Colors.grey,
-                          //           ),
-                          //           // style: Theme.of(context).textTheme.headline5,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   );
-                          // }),
-                        )),
-              Container(
-                margin: EdgeInsets.all(10),
-                child: MaterialButton(
-                  onPressed: () async {
-
-                    if (slotid==null) {
-                      Get.showSnackbar(GetBar(
-                        message: 'Please any one slot',
-                        duration: Duration(seconds: 2),
-                      ));
-                      return;
-                    }
-
-                    // if(sessionRadio > 0){
-                    print('widget.appointment${widget.appointment}');
-
-                    if (widget.appointment == null) {
-                      var data;
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      print(prefs.getString("cleintid"));
-                      data = AppointmentModel(
-                          clientId: prefs.getString("cleintid"),
-                          counsellorId: widget.data['id'],
-                          couponCode: "",
-                          date: selectdate.toString(),
-                          noSession: "1",
-                          time: slotid);
-                      Appointmentorder.diomwthod(data, context, widget.mediaurl,
-                          widget.data, "1", widget.type, "Schedule");
-                    }
-                    else {
-                      AppointmentModel data;
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      print(prefs.getString("cleintid"));
-                      data = AppointmentModel(
-                          clientId: prefs.getString("cleintid"),
-                          counsellorId: widget.data,
-                          couponCode: "",
-                          date: selectdate.toString(),
-                          noSession: "1",
-                          time: slotid);
-                      print(data);
-                      Appointmentorder.diomwthod(data, context, widget.mediaurl,
-                          widget.data, "1", widget.type, "Schedule");
-                    }
-
-                    // }else{
-                    //   toast("Please select session");
-                    // }
-                  },
-                  child: Text(
-                    "Continue",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600),
-                  ),
-                  minWidth: SizeConfig.screenWidth,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  color: Color(backgroundColorBlue),
+                    Positioned(
+                        right: 5,
+                        top: 60,
+                        child: RotatedBox(
+                          quarterTurns: 3,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _controller.toggleCalendarFormat();
+                              });
+                            },
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.black,
+                              size: 15,
+                            ),
+                          ),
+                        ))
+                  ],
                 ),
-              ),
-            ],
+                ..._selectedEvents.map((event) => Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height / 20,
+                        width: MediaQuery.of(context).size.width / 2,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey)),
+                        child: Center(
+                            child: Text(
+                          event,
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                        )),
+                      ),
+                    )),
+                Divider(
+                  height: 20,
+                  thickness: 1.6,
+                  color: Colors.grey[300],
+                ),
+                Container(
+                    margin: EdgeInsets.all(10),
+                    height: SizeConfig.screenHeight * 0.54,
+                    child: value.isEmpty
+                        ? Center(child: Text('Slot not available'))
+                        : GridView.count(
+                            childAspectRatio: 3.5 / 2,
+                            // Create a grid with 2 columns. If you change the scrollDirection to
+                            // horizontal, this produces 2 rows.
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 15,
+                            // Generate 100 widgets that display their index in the List.
+                            children:slotarray()
+                            //     List.generate(value.length, (index) {
+                            //   return GestureDetector(
+                            //     onTap: () {
+                            //       setState(() {
+                            //         _onSelected(index);
+                            //
+                            //         slotid =
+                            //             slot[int.parse(listAvailableSlot[index])];
+                            //         print(slotid);
+                            //       });
+                            //     },
+                            //     child: Container(
+                            //       padding: EdgeInsets.all(5),
+                            //       decoration: BoxDecoration(
+                            //           borderRadius: BorderRadius.circular(10),
+                            //           color: _selectedIndex != null &&
+                            //                   _selectedIndex == index
+                            //               ? Color(backgroundColorBlue)
+                            //               : Colors.white,
+                            //           border: Border.all(
+                            //             color: _selectedIndex != null &&
+                            //                     _selectedIndex == index
+                            //                 ? Color(backgroundColorBlue)
+                            //                 : Colors.grey,
+                            //           )),
+                            //       child: Center(
+                            //         child: Text(
+                            //           moodstaticList[
+                            //               int.parse(value[index])],
+                            //           style: TextStyle(
+                            //             color: _selectedIndex != null &&
+                            //                     _selectedIndex == index
+                            //                 ? Colors.white
+                            //                 : Colors.grey,
+                            //           ),
+                            //           // style: Theme.of(context).textTheme.headline5,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   );
+                            // }),
+                          )),
+                Container(
+                  margin: EdgeInsets.all(10),
+                  child: MaterialButton(
+                    onPressed: () async {
+
+                      if (slotid==null) {
+                        Get.showSnackbar(GetBar(
+                          message: 'Please any one slot',
+                          duration: Duration(seconds: 2),
+                        ));
+                        return;
+                      }
+
+                      // if(sessionRadio > 0){
+                      print('widget.appointment${widget.appointment}');
+
+                      if (widget.appointment == null) {
+                        var data;
+                        setState(() {
+
+                        });
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        print(prefs.getString("cleintid"));
+                        data = AppointmentModel(
+                            clientId: prefs.getString("cleintid"),
+                            counsellorId: widget.data['id'],
+                            couponCode: "",
+                            date: selectdate.toString(),
+                            noSession: "1",
+                            time: slotid);
+                        Appointmentorder.diomwthod(data, context, widget.mediaurl,
+                            widget.data, "1", widget.type, "Schedule");
+                      }
+                      else {
+                        setState(() {
+
+                        });
+                        AppointmentModel data;
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        print(prefs.getString("cleintid"));
+                        data = AppointmentModel(
+                            clientId: prefs.getString("cleintid"),
+                            counsellorId: widget.data,
+                            couponCode: "",
+                            date: selectdate.toString(),
+                            noSession: "1",
+                            time: slotid);
+                        print(data);
+                        Appointmentorder.diomwthod(data, context, widget.mediaurl,
+                            widget.data, "1", widget.type, "Schedule");
+                      }
+
+                      // }else{
+                      //   toast("Please select session");
+                      // }
+                    },
+                    child: Text(
+                      "Continue",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
+                    minWidth: SizeConfig.screenWidth,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    color: Color(backgroundColorBlue),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -591,7 +603,7 @@ class _DynamicEventState extends State<DynamicEvent> {
     for (int i = 0; i < value.length; i++) {
       print('INdex:${(i / 2) == 0}');
       print("knejknp" + value[i].length.toString());
-      if (i.isEven) {
+       {
         slotlist.add(
           value[i].length < 3
               ? GestureDetector(

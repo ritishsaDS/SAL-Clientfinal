@@ -26,7 +26,8 @@ class _ConnectState extends State<Connect> {
   bool isloding = false;
   String topic;
   int _selectedIndex = 0;
-  var moodstatic = [
+  var moodstaticList = [
+    "0:00",
     "0:30",
     "1:00",
     "1:30",
@@ -76,6 +77,59 @@ class _ConnectState extends State<Connect> {
     "23:30",
     "24:00"
   ];
+  double start = 500.0;
+  double end = 500.0;
+  var slot = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    '37',
+    '38',
+    "39",
+    "40",
+    "41",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47"
+  ];
+
 
   _onSelected(int index) {
     setState(() => _selectedIndex = index);
@@ -87,7 +141,7 @@ class _ConnectState extends State<Connect> {
   bool expand = false;
   int checkboxValue = 0;
   var passlist = [];
-  double price = 0;
+  double price = 500.0;
   double pricemax = 2500;
   DateTime selectedDate = DateTime.now();
   var getHomeContentModal = GetCounsellor();
@@ -485,31 +539,43 @@ class _ConnectState extends State<Connect> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    "₹ ${price.round().toString()} ",
+                                    checkboxValue==2?"0":"₹ ${end.round().toString()} ",
                                     style: TextStyle(
                                         color: Color(fontColorSteelGrey),
                                         fontWeight: FontWeight.w600),
                                   )
                                 ],
                               ),
+                              checkboxValue==2? Opacity(
+                                opacity: 0.4,
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color:Color(backgroundColorBlue)),
+margin: EdgeInsets.only(left: 20,top: 20,bottom: 20),
+                                  width: SizeConfig.screenWidth*0.8,
+                                  height: 5,
+child: CircleAvatar(backgroundColor: Colors.white,radius: 0,),
+                                ),
+                              ):
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   thumbColor: Colors.white,
                                   activeTrackColor: Color(backgroundColorBlue),
                                   inactiveTrackColor: Color(fontColorGray),
                                 ),
-                                child: Slider(
-                                  min: 0,
-                                  max: 2500,
-                                  value: price,
-                                  divisions: 50,
-                                  label: price.round().toString(),
+                                child: RangeSlider(
+                                  divisions: 40,
+                                  values: RangeValues(start, end),
+                                //  labels: RangeLabels(start.toString(), end.toString()),
                                   onChanged: (value) {
-
                                     setState(() {
-                                      price = value;
+
+                                      end = value.end;
+                                      price=end;
                                     });
                                   },
+                                  min: 500.0,
+                                  max: 2500.0,
                                 ),
                               ),
                             ],
@@ -636,7 +702,19 @@ class _ConnectState extends State<Connect> {
                           onPressed: () {
                             if(passlist.isEmpty){
                               print("vjbilibk");
-
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SearchResult(
+                                              list: passlist,
+                                              type: checkboxValue,
+                                              topic: topictype,
+                                              language: language,
+                                              date: selectedDate
+                                                  .toString()
+                                                  .substring(0, 10),
+                                              price: price.round().toString())));
                             }
                             //print(checkboxValue.toString()+"  "+topic+""+price.round().toString()+""+language+""+selectedDate.toString().substring(0,10));
                            else{
@@ -700,7 +778,7 @@ class _ConnectState extends State<Connect> {
                                   });
                                   print(eventlength[index]);
                                   getCouncilorpagefromserver(
-                                      eventlength[index]);
+                                      eventlength[index]+1);
                                 },
                                 child: Center(
                                     child: eventlength.last <= index
@@ -1092,9 +1170,7 @@ class _ConnectState extends State<Connect> {
               CounsellorProfile(
                   getData: Therapist[i],
                   mediaUrl: mediaurl,
-                  slot: slots[Therapist[i]['id']].isEmpty
-                      ? {}
-                      : slots[Therapist[i]['id']][0],
+
                   type: Therapist[i]['type'])));
 }
                 ,
@@ -1146,7 +1222,7 @@ class _ConnectState extends State<Connect> {
       for (int i = 0; i < value.length; i++) {
         print('INdex:${(i / 2) == 0}');
         print("knejknp" + value[i].length.toString());
-        if (i.isEven) {
+
           slotlist.add(
             value[i].length < 3
                 ? GestureDetector(
@@ -1168,14 +1244,14 @@ class _ConnectState extends State<Connect> {
                         : Colors.grey,
                   ),
                 ),
-                child: Text(moodstatic[int.parse(value[i])].toString()),
+                child: Text(moodstaticList[int.parse(value[i])].toString()),
                 alignment: Alignment.center,
               ),
             )
                 : Container(),
           );
         }
-      }
+
       return slotlist;
     }
   }

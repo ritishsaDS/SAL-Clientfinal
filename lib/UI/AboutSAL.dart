@@ -57,9 +57,13 @@ class _AboutSALState extends State<AboutSAL> {
                   horizontal: SizeConfig.screenWidth * 0.02
               ),
               alignment: Alignment.centerLeft,
-              child: Text("Mollit quis magna pariatur nulla do elit ullamco ut dolore enim nisi laboris. Pariatur et mollit Lorem qui commodo. Reprehenderit enim ullamco deserunt dolor aliquip id nulla sunt ut veniam magna mollit enim nostrud.\n\n"
-                  "In sunt do non incididunt id irure id dolor cupidatat officia cillum et fugiat. Exercitation cupidatat nisi et occaecat ipsum sunt quis amet ullamco. Do duis Lorem do incididunt aliquip adipisicing fugiat dolore proident proident eu. Velit aute excepteur exercitation sit elit et nostrud irure esse.",
-                style: TextStyle(
+              child: Text( "Salubrium Private Limited (SAL) was formed with the purpose of providing emotional well-being solutions for the people. Our constant endeavour is to educate people and reduce stigma around mental health through our various initiatives."
+            "\n"
+            "\n" " We equip people to deal with situations in their life and help them in preventing mental health issues. In the process, our goal is to elevate their emotional wellbeing by providing all such free & paid services under one roof by a team of Listener volunteers & Therapist, respectively."
+            "\n"
+            "\n"
+            "We hold that hand that’s slipping out, say a kind word to those in distress or just hear them out so that people can feel better by managing their emotions in a confidential environment.",
+              style: TextStyle(
                     fontWeight: FontWeight.w400,
                     color: Color(fontColorSteelGrey),
                 ),
