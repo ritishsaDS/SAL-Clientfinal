@@ -296,8 +296,9 @@ class _AllContentsState extends State<AllContents> {
                           scrollDirection: Axis.horizontal,
                           children: List.generate(
                               result.audios.length ,
-                                  (index) => index == result.audios.length
-                                  ? GestureDetector(
+                                  (index) => index == 2
+
+                                  ?GestureDetector(
                                   onTap: () {
                                     Get.to(SeeMoreExplore(
                                       dataList: result.audios,
@@ -306,14 +307,14 @@ class _AllContentsState extends State<AllContents> {
                                   },
                                   child: seeMoreContainer(
                                       result.audios[index]))
-                                  : GestureDetector(
+                                  : index <= 1? GestureDetector(
                                   onTap: () {
                                     Get.to(PlayerPage(
                                       data: result.audios[index],
                                         likedcontent:result.likedContentIds
                                     ));
                                   },
-                                  child: explorewidget(articles:result.audios[index],likedcontent:result.likedContentIds))),
+                                  child: explorewidget(articles:result.audios[index],likedcontent:result.likedContentIds)):Container()),
                         ),
                       ),
                       SizedBox(
@@ -331,13 +332,14 @@ class _AllContentsState extends State<AllContents> {
                         height: 20,
                       ),
                       SizedBox(
-                        height: 180,
+                        height: 140,
                         width: Get.width,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
                           children: List.generate(
-                            result.articles.length ,
-                                (index) => index == result.articles.length
+                            result.articles.length,
+                                (index) => index == 2
+
                                 ? GestureDetector(
                                 onTap: () {
                                   Get.to(SeeMoreExplore(
@@ -345,9 +347,13 @@ class _AllContentsState extends State<AllContents> {
                                     extension: 'Articles',
                                   ));
                                 },
-                                child: seeMoreContainer(
-                                    result.articles[index]))
-                                : GestureDetector(
+                                child: Container(
+                                  height: 140,
+                                  width: 190,
+                                  child: seeMoreContainer(
+                                      result.articles[index]),
+                                ))
+                                : index <= 1?GestureDetector(
                                 onTap: () {
                                   Get.to(ArticleDetail(
                                       description:result.articles[index].description,
@@ -361,7 +367,7 @@ class _AllContentsState extends State<AllContents> {
                                   ));
                                 },
                                 child:explorewidget(articles:result.articles[index],likedcontent:result.likedContentIds)
-                            ),
+                            ):Container(),
                           ),
                         ),
                       ),
@@ -419,7 +425,9 @@ class _AllContentsState extends State<AllContents> {
 
   Container seeMoreContainer(ContentsArticle e) {
     return Container(
-      width: SizeConfig.screenWidth * 0.45,
+      height: 140,
+      width: 190,
+
       alignment: Alignment.bottomCenter,
       margin: EdgeInsets.symmetric(horizontal: SizeConfig.screenWidth * 0.02),
       decoration: BoxDecoration(
@@ -430,6 +438,7 @@ class _AllContentsState extends State<AllContents> {
       ),
       child: Container(
         width: SizeConfig.screenWidth,
+
         padding: EdgeInsets.only(
             left: SizeConfig.screenWidth * 0.02,
             right: SizeConfig.screenWidth * 0.02),

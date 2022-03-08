@@ -560,7 +560,7 @@ return homitemlist;
           sharelink));
       var response = await request.close();
       Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-      await Share.file('SAL Invoice', 'Result.pdf', bytes, 'document/pdf');
+      await Share.file('SAL Result', 'Result.pdf', bytes, 'document/pdf');
     } catch (e) {
       print('error: $e');
     }

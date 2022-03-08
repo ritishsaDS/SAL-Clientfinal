@@ -69,6 +69,7 @@ class SeeMoreExplore extends StatelessWidget {
                 },
                 child: Container(
                   width: SizeConfig.screenWidth * 0.45,
+
                   alignment: Alignment.bottomCenter,
                   margin: EdgeInsets.symmetric(
                       horizontal: SizeConfig.screenWidth * 0.02),
